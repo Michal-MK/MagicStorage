@@ -1,0 +1,7 @@
+﻿[*.cs]
+
+# ChangeMagicNumberToID: Change magic numbers into appropriate ID values
+dotnet_diagnostic.ChangeMagicNumberToID.severity = error
+
+# CS0618: Type or member is obsolete
+dotnet_diagnostic.CS0618.severity = warning
