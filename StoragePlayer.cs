@@ -4,6 +4,7 @@ using Terraria.DataStructures;
 using Terraria.ModLoader;
 using Terraria.UI;
 using Terraria.ID;
+using MagicStorage.GUI;
 
 namespace MagicStorage {
 	public class StoragePlayer : ModPlayer {

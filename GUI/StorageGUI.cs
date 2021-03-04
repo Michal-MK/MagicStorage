@@ -11,7 +11,7 @@ using Terraria.Localization;
 using Terraria.UI;
 using Terraria.ID;
 
-namespace MagicStorage {
+namespace MagicStorage.GUI {
 	public static class StorageGUI {
 		private const int padding = 4;
 		private const int numColumns = 10;

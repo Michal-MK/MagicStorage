@@ -1,3 +1,4 @@
+using MagicStorage.GUI;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;

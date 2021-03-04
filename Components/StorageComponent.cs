@@ -8,10 +8,21 @@ using Terraria.ObjectData;
 
 namespace MagicStorage.Components {
 	public class StorageComponent : ModTile {
+
+		public StorageComponent() {
+			tileTexture = "MagicStorage/Textures/Tiles/" + GetType().Name;
+		}
+
 		public static Point16 killTile = new Point16(-1, -1);
 
 		// Use StorageComponent_Highlight as the default highlight mask for subclasses
 		public override string HighlightTexture { get { return typeof(StorageComponent).FullName.Replace('.', '/') + "_Highlight"; } }
+
+		public string tileTexture;
+
+		public override bool Autoload(ref string name, ref string texture) {
+			return base.Autoload(ref name, ref tileTexture);
+		}
 
 		public override void SetDefaults() {
 			Main.tileSolidTop[Type] = true;

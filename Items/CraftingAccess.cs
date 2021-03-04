@@ -15,6 +15,8 @@ namespace MagicStorage.Items {
 			DisplayName.AddTranslation(GameCulture.Chinese, "制作存储单元");
 		}
 
+		public override string Texture => "MagicStorage/Textures/Tiles/CraftingAccess";
+
 		public override void SetDefaults() {
 			item.width = 26;
 			item.height = 26;

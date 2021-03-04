@@ -1,4 +1,5 @@
 using MagicStorage.Components;
+using MagicStorage.GUI;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using System.Reflection;

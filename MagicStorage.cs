@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MagicStorage.GUI;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Terraria;
@@ -222,8 +223,10 @@ namespace MagicStorage {
 			AddTranslation(text);
 		}
 
-		public override void PostSetupContent() {
+		
 
+		public override void PostSetupContent() {
+			
 		}
 
 		public override void AddRecipeGroups() {

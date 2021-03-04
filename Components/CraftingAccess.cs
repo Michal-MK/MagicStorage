@@ -16,6 +16,14 @@ namespace MagicStorage.Components {
 			return true;
 		}
 
+		public CraftingAccess() {
+			tileTexture = "MagicStorage/Textures/Tiles/"  + GetType().Name;
+		}
+
+		public override bool Autoload(ref string name, ref string texture) {
+			return base.Autoload(ref name, ref tileTexture);
+		}
+
 		public override TEStorageHeart GetHeart(int i, int j) {
 			Point16 point = TEStorageComponent.FindStorageCenter(new Point16(i, j));
 			if (point.X < 0 || point.Y < 0 || !TileEntity.ByPosition.ContainsKey(point)) {

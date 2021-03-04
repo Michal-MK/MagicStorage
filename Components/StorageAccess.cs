@@ -101,7 +101,7 @@ namespace MagicStorage.Components {
 			Rectangle frame = new Rectangle(tile.frameX, tile.frameY, 16, 16);
 			Color lightColor = Lighting.GetColor(i, j, Color.White);
 			Color color = Color.Lerp(lightColor, Color.White, Main.essScale);
-			spriteBatch.Draw(mod.GetTexture("Components/" + Name + "_Glow"), drawPos, frame, color);
+			spriteBatch.Draw(mod.GetTexture("Textures/Tiles/" + Name + "_Glow"), drawPos, frame, color);
 		}
 	}
 }

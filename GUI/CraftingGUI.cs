@@ -15,7 +15,7 @@ using Terraria.Map;
 using Terraria.ModLoader;
 using Terraria.UI;
 
-namespace MagicStorage {
+namespace MagicStorage.GUI {
 	public static class CraftingGUI {
 		private const int padding = 4;
 		private const int numColumns = 10;
@@ -353,8 +353,8 @@ namespace MagicStorage {
 			if (recipeButtons == null) {
 				recipeButtons = new UIButtonChoice(new Texture2D[]
 				{
-					MagicStorage.Instance.GetTexture("RecipeAvailable"),
-					MagicStorage.Instance.GetTexture("RecipeAll")
+					MagicStorage.Instance.GetTexture("Textures/Filtering/RecipeAvailable"),
+					MagicStorage.Instance.GetTexture("Textures/Filtering/RecipeAll")
 				},
 				new LocalizedText[]
 				{
