@@ -16,20 +16,33 @@ namespace MagicStorage.Components {
 		public static Point16 killTile = new Point16(-1, -1);
 
 		// Use StorageComponent_Highlight as the default highlight mask for subclasses
-		public override string HighlightTexture { get { return typeof(StorageComponent).FullName.Replace('.', '/') + "_Highlight"; } }
+		public override string HighlightTexture => "MagicStorage/Textures/Tiles/" + nameof(StorageComponent) + "_Highlight";
 
 		public string tileTexture;
 
 		public override bool Autoload(ref string name, ref string texture) {
-			return base.Autoload(ref name, ref tileTexture);
+			texture = tileTexture;
+			return base.Autoload(ref name, ref texture);
 		}
 
 		public override void SetDefaults() {
+			TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
 			Main.tileSolidTop[Type] = true;
+			Main.tileTable[Type] = true;
 			Main.tileFrameImportant[Type] = true;
+			Main.tileNoAttach[Type] = false;
+			//TileObjectData.newTile.AnchorWall = true;
+			//TileObjectData.newTile.AnchorBottom = new AnchorData(Terraria.Enums.AnchorType.None, 0, 0);
+			AnchorData d = TileObjectData.newTile.AnchorBottom;
+			d.type |= Terraria.Enums.AnchorType.EmptyTile;
+			//d.tileCount = 0;
+			d.checkStart = 0;
+			TileObjectData.newTile.AnchorBottom = d;
+			//TileObjectData.newTile.AnchorLeft = new AnchorData(Terraria.Enums.AnchorType.None, 0, 0);
+			//TileObjectData.newTile.AnchorRight = new AnchorData(Terraria.Enums.AnchorType.None, 0, 0);
 			TileObjectData.newTile.Width = 2;
 			TileObjectData.newTile.Height = 2;
-			TileObjectData.newTile.Origin = new Point16(1, 1);
+			TileObjectData.newTile.Origin = new Point16(0, 1);
 			TileObjectData.newTile.CoordinateHeights = new int[] { 16, 16 };
 			TileObjectData.newTile.CoordinateWidth = 16;
 			TileObjectData.newTile.CoordinatePadding = 2;
@@ -74,7 +87,7 @@ namespace MagicStorage.Components {
 				count++;
 			}
 
-			Point16 startSearch = new Point16(i - 1, j - 1);
+			Point16 startSearch = new Point16(i, j - 1);
 			HashSet<Point16> explored = new HashSet<Point16>();
 			explored.Add(startSearch);
 			Queue<Point16> toExplore = new Queue<Point16>();

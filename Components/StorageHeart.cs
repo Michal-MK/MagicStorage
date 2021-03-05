@@ -25,9 +25,9 @@ namespace MagicStorage.Components {
 			Player player = Main.player[Main.myPlayer];
 			Item item = player.inventory[player.selectedItem];
 			if (item.type == mod.ItemType("Locator") || item.type == mod.ItemType("LocatorDisk") || item.type == mod.ItemType("PortableAccess")) {
-				if (Main.tile[i, j].frameX % 36 == 18) {
-					i--;
-				}
+				//if (Main.tile[i, j].frameX % 36 == 18) {
+				//	i--;
+				//}
 				if (Main.tile[i, j].frameY % 36 == 18) {
 					j--;
 				}

@@ -37,9 +37,9 @@ namespace MagicStorage.Components {
 		}
 
 		public override bool NewRightClick(int i, int j) {
-			if (Main.tile[i, j].frameX % 36 == 18) {
-				i--;
-			}
+			//if (Main.tile[i, j].frameX % 36 == 18) {
+			//	i--;
+			//}
 			if (Main.tile[i, j].frameY % 36 == 18) {
 				j--;
 			}

@@ -15,21 +15,21 @@ namespace MagicStorage.Components {
 
 		public override int Hook_AfterPlacement(int i, int j, int type, int style, int direction) {
 			if (Main.netMode == NetmodeID.MultiplayerClient) {
-				NetHelper.SendComponentPlace(i - 1, j - 1, Type);
+				NetHelper.SendComponentPlace(i, j - 1, Type);
 				return -1;
 			}
-			int id = Place(i - 1, j - 1);
+			int id = Place(i, j - 1);
 			((TEStorageComponent)TileEntity.ByID[id]).OnPlace();
 			return id;
 		}
 
 		public static int Hook_AfterPlacement_NoEntity(int i, int j, int type, int style, int direction) {
 			if (Main.netMode == NetmodeID.MultiplayerClient) {
-				NetMessage.SendTileRange(Main.myPlayer, i - 1, j - 1, 2, 2);
-				NetHelper.SendSearchAndRefresh(i - 1, j - 1);
+				NetMessage.SendTileRange(Main.myPlayer, i, j - 1, 2, 2);
+				NetHelper.SendSearchAndRefresh(i, j - 1);
 				return 0;
 			}
-			SearchAndRefreshNetwork(new Point16(i - 1, j - 1));
+			SearchAndRefreshNetwork(new Point16(i, j - 1));
 			return 0;
 		}
 

@@ -8,6 +8,12 @@ using Terraria.ID;
 
 namespace MagicStorage.Components {
 	public class StorageConnector : ModTile {
+
+		public StorageConnector() {
+			tileTexture = "MagicStorage/Textures/Tiles/" + GetType().Name;
+		}
+
+
 		public override void SetDefaults() {
 			Main.tileSolid[Type] = false;
 			TileObjectData.newTile.Width = 1;
@@ -26,6 +32,15 @@ namespace MagicStorage.Components {
 			dustType = 7;
 			drop = mod.ItemType("StorageConnector");
 		}
+
+
+		public string tileTexture;
+
+		public override bool Autoload(ref string name, ref string texture) {
+			texture = tileTexture;
+			return base.Autoload(ref name, ref texture);
+		}
+
 
 		public int CanPlace(int i, int j, int type, int style, int direction) {
 			int count = 0;

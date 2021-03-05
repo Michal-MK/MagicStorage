@@ -223,12 +223,6 @@ namespace MagicStorage {
 			AddTranslation(text);
 		}
 
-		
-
-		public override void PostSetupContent() {
-			
-		}
-
 		public override void AddRecipeGroups() {
 			RecipeGroup group = new RecipeGroup(() => Lang.misc[37] + " Chest",
 			ItemID.Chest,
