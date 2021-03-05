@@ -17,38 +17,47 @@ using Terraria.UI;
 
 namespace MagicStorage.GUI {
 	public static class CraftingGUI {
-		private const int padding = 4;
-		private const int numColumns = 10;
-		private const int numColumns2 = 7;
-		private const float inventoryScale = 0.85f;
-		private const float smallScale = 0.7f;
+
+		public const int AVAILABLE_RECIPES_NUM_COLS = 10;
+		public const int AVAILABLE_INGREDIENT_NUM_COLS = 7;
+		public const float RECIPES_SCALE = 0.85f;
+		public const float INGREDIENTS_SCALE = 0.7f;
+		private const float TOP_BAR_HEIGHT = 32f;
+
+
+		private const int START_MAX_CRAFT_TIMER = 20;
+		private const int SMART_MAX_CLICK_TIMER = 20;
+
+		// Padding between Item Slots
+
+		// Element Spacing
+		private const int SPACING = UICommon.PADDING * 3;
+
+		// The left offset from the screen
+		private const float PANEL_LEFT = 20;
 
 		public static MouseState curMouse;
 		public static MouseState oldMouse;
-		public static bool MouseClicked {
-			get {
-				return curMouse.LeftButton == ButtonState.Pressed && oldMouse.LeftButton == ButtonState.Released;
-			}
-		}
 
-		private static UIPanel basePanel;
+		public static bool MouseClicked => curMouse.LeftButton == ButtonState.Pressed && oldMouse.LeftButton == ButtonState.Released;
+
+		private static UIPanel recipesPanel;
 		private static float panelTop;
-		private static float panelLeft;
 		private static float panelWidth;
 		private static float panelHeight;
 
-		private static UIElement topBar;
-		internal static UISearchBar searchBar;
+		private static UIElement recipesTopBar;
+		internal static UISearchBar itemNameSearch;
 		private static UIButtonChoice sortButtons;
 		private static UIButtonChoice recipeButtons;
-		private static UIElement topBar2;
+		private static UIElement ingredientsTopBar;
 		private static UIButtonChoice filterButtons;
-		internal static UISearchBar searchBar2;
+		internal static UISearchBar modNameSearch;
 
 		private static UIText stationText;
-		private static UISlotZone stationZone = new UISlotZone(HoverStation, GetStation, inventoryScale);
+		private static UISlotZone stationZone = new UISlotZone(HoverStation, GetStation, RECIPES_SCALE);
 		private static UIText recipeText;
-		private static UISlotZone recipeZone = new UISlotZone(HoverRecipe, GetRecipe, inventoryScale);
+		private static UISlotZone recipeZone = new UISlotZone(HoverRecipe, GetRecipe, RECIPES_SCALE);
 
 		internal static UIScrollbar scrollBar = new UIScrollbar();
 		private static int scrollBarFocus = 0;
@@ -75,20 +84,20 @@ namespace MagicStorage.GUI {
 		private static UIElement bottomBar = new UIElement();
 		private static UIText capacityText;
 
-		private static UIPanel recipePanel;
-		private static float recipeTop;
-		private static float recipeLeft;
-		private static float recipeWidth;
-		private static float recipeHeight;
+		private static UIPanel ingredientsPanel;
+		private static float ingredientTop;
+		private static float ingredientLeft;
+		private static float ingredientWidth;
+		private static float ingredientHeight;
 
 		private static UIText recipePanelHeader;
 		private static UIText ingredientText;
-		private static UISlotZone ingredientZone = new UISlotZone(HoverItem, GetIngredient, smallScale);
+		private static UISlotZone ingredientZone = new UISlotZone(HoverItem, GetIngredient, INGREDIENTS_SCALE);
 		private static UIText reqObjText;
 		private static UIText reqObjText2;
 		private static UIText storedItemsText;
 
-		private static UISlotZone storageZone = new UISlotZone(HoverStorage, GetStorage, smallScale);
+		private static UISlotZone storageZone = new UISlotZone(HoverStorage, GetStorage, INGREDIENTS_SCALE);
 		private static int numRows2;
 		private static int displayRows2;
 		private static List<Item> storageItems = new List<Item>();
@@ -100,17 +109,17 @@ namespace MagicStorage.GUI {
 
 		internal static UITextPanel<LocalizedText> craftButton;
 		private static Item result = null;
-		private static UISlotZone resultZone = new UISlotZone(HoverResult, GetResult, inventoryScale);
-		private static int craftTimer = 0;
-		private const int startMaxCraftTimer = 20;
-		private static int maxCraftTimer = startMaxCraftTimer;
-		private static int rightClickTimer = 0;
-		private const int startMaxRightClickTimer = 20;
-		private static int maxRightClickTimer = startMaxRightClickTimer;
+		private static UISlotZone resultZone = new UISlotZone(HoverResult, GetResult, RECIPES_SCALE);
 
-		private static Object threadLock = new Object();
-		private static Object recipeLock = new Object();
-		private static Object itemsLock = new Object();
+		private static int craftTimer = 0;
+		private static int maxCraftTimer = START_MAX_CRAFT_TIMER;
+		private static int rightClickTimer = 0;
+		private static int maxRightClickTimer = SMART_MAX_CLICK_TIMER;
+
+		private static readonly object threadLOCK = new object();
+		private static readonly object recipeLOCK = new object();
+		private static readonly object itemsLOCK = new object();
+
 		private static bool threadRunning = false;
 		internal static bool threadNeedsRestart = false;
 		private static SortMode threadSortMode;
@@ -121,112 +130,126 @@ namespace MagicStorage.GUI {
 		private static List<bool> nextRecipeAvailable = new List<bool>();
 
 		public static void Initialize() {
-			lock (recipeLock) {
+			lock (recipeLOCK) {
 				recipes = nextRecipes;
 				recipeAvailable = nextRecipeAvailable;
 			}
 
 			InitLangStuff();
-			float itemSlotWidth = Main.inventoryBackTexture.Width * inventoryScale;
-			float itemSlotHeight = Main.inventoryBackTexture.Height * inventoryScale;
-			float smallSlotWidth = Main.inventoryBackTexture.Width * smallScale;
-			float smallSlotHeight = Main.inventoryBackTexture.Height * smallScale;
+
+			float itemSlotWidth = Main.inventoryBackTexture.Width * RECIPES_SCALE;
+			float itemSlotHeight = Main.inventoryBackTexture.Height * RECIPES_SCALE;
+			float smallSlotWidth = Main.inventoryBackTexture.Width * INGREDIENTS_SCALE;
+			float smallSlotHeight = Main.inventoryBackTexture.Height * INGREDIENTS_SCALE;
 
 			panelTop = Main.instance.invBottom + 60;
-			panelLeft = 20f;
-			basePanel = new UIPanel();
-			float innerPanelLeft = panelLeft + basePanel.PaddingLeft;
-			float innerPanelWidth = numColumns * (itemSlotWidth + padding) + 20f + padding;
-			panelWidth = basePanel.PaddingLeft + innerPanelWidth + basePanel.PaddingRight;
-			panelHeight = Main.screenHeight - panelTop - 40f;
-			basePanel.Left.Set(panelLeft, 0f);
-			basePanel.Top.Set(panelTop, 0f);
-			basePanel.Width.Set(panelWidth, 0f);
-			basePanel.Height.Set(panelHeight, 0f);
-			basePanel.Recalculate();
+			panelHeight = Main.screenHeight - panelTop - 60;
 
-			recipePanel = new UIPanel();
-			recipeTop = panelTop;
-			recipeLeft = panelLeft + panelWidth;
-			recipeWidth = numColumns2 * (smallSlotWidth + padding) + 20f + padding;
-			recipeWidth += recipePanel.PaddingLeft + recipePanel.PaddingRight;
-			recipeHeight = panelHeight;
-			recipePanel.Left.Set(recipeLeft, 0f);
-			recipePanel.Top.Set(recipeTop, 0f);
-			recipePanel.Width.Set(recipeWidth, 0f);
-			recipePanel.Height.Set(recipeHeight, 0f);
-			recipePanel.Recalculate();
+			recipesPanel = new UIPanel();
 
-			topBar = new UIElement();
-			topBar.Width.Set(0f, 1f);
-			topBar.Height.Set(32f, 0f);
-			basePanel.Append(topBar);
+			float innerPanelWidth = AVAILABLE_RECIPES_NUM_COLS * (itemSlotWidth + UICommon.PADDING) + 20f + UICommon.PADDING;
+			panelWidth = recipesPanel.PaddingLeft + innerPanelWidth + recipesPanel.PaddingRight;
+			recipesPanel.Left.Set(PANEL_LEFT, 0f);
+			recipesPanel.Top.Set(panelTop, 0f);
+			recipesPanel.Width.Set(panelWidth, 0f);
+			recipesPanel.Height.Set(panelHeight, 0f);
+			recipesPanel.Recalculate();
+
+
+			ingredientsPanel = new UIPanel();
+
+			ingredientTop = panelTop;
+			ingredientLeft = PANEL_LEFT + panelWidth;
+			ingredientWidth = AVAILABLE_INGREDIENT_NUM_COLS * (smallSlotWidth + UICommon.PADDING) + 20f + UICommon.PADDING;
+			ingredientWidth += ingredientsPanel.PaddingLeft + ingredientsPanel.PaddingRight;
+			ingredientHeight = panelHeight;
+
+			ingredientsPanel.Left.Set(ingredientLeft, 0f);
+			ingredientsPanel.Top.Set(ingredientTop, 0f);
+			ingredientsPanel.Width.Set(ingredientWidth, 0f);
+			ingredientsPanel.Height.Set(ingredientHeight, 0f);
+			ingredientsPanel.Recalculate();
+
+			recipesTopBar = new UIElement();
+			recipesTopBar.Width.Set(0f, 1f);
+			recipesTopBar.Height.Set(TOP_BAR_HEIGHT, 0f);
+			recipesPanel.Append(recipesTopBar);
 
 			InitSortButtons();
-			topBar.Append(sortButtons);
-			float sortButtonsRight = sortButtons.GetDimensions().Width + padding;
+			recipesTopBar.Append(sortButtons);
+			float sortButtonsRight = sortButtons.GetDimensions().Width + UICommon.PADDING;
 			InitRecipeButtons();
-			float recipeButtonsLeft = sortButtonsRight + 32f + 3 * padding;
+			float recipeButtonsLeft = sortButtonsRight + UIButtonChoice.BUTTON_SIZE + 3 * UICommon.PADDING;
 			recipeButtons.Left.Set(recipeButtonsLeft, 0f);
-			topBar.Append(recipeButtons);
-			float recipeButtonsRight = recipeButtonsLeft + recipeButtons.GetDimensions().Width + padding;
+			recipesTopBar.Append(recipeButtons);
+			float recipeButtonsRight = recipeButtonsLeft + recipeButtons.GetDimensions().Width + UICommon.PADDING;
 
-			searchBar.Left.Set(recipeButtonsRight + padding, 0f);
-			searchBar.Width.Set(-recipeButtonsRight - 2 * padding, 1f);
-			searchBar.Height.Set(0f, 1f);
-			topBar.Append(searchBar);
+			itemNameSearch.Left.Set(recipeButtonsRight + UICommon.PADDING, 0f);
+			itemNameSearch.Width.Set(-recipeButtonsRight - 2 * UICommon.PADDING, 1f);
+			itemNameSearch.Height.Set(0f, 1f);
+			recipesTopBar.Append(itemNameSearch);
 
-			topBar2 = new UIElement();
-			topBar2.Width.Set(0f, 1f);
-			topBar2.Height.Set(32f, 0f);
-			topBar2.Top.Set(36f, 0f);
-			basePanel.Append(topBar2);
+			ingredientsTopBar = new UIElement();
+			ingredientsTopBar.Width.Set(0f, 1f);
+			ingredientsTopBar.Height.Set(TOP_BAR_HEIGHT, 0f);
+			ingredientsTopBar.Top.Set(TOP_BAR_HEIGHT + UICommon.PADDING, 0f);
+			recipesPanel.Append(ingredientsTopBar);
 
 			InitFilterButtons();
-			float filterButtonsRight = filterButtons.GetDimensions().Width + padding;
-			topBar2.Append(filterButtons);
-			searchBar2.Left.Set(filterButtonsRight + padding, 0f);
-			searchBar2.Width.Set(-filterButtonsRight - 2 * padding, 1f);
-			searchBar2.Height.Set(0f, 1f);
-			topBar2.Append(searchBar2);
-
-			stationText.Top.Set(76f, 0f);
-			basePanel.Append(stationText);
+			float filterButtonsRight = filterButtons.GetDimensions().Width + UICommon.PADDING;
+			ingredientsTopBar.Append(filterButtons);
+			modNameSearch.Left.Set(filterButtonsRight + UICommon.PADDING, 0f);
+			modNameSearch.Width.Set(-filterButtonsRight - 2 * UICommon.PADDING, 1f);
+			modNameSearch.Height.Set(0f, 1f);
+			ingredientsTopBar.Append(modNameSearch);
+			stationText.Top.Set(sortButtons.Height.Pixels + filterButtons.Height.Pixels + UICommon.PADDING * 4, 0f);
+			recipesPanel.Append(stationText);
 
 			stationZone.Width.Set(0f, 1f);
-			stationZone.Top.Set(100f, 0f);
-			stationZone.Height.Set(70f, 0f);
-			stationZone.SetDimensions(numColumns, 1);
-			basePanel.Append(stationZone);
+			stationZone.Top.Set(stationText.Top.Pixels + stationText.GetDimensions().Height + UICommon.PADDING * 3, 0f);
+			stationZone.SetDimensions(AVAILABLE_RECIPES_NUM_COLS, 1);
+			recipesPanel.Append(stationZone);
 
-			recipeText.Top.Set(152f, 0f);
-			basePanel.Append(recipeText);
+			recipeText.Top.Set(stationZone.Top.Pixels + stationZone.ActualHeight + UICommon.PADDING * 2, 0f);
+			recipesPanel.Append(recipeText);
+
+			//UIDebug dbg = new UIDebug();
+
+			//dbg.Width.Set(0f, 1f);
+			//dbg.Top.Set(recipeText.GetDimensions().Y + recipeText.GetDimensions().Height, 0f);
+			//dbg.Height.Set(200f, 1f);
 
 			recipeZone.Width.Set(0f, 1f);
-			recipeZone.Top.Set(176f, 0f);
-			recipeZone.Height.Set(-216f, 1f);
-			basePanel.Append(recipeZone);
+			recipeZone.Top.Set(recipeText.Top.Pixels + recipeText.GetDimensions().Height + UICommon.PADDING * 3, 0f);
+			numRows = (recipes.Count + AVAILABLE_RECIPES_NUM_COLS - 1) / AVAILABLE_RECIPES_NUM_COLS;
+			float h = panelHeight - recipeText.Top.Pixels - recipeText.GetDimensions().Height - UICommon.PADDING * 2;
+			recipeZone.Height.Set(h, 0f);
 
-			numRows = (recipes.Count + numColumns - 1) / numColumns;
-			displayRows = (int)recipeZone.GetDimensions().Height / ((int)itemSlotHeight + padding);
-			recipeZone.SetDimensions(numColumns, displayRows);
+			//recipesPanel.Append(dbg);
+			recipesPanel.Append(recipeZone);
+
+			numRows = (recipes.Count + AVAILABLE_RECIPES_NUM_COLS - 1) / AVAILABLE_RECIPES_NUM_COLS;
+			displayRows = (int)recipeZone.GetDimensions().Height / ((int)itemSlotHeight + UICommon.PADDING * 2);
+			recipeZone.SetDimensions(AVAILABLE_RECIPES_NUM_COLS, displayRows);
+
 			int noDisplayRows = numRows - displayRows;
 			if (noDisplayRows < 0) {
 				noDisplayRows = 0;
 			}
 			scrollBarMaxViewSize = 1 + noDisplayRows;
-			scrollBar.Height.Set(displayRows * (itemSlotHeight + padding), 0f);
+			scrollBar.Height.Set(displayRows * (itemSlotHeight + UICommon.PADDING), 0f);
 			scrollBar.Left.Set(-20f, 1f);
 			scrollBar.SetView(scrollBarViewSize, scrollBarMaxViewSize);
 			recipeZone.Append(scrollBar);
 
 			bottomBar.Width.Set(0f, 1f);
-			bottomBar.Height.Set(32f, 0f);
-			bottomBar.Top.Set(-32f, 1f);
-			basePanel.Append(bottomBar);
+			bottomBar.Height.Set(TOP_BAR_HEIGHT, 0f);
+			bottomBar.Top.Set(-TOP_BAR_HEIGHT, 1f);
+			recipesPanel.Append(bottomBar);
 
 			capacityText.Left.Set(6f, 0f);
 			capacityText.Top.Set(6f, 0f);
+
 			TEStorageHeart heart = GetHeart();
 			int numItems = 0;
 			int capacity = 0;
@@ -241,36 +264,36 @@ namespace MagicStorage.GUI {
 			capacityText.SetText(numItems + "/" + capacity + " Items");
 			bottomBar.Append(capacityText);
 
-			recipePanel.Append(recipePanelHeader);
+			ingredientsPanel.Append(recipePanelHeader);
 			ingredientText.Top.Set(30f, 0f);
-			recipePanel.Append(ingredientText);
+			ingredientsPanel.Append(ingredientText);
 
-			ingredientZone.SetDimensions(numColumns2, 2);
+			ingredientZone.SetDimensions(AVAILABLE_INGREDIENT_NUM_COLS, 2);
 			ingredientZone.Top.Set(54f, 0f);
 			ingredientZone.Width.Set(0f, 1f);
 			ingredientZone.Height.Set(60f, 0f);
-			recipePanel.Append(ingredientZone);
+			ingredientsPanel.Append(ingredientZone);
 
 			reqObjText.Top.Set(136f, 0f);
-			recipePanel.Append(reqObjText);
+			ingredientsPanel.Append(reqObjText);
 			reqObjText2.Top.Set(160f, 0f);
-			recipePanel.Append(reqObjText2);
+			ingredientsPanel.Append(reqObjText2);
 			storedItemsText.Top.Set(190f, 0f);
-			recipePanel.Append(storedItemsText);
+			ingredientsPanel.Append(storedItemsText);
 
 			storageZone.Top.Set(214f, 0f);
 			storageZone.Width.Set(0f, 1f);
 			storageZone.Height.Set(-214f - 36, 1f);
-			recipePanel.Append(storageZone);
-			numRows2 = (storageItems.Count + numColumns2 - 1) / numColumns2;
-			displayRows2 = (int)storageZone.GetDimensions().Height / ((int)smallSlotHeight + padding);
-			storageZone.SetDimensions(numColumns2, displayRows2);
+			ingredientsPanel.Append(storageZone);
+			numRows2 = (storageItems.Count + AVAILABLE_INGREDIENT_NUM_COLS - 1) / AVAILABLE_INGREDIENT_NUM_COLS;
+			displayRows2 = (int)storageZone.GetDimensions().Height / ((int)smallSlotHeight + UICommon.PADDING);
+			storageZone.SetDimensions(AVAILABLE_INGREDIENT_NUM_COLS, displayRows2);
 			int noDisplayRows2 = numRows2 - displayRows2;
 			if (noDisplayRows2 < 0) {
 				noDisplayRows2 = 0;
 			}
 			scrollBar2MaxViewSize = 1 + noDisplayRows2;
-			scrollBar2.Height.Set(displayRows2 * (smallSlotHeight + padding), 0f);
+			scrollBar2.Height.Set(displayRows2 * (smallSlotHeight + UICommon.PADDING), 0f);
 			scrollBar2.Left.Set(-20f, 1f);
 			scrollBar2.SetView(scrollBar2ViewSize, scrollBar2MaxViewSize);
 			storageZone.Append(scrollBar2);
@@ -280,22 +303,22 @@ namespace MagicStorage.GUI {
 			craftButton.Height.Set(24f, 0f);
 			craftButton.PaddingTop = 8f;
 			craftButton.PaddingBottom = 8f;
-			recipePanel.Append(craftButton);
+			ingredientsPanel.Append(craftButton);
 
 			resultZone.SetDimensions(1, 1);
 			resultZone.Left.Set(-itemSlotWidth, 1f);
 			resultZone.Top.Set(-itemSlotHeight, 1f);
 			resultZone.Width.Set(itemSlotWidth, 0f);
 			resultZone.Height.Set(itemSlotHeight, 0f);
-			recipePanel.Append(resultZone);
+			ingredientsPanel.Append(resultZone);
 		}
 
 		private static void InitLangStuff() {
-			if (searchBar == null) {
-				searchBar = new UISearchBar(Language.GetText("Mods.MagicStorage.SearchName"));
+			if (itemNameSearch == null) {
+				itemNameSearch = new UISearchBar(Language.GetText("Mods.MagicStorage.SearchName"));
 			}
-			if (searchBar2 == null) {
-				searchBar2 = new UISearchBar(Language.GetText("Mods.MagicStorage.SearchMod"));
+			if (modNameSearch == null) {
+				modNameSearch = new UISearchBar(Language.GetText("Mods.MagicStorage.SearchMod"));
 			}
 			if (stationText == null) {
 				stationText = new UIText(Language.GetText("Mods.MagicStorage.CraftingStations"));
@@ -324,12 +347,6 @@ namespace MagicStorage.GUI {
 			if (craftButton == null) {
 				craftButton = new UITextPanel<LocalizedText>(Language.GetText("LegacyMisc.72"), 1f);
 			}
-		}
-
-		internal static void Unload() {
-			sortButtons = null;
-			filterButtons = null;
-			recipeButtons = null;
 		}
 
 		private static void InitSortButtons() {
@@ -389,19 +406,25 @@ namespace MagicStorage.GUI {
 			}
 		}
 
+		internal static void Unload() {
+			sortButtons = null;
+			filterButtons = null;
+			recipeButtons = null;
+		}
+
 		public static void Update(GameTime gameTime) {
 			try {
 				oldMouse = StorageGUI.oldMouse;
 				curMouse = StorageGUI.curMouse;
-				if (Main.playerInventory && Main.player[Main.myPlayer].GetModPlayer<StoragePlayer>().ViewingStorage().X >= 0 && StoragePlayer.IsStorageCrafting()) {
+				if (Main.playerInventory && Main.player[Main.myPlayer].GetModPlayer<StoragePlayer>().ViewingStorage().X >= 0 && StoragePlayer.IsOnlyStorageCrafting()) {
 					if (curMouse.RightButton == ButtonState.Released) {
 						ResetSlotFocus();
 					}
-					if (basePanel != null) {
-						basePanel.Update(gameTime);
+					if (recipesPanel != null) {
+						recipesPanel.Update(gameTime);
 					}
-					if (recipePanel != null) {
-						recipePanel.Update(gameTime);
+					if (ingredientsPanel != null) {
+						ingredientsPanel.Update(gameTime);
 					}
 					UpdateRecipeText();
 					UpdateScrollBar();
@@ -411,7 +434,7 @@ namespace MagicStorage.GUI {
 					scrollBarFocus = 0;
 					selectedRecipe = null;
 					craftTimer = 0;
-					maxCraftTimer = startMaxCraftTimer;
+					maxCraftTimer = START_MAX_CRAFT_TIMER;
 					ResetSlotFocus();
 				}
 			}
@@ -421,15 +444,16 @@ namespace MagicStorage.GUI {
 		public static void Draw(TEStorageHeart heart) {
 			try {
 				Player player = Main.player[Main.myPlayer];
+
 				StoragePlayer modPlayer = player.GetModPlayer<StoragePlayer>();
 				Initialize();
-				if (Main.mouseX > panelLeft && Main.mouseX < recipeLeft + panelWidth && Main.mouseY > panelTop && Main.mouseY < panelTop + panelHeight) {
+				if (Main.mouseX > PANEL_LEFT && Main.mouseX < ingredientLeft + ingredientWidth && Main.mouseY > panelTop && Main.mouseY < panelTop + panelHeight) {
 					player.mouseInterface = true;
 					player.showItemIcon = false;
 					InterfaceHelper.HideItemIconCache();
 				}
-				basePanel.Draw(Main.spriteBatch);
-				recipePanel.Draw(Main.spriteBatch);
+				recipesPanel.Draw(Main.spriteBatch);
+				ingredientsPanel.Draw(Main.spriteBatch);
 				Vector2 pos = recipeZone.GetDimensions().Position();
 				if (threadRunning) {
 					Utils.DrawBorderString(Main.spriteBatch, "Loading", pos + new Vector2(8f, 8f), Color.White);
@@ -442,6 +466,7 @@ namespace MagicStorage.GUI {
 				sortButtons.DrawText();
 				recipeButtons.DrawText();
 				filterButtons.DrawText();
+				Main.instance.MouseText($"[{Main.mouseX},{Main.mouseY}]");
 			}
 			catch (Exception e) { Main.NewTextMultiline(e.ToString()); }
 		}
@@ -458,7 +483,7 @@ namespace MagicStorage.GUI {
 			if (threadRunning) {
 				return new Item();
 			}
-			int index = slot + numColumns * (int)Math.Round(scrollBar.ViewPosition);
+			int index = slot + AVAILABLE_RECIPES_NUM_COLS * (int)Math.Round(scrollBar.ViewPosition);
 			Item item = index < recipes.Count ? recipes[index].createItem : new Item();
 			if (!item.IsAir && recipes[index] == selectedRecipe) {
 				context = 6;
@@ -496,7 +521,7 @@ namespace MagicStorage.GUI {
 		}
 
 		private static Item GetStorage(int slot, ref int context) {
-			int index = slot + numColumns2 * (int)Math.Round(scrollBar2.ViewPosition);
+			int index = slot + AVAILABLE_INGREDIENT_NUM_COLS * (int)Math.Round(scrollBar2.ViewPosition);
 			Item item = index < storageItems.Count ? storageItems[index] : new Item();
 			if (blockStorageItems.Contains(new ItemData(item))) {
 				context = 3;
@@ -619,6 +644,7 @@ namespace MagicStorage.GUI {
 							}
 							TryCraft();
 							RefreshItems();
+							StorageGUI.RefreshItems();
 							Main.PlaySound(SoundID.Grab, -1, -1, 1);
 						}
 						craftTimer--;
@@ -634,7 +660,7 @@ namespace MagicStorage.GUI {
 			}
 			if (!flag) {
 				craftTimer = 0;
-				maxCraftTimer = startMaxCraftTimer;
+				maxCraftTimer = START_MAX_CRAFT_TIMER;
 			}
 		}
 
@@ -710,7 +736,7 @@ namespace MagicStorage.GUI {
 					break;
 			}
 			RefreshStorageItems();
-			lock (threadLock) {
+			lock (threadLOCK) {
 				threadNeedsRestart = true;
 				threadSortMode = sortMode;
 				threadFilterMode = filterMode;
@@ -727,12 +753,12 @@ namespace MagicStorage.GUI {
 				try {
 					SortMode sortMode;
 					FilterMode filterMode;
-					lock (threadLock) {
+					lock (threadLOCK) {
 						threadNeedsRestart = false;
 						sortMode = threadSortMode;
 						filterMode = threadFilterMode;
 					}
-					var temp = ItemSorter.GetRecipes(sortMode, filterMode, searchBar2.Text, searchBar.Text);
+					var temp = ItemSorter.GetRecipes(sortMode, filterMode, modNameSearch.Text, itemNameSearch.Text);
 					threadRecipes.Clear();
 					threadRecipeAvailable.Clear();
 					try {
@@ -749,14 +775,14 @@ namespace MagicStorage.GUI {
 					}
 					catch (KeyNotFoundException) {
 					}
-					lock (recipeLock) {
+					lock (recipeLOCK) {
 						nextRecipes = new List<Recipe>();
 						nextRecipeAvailable = new List<bool>();
 						nextRecipes.AddRange(threadRecipes);
 						nextRecipeAvailable.AddRange(threadRecipeAvailable);
 
 					}
-					lock (threadLock) {
+					lock (threadLOCK) {
 						if (!threadNeedsRestart) {
 							threadRunning = false;
 							return;
@@ -999,6 +1025,7 @@ namespace MagicStorage.GUI {
 				}
 				if (changed) {
 					RefreshItems();
+					StorageGUI.RefreshItems();
 					Main.PlaySound(SoundID.Grab, -1, -1, 1);
 				}
 			}
@@ -1008,7 +1035,7 @@ namespace MagicStorage.GUI {
 
 		private static void HoverRecipe(int slot, ref int hoverSlot) {
 			int visualSlot = slot;
-			slot += numColumns * (int)Math.Round(scrollBar.ViewPosition);
+			slot += AVAILABLE_RECIPES_NUM_COLS * (int)Math.Round(scrollBar.ViewPosition);
 			if (slot < recipes.Count) {
 				if (MouseClicked) {
 					selectedRecipe = recipes[slot];
@@ -1025,7 +1052,7 @@ namespace MagicStorage.GUI {
 
 		private static void HoverStorage(int slot, ref int hoverSlot) {
 			int visualSlot = slot;
-			slot += numColumns2 * (int)Math.Round(scrollBar2.ViewPosition);
+			slot += AVAILABLE_INGREDIENT_NUM_COLS * (int)Math.Round(scrollBar2.ViewPosition);
 			if (slot < storageItems.Count) {
 				if (MouseClicked) {
 					ItemData data = new ItemData(storageItems[slot]);
@@ -1066,6 +1093,7 @@ namespace MagicStorage.GUI {
 				}
 				if (changed) {
 					RefreshItems();
+					StorageGUI.RefreshItems();
 					Main.PlaySound(SoundID.Grab, -1, -1, 1);
 				}
 			}
@@ -1105,6 +1133,7 @@ namespace MagicStorage.GUI {
 					Main.soundInstanceMenuTick = Main.soundMenuTick.CreateInstance();
 					Main.PlaySound(SoundID.MenuTick, -1, -1, 1);
 					RefreshItems();
+					StorageGUI.RefreshItems();
 				}
 				rightClickTimer--;
 			}
@@ -1113,7 +1142,7 @@ namespace MagicStorage.GUI {
 		private static void ResetSlotFocus() {
 			slotFocus = false;
 			rightClickTimer = 0;
-			maxRightClickTimer = startMaxRightClickTimer;
+			maxRightClickTimer = SMART_MAX_CLICK_TIMER;
 		}
 
 		private static Item DoWithdraw(int slot) {
@@ -1121,6 +1150,7 @@ namespace MagicStorage.GUI {
 			if (Main.netMode == NetmodeID.SinglePlayer) {
 				Item result = access.TryWithdrawStation(slot);
 				RefreshItems();
+				StorageGUI.RefreshItems();
 				return result;
 			}
 			else {
@@ -1134,6 +1164,7 @@ namespace MagicStorage.GUI {
 			if (Main.netMode == NetmodeID.SinglePlayer) {
 				Item result = access.DoStationSwap(item, slot);
 				RefreshItems();
+				StorageGUI.RefreshItems();
 				return result;
 			}
 			else {

@@ -1,5 +1,6 @@
 ﻿using MagicStorage.GUI;
 using System;
+using System.Reflection;
 using System.Collections.Generic;
 using System.IO;
 using Terraria;
@@ -7,6 +8,7 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.UI;
+using System.Linq;
 
 namespace MagicStorage {
 	public class MagicStorage : Mod {
@@ -224,70 +226,46 @@ namespace MagicStorage {
 		}
 
 		public override void AddRecipeGroups() {
-			RecipeGroup group = new RecipeGroup(() => Lang.misc[37] + " Chest",
-			ItemID.Chest,
-			ItemID.GoldChest,
-			ItemID.ShadowChest,
-			ItemID.EbonwoodChest,
-			ItemID.RichMahoganyChest,
-			ItemID.PearlwoodChest,
-			ItemID.IvyChest,
-			ItemID.IceChest,
-			ItemID.LivingWoodChest,
-			ItemID.SkywareChest,
-			ItemID.ShadewoodChest,
-			ItemID.WebCoveredChest,
-			ItemID.LihzahrdChest,
-			ItemID.WaterChest,
-			ItemID.JungleChest,
-			ItemID.CorruptionChest,
-			ItemID.CrimsonChest,
-			ItemID.HallowedChest,
-			ItemID.FrozenChest,
-			ItemID.DynastyChest,
-			ItemID.HoneyChest,
-			ItemID.SteampunkChest,
-			ItemID.PalmWoodChest,
-			ItemID.MushroomChest,
-			ItemID.BorealWoodChest,
-			ItemID.SlimeChest,
-			ItemID.GreenDungeonChest,
-			ItemID.PinkDungeonChest,
-			ItemID.BlueDungeonChest,
-			ItemID.BoneChest,
-			ItemID.CactusChest,
-			ItemID.FleshChest,
-			ItemID.ObsidianChest,
-			ItemID.PumpkinChest,
-			ItemID.SpookyChest,
-			ItemID.GlassChest,
-			ItemID.MartianChest,
-			ItemID.GraniteChest,
-			ItemID.MeteoriteChest,
-			ItemID.MarbleChest);
-			RecipeGroup.RegisterGroup("MagicStorage:AnyChest", group);
-			group = new RecipeGroup(() => Lang.misc[37].Value + " " + Language.GetTextValue("Mods.MagicStorage.SnowBiomeBlock"), ItemID.SnowBlock, ItemID.IceBlock, ItemID.PurpleIceBlock, ItemID.PinkIceBlock);
+			IEnumerable<int> chests = typeof(ItemID).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.IgnoreCase)
+				.Where(w => w.Name.Contains("Chest") && !w.Name.Contains("Fake_") && !w.Name.Contains("Statue")).Select(s => (int)(short)s.GetValue(null));
+
+			RecipeGroup anyChest = new RecipeGroup(() => Language.GetText(Constants.ANY).Value + " Chest", chests.ToArray());
+			RecipeGroup.RegisterGroup(Constants.ANY_CHEST, anyChest);
+
+
+			RecipeGroup anySnowBiomeBlock = new RecipeGroup(() => $"{Language.GetText(Constants.ANY).Value} {Language.GetTextValue("Mods.MagicStorage.SnowBiomeBlock")}",
+				ItemID.SnowBlock, ItemID.IceBlock, ItemID.PurpleIceBlock, ItemID.PinkIceBlock);
+
 			if (bluemagicMod != null) {
-				group.ValidItems.Add(bluemagicMod.ItemType("DarkBlueIce"));
+				anySnowBiomeBlock.ValidItems.Add(bluemagicMod.ItemType("DarkBlueIce"));
 			}
-			RecipeGroup.RegisterGroup("MagicStorage:AnySnowBiomeBlock", group);
-			group = new RecipeGroup(() => Lang.misc[37].Value + " " + Lang.GetItemNameValue(ItemID.Diamond), ItemID.Diamond, ItemType("ShadowDiamond"));
+			RecipeGroup.RegisterGroup(Constants.ANY_SNOWBLOCK, anySnowBiomeBlock);
+
+
+			RecipeGroup anyDiamod = new RecipeGroup(() => $"{Language.GetText(Constants.ANY).Value} {Lang.GetItemNameValue(ItemID.Diamond)}",
+				ItemID.Diamond, ItemType("ShadowDiamond"));
 			if (legendMod != null) {
-				group.ValidItems.Add(legendMod.ItemType("GemChrysoberyl"));
-				group.ValidItems.Add(legendMod.ItemType("GemAlexandrite"));
+				anyDiamod.ValidItems.Add(legendMod.ItemType("GemChrysoberyl"));
+				anyDiamod.ValidItems.Add(legendMod.ItemType("GemAlexandrite"));
 			}
-			RecipeGroup.RegisterGroup("MagicStorage:AnyDiamond", group);
+			RecipeGroup.RegisterGroup(Constants.ANY_DIA, anyDiamod);
+
 			if (legendMod != null) {
-				group = new RecipeGroup(() => Lang.misc[37].Value + " " + Lang.GetItemNameValue(ItemID.Amethyst), ItemID.Amethyst, legendMod.ItemType("GemOnyx"), legendMod.ItemType("GemSpinel"));
-				RecipeGroup.RegisterGroup("MagicStorage:AnyAmethyst", group);
-				group = new RecipeGroup(() => Lang.misc[37].Value + " " + Lang.GetItemNameValue(ItemID.Topaz), ItemID.Topaz, legendMod.ItemType("GemGarnet"));
-				RecipeGroup.RegisterGroup("MagicStorage:AnyTopaz", group);
-				group = new RecipeGroup(() => Lang.misc[37].Value + " " + Lang.GetItemNameValue(ItemID.Sapphire), ItemID.Sapphire, legendMod.ItemType("GemCharoite"));
-				RecipeGroup.RegisterGroup("MagicStorage:AnySapphire", group);
-				group = new RecipeGroup(() => Lang.misc[37].Value + " " + Lang.GetItemNameValue(ItemID.Emerald), legendMod.ItemType("GemPeridot"));
-				RecipeGroup.RegisterGroup("MagicStorage:AnyEmerald", group);
-				group = new RecipeGroup(() => Lang.misc[37].Value + " " + Lang.GetItemNameValue(ItemID.Ruby), ItemID.Ruby, legendMod.ItemType("GemOpal"));
-				RecipeGroup.RegisterGroup("MagicStorage:AnyRuby", group);
+				RecipeGroup amethyst = new RecipeGroup(() => $"{Language.GetText(Constants.ANY).Value} {Lang.GetItemNameValue(ItemID.Amethyst)}",
+					ItemID.Amethyst, legendMod.ItemType("GemOnyx"), legendMod.ItemType("GemSpinel"));
+				RecipeGroup.RegisterGroup(Constants.ANY_AME, amethyst);
+
+				RecipeGroup topaz = new RecipeGroup(() => $"{Language.GetText(Constants.ANY).Value} {Lang.GetItemNameValue(ItemID.Topaz)}", ItemID.Topaz, legendMod.ItemType("GemGarnet"));
+				RecipeGroup.RegisterGroup(Constants.ANY_TOPA, topaz);
+				
+				RecipeGroup sapphire = new RecipeGroup(() => $"{Language.GetText(Constants.ANY).Value} {Lang.GetItemNameValue(ItemID.Sapphire)}", ItemID.Sapphire, legendMod.ItemType("GemCharoite"));
+				RecipeGroup.RegisterGroup(Constants.ANY_SAPH, sapphire);
+				
+				RecipeGroup emerald = new RecipeGroup(() => $"{Language.GetText(Constants.ANY).Value} {Lang.GetItemNameValue(ItemID.Emerald)}", legendMod.ItemType("GemPeridot"));
+				RecipeGroup.RegisterGroup(Constants.ANY_EMER, emerald);
+				
+				RecipeGroup ruby = new RecipeGroup(() => $"{Language.GetText(Constants.ANY).Value} {Lang.GetItemNameValue(ItemID.Ruby)}", ItemID.Ruby, legendMod.ItemType("GemOpal"));
+				RecipeGroup.RegisterGroup(Constants.ANY_RUBY, ruby);
 			}
 		}
 

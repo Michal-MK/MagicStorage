@@ -12,28 +12,25 @@ using Terraria.UI;
 
 namespace MagicStorage {
 	public class UISearchBar : UIElement {
+		//TODO this hack
 		private static List<UISearchBar> searchBars = new List<UISearchBar>();
 
-		private const int padding = 4;
-		private LocalizedText defaultText = Language.GetText("Mods.MagicStorage.Search");
-		private string text = string.Empty;
+		private readonly LocalizedText hintText = Language.GetText("Mods.MagicStorage.Search");
+
+		private string text = "";
+		public string Text => text;
+
 		private int cursorPosition = 0;
 		private bool hasFocus = false;
 		private int cursorTimer = 0;
 
 		public UISearchBar() {
-			this.SetPadding(padding);
+			SetPadding(UICommon.PADDING);
 			searchBars.Add(this);
 		}
 
-		public UISearchBar(LocalizedText defaultText) : this() {
-			this.defaultText = defaultText;
-		}
-
-		public string Text {
-			get {
-				return text;
-			}
+		public UISearchBar(LocalizedText defaultText) {
+			hintText = defaultText;
 		}
 
 		public void Reset() {
@@ -116,6 +113,10 @@ namespace MagicStorage {
 					cursorPosition = 0;
 					changed = true;
 				}
+				if ((Main.keyState.IsKeyDown(Keys.LeftControl) || Main.keyState.IsKeyDown(Keys.RightControl)) && KeyTyped(Keys.Delete)) {
+					text = text.Remove(cursorPosition);
+					changed = true;
+				}
 
 				if (changed) {
 					StorageGUI.RefreshItems();
@@ -132,22 +133,23 @@ namespace MagicStorage {
 		protected override void DrawSelf(SpriteBatch spriteBatch) {
 			Texture2D texture = ModContent.GetTexture("MagicStorage/SearchBar");
 			CalculatedStyle dim = GetDimensions();
-			int innerWidth = (int)dim.Width - 2 * padding;
-			int innerHeight = (int)dim.Height - 2 * padding;
-			spriteBatch.Draw(texture, dim.Position(), new Rectangle(0, 0, padding, padding), Color.White);
-			spriteBatch.Draw(texture, new Rectangle((int)dim.X + padding, (int)dim.Y, innerWidth, padding), new Rectangle(padding, 0, 1, padding), Color.White);
-			spriteBatch.Draw(texture, new Vector2(dim.X + padding + innerWidth, dim.Y), new Rectangle(padding + 1, 0, padding, padding), Color.White);
-			spriteBatch.Draw(texture, new Rectangle((int)dim.X, (int)dim.Y + padding, padding, innerHeight), new Rectangle(0, padding, padding, 1), Color.White);
-			spriteBatch.Draw(texture, new Rectangle((int)dim.X + padding, (int)dim.Y + padding, innerWidth, innerHeight), new Rectangle(padding, padding, 1, 1), Color.White);
-			spriteBatch.Draw(texture, new Rectangle((int)dim.X + padding + innerWidth, (int)dim.Y + padding, padding, innerHeight), new Rectangle(padding + 1, padding, padding, 1), Color.White);
-			spriteBatch.Draw(texture, new Vector2(dim.X, dim.Y + padding + innerHeight), new Rectangle(0, padding + 1, padding, padding), Color.White);
-			spriteBatch.Draw(texture, new Rectangle((int)dim.X + padding, (int)dim.Y + padding + innerHeight, innerWidth, padding), new Rectangle(padding, padding + 1, 1, padding), Color.White);
-			spriteBatch.Draw(texture, new Vector2(dim.X + padding + innerWidth, dim.Y + padding + innerHeight), new Rectangle(padding + 1, padding + 1, padding, padding), Color.White);
+			const int P = UICommon.PADDING;
+			int innerWidth = (int)dim.Width - 2 * P;
+			int innerHeight = (int)dim.Height - 2 * P;
+			spriteBatch.Draw(texture, dim.Position(), new Rectangle(0, 0, P, P), Color.White);
+			spriteBatch.Draw(texture, new Rectangle((int)dim.X + P, (int)dim.Y, innerWidth, P), new Rectangle(P, 0, 1, P), Color.White);
+			spriteBatch.Draw(texture, new Vector2(dim.X + P + innerWidth, dim.Y), new Rectangle(P + 1, 0, P, P), Color.White);
+			spriteBatch.Draw(texture, new Rectangle((int)dim.X, (int)dim.Y + P, P, innerHeight), new Rectangle(0, P, P, 1), Color.White);
+			spriteBatch.Draw(texture, new Rectangle((int)dim.X + P, (int)dim.Y + P, innerWidth, innerHeight), new Rectangle(P, P, 1, 1), Color.White);
+			spriteBatch.Draw(texture, new Rectangle((int)dim.X + P + innerWidth, (int)dim.Y + P, P, innerHeight), new Rectangle(P + 1, P, P, 1), Color.White);
+			spriteBatch.Draw(texture, new Vector2(dim.X, dim.Y + P + innerHeight), new Rectangle(0, P + 1, P, P), Color.White);
+			spriteBatch.Draw(texture, new Rectangle((int)dim.X + P, (int)dim.Y + P + innerHeight, innerWidth, P), new Rectangle(P, P + 1, 1, P), Color.White);
+			spriteBatch.Draw(texture, new Vector2(dim.X + P + innerWidth, dim.Y + P + innerHeight), new Rectangle(P + 1, P + 1, P, P), Color.White);
 
 			bool isEmpty = text.Length == 0;
-			string drawText = isEmpty ? defaultText.Value : text;
-			DynamicSpriteFont font = Main.fontMouseText;
-			Vector2 size = font.MeasureString(drawText);
+
+			string drawText = isEmpty ? hintText.Value : text;
+			Vector2 size = Main.fontMouseText.MeasureString(drawText);
 			float scale = innerHeight / size.Y;
 			if (isEmpty && hasFocus) {
 				drawText = string.Empty;
@@ -157,10 +159,10 @@ namespace MagicStorage {
 			if (isEmpty) {
 				color *= 0.75f;
 			}
-			spriteBatch.DrawString(font, drawText, new Vector2(dim.X + padding, dim.Y + padding), color, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+			spriteBatch.DrawString(Main.fontMouseText, drawText, new Vector2(dim.X + P, dim.Y + P + P), color, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
 			if (!isEmpty && hasFocus && cursorTimer < 30) {
-				float drawCursor = font.MeasureString(drawText.Substring(0, cursorPosition)).X * scale;
-				spriteBatch.DrawString(font, "|", new Vector2(dim.X + padding + drawCursor, dim.Y + padding), color, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+				float drawCursor = Main.fontMouseText.MeasureString(drawText.Substring(0, cursorPosition)).X * scale;
+				spriteBatch.DrawString(Main.fontMouseText, "|", new Vector2(dim.X + P + drawCursor - 2, dim.Y + P + P), color, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
 			}
 		}
 

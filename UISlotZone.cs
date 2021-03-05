@@ -10,7 +10,6 @@ namespace MagicStorage {
 		public delegate void HoverItemSlot(int slot, ref int hoverSlot);
 		public delegate Item GetItem(int slot, ref int context);
 
-		private const int padding = 4;
 		private int numColumns = 10;
 		private int numRows = 4;
 		private int hoverSlot = -1;
@@ -18,7 +17,7 @@ namespace MagicStorage {
 		private GetItem getItem;
 		private float inventoryScale;
 
-		private static Item[] temp = new Item[11];
+		internal float ActualHeight => Main.inventoryBackTexture.Height * inventoryScale * numRows + numRows * UICommon.PADDING;
 
 		public UISlotZone(HoverItemSlot onHover, GetItem getItem, float scale) {
 			this.onHover = onHover;
@@ -27,8 +26,8 @@ namespace MagicStorage {
 		}
 
 		public void SetDimensions(int columns, int rows) {
-			this.numColumns = columns;
-			this.numRows = rows;
+			numColumns = columns;
+			numRows = rows;
 		}
 
 		public override void Update(GameTime gameTime) {
@@ -40,12 +39,12 @@ namespace MagicStorage {
 			}
 			int slotWidth = (int)(Main.inventoryBackTexture.Width * inventoryScale * Main.UIScale);
 			int slotHeight = (int)(Main.inventoryBackTexture.Height * inventoryScale * Main.UIScale);
-			int slotX = (curMouse.X - (int)origin.X) / (slotWidth + padding);
-			int slotY = (curMouse.Y - (int)origin.Y) / (slotHeight + padding);
+			int slotX = (curMouse.X - (int)origin.X) / (slotWidth + UICommon.PADDING);
+			int slotY = (curMouse.Y - (int)origin.Y) / (slotHeight + UICommon.PADDING);
 			if (slotX < 0 || slotX >= numColumns || slotY < 0 || slotY >= numRows) {
 				return;
 			}
-			Vector2 slotPos = origin + new Vector2(slotX * (slotWidth + padding * Main.UIScale), slotY * (slotHeight + padding * Main.UIScale));
+			Vector2 slotPos = origin + new Vector2(slotX * (slotWidth + UICommon.PADDING * Main.UIScale), slotY * (slotHeight + UICommon.PADDING * Main.UIScale));
 			if (curMouse.X > slotPos.X && curMouse.X < slotPos.X + slotWidth && curMouse.Y > slotPos.Y && curMouse.Y < slotPos.Y + slotHeight) {
 				onHover(slotX + numColumns * slotY, ref hoverSlot);
 			}
@@ -61,9 +60,9 @@ namespace MagicStorage {
 			for (int k = 0; k < numColumns * numRows; k++) {
 				int context = 0;
 				Item item = getItem(k, ref context);
-				Vector2 drawPos = origin + new Vector2((slotWidth + padding) * (k % numColumns), (slotHeight + padding) * (k / numColumns));
+				Vector2 drawPos = origin + new Vector2((slotWidth + UICommon.PADDING) * (k % numColumns), (slotHeight + UICommon.PADDING) * (k / numColumns));
 				temp[10] = item;
-				ItemSlot.Draw(Main.spriteBatch, temp, context, 10, drawPos);
+				ItemSlot.Draw(spriteBatch, temp, context, 10, drawPos);
 			}
 			Main.inventoryScale = oldScale;
 		}

@@ -13,9 +13,9 @@ using Terraria.ID;
 
 namespace MagicStorage.GUI {
 	public static class StorageGUI {
-		private const int padding = 4;
 		private const int numColumns = 10;
 		public const float inventoryScale = 0.85f;
+		public static bool doOffset = false;
 
 		public static MouseState curMouse;
 		public static MouseState oldMouse;
@@ -64,14 +64,22 @@ namespace MagicStorage.GUI {
 			InitLangStuff();
 			float itemSlotWidth = Main.inventoryBackTexture.Width * inventoryScale;
 			float itemSlotHeight = Main.inventoryBackTexture.Height * inventoryScale;
+			float smallSlotWidth = Main.inventoryBackTexture.Width * CraftingGUI.INGREDIENTS_SCALE;
+
 
 			panelTop = Main.instance.invBottom + 60;
-			panelLeft = 20f;
+
+			float innerCraftingPanelWidth = CraftingGUI.AVAILABLE_RECIPES_NUM_COLS * (itemSlotWidth + UICommon.PADDING) + 20f + UICommon.PADDING;
+			float craftingPanelWidth = 12 + innerCraftingPanelWidth + 12;
+			float ingredientWidth = CraftingGUI.AVAILABLE_INGREDIENT_NUM_COLS * (smallSlotWidth + UICommon.PADDING) + 20f + UICommon.PADDING;
+			ingredientWidth += 12 * 2;
+
+			panelLeft = 20f + (doOffset ? craftingPanelWidth + ingredientWidth: 0);
 			basePanel = new UIPanel();
 			float innerPanelLeft = panelLeft + basePanel.PaddingLeft;
-			float innerPanelWidth = numColumns * (itemSlotWidth + padding) + 20f + padding;
+			float innerPanelWidth = numColumns * (itemSlotWidth + UICommon.PADDING) + 20f + UICommon.PADDING;
 			panelWidth = basePanel.PaddingLeft + innerPanelWidth + basePanel.PaddingRight;
-			panelHeight = Main.screenHeight - panelTop - 40f;
+			panelHeight = Main.screenHeight - panelTop - 60f;
 			basePanel.Left.Set(panelLeft, 0f);
 			basePanel.Top.Set(panelTop, 0f);
 			basePanel.Width.Set(panelWidth, 0f);
@@ -86,16 +94,16 @@ namespace MagicStorage.GUI {
 			InitSortButtons();
 			topBar.Append(sortButtons);
 
-			depositButton.Left.Set(sortButtons.GetDimensions().Width + 2 * padding, 0f);
+			depositButton.Left.Set(sortButtons.GetDimensions().Width + 2 * UICommon.PADDING, 0f);
 			depositButton.Width.Set(128f, 0f);
-			depositButton.Height.Set(-2 * padding, 1f);
+			depositButton.Height.Set(-2 * UICommon.PADDING, 1f);
 			depositButton.PaddingTop = 8f;
 			depositButton.PaddingBottom = 8f;
 			topBar.Append(depositButton);
 
-			float depositButtonRight = sortButtons.GetDimensions().Width + 2 * padding + depositButton.GetDimensions().Width;
-			searchBar.Left.Set(depositButtonRight + padding, 0f);
-			searchBar.Width.Set(-depositButtonRight - 2 * padding, 1f);
+			float depositButtonRight = sortButtons.GetDimensions().Width + 2 * UICommon.PADDING + depositButton.GetDimensions().Width;
+			searchBar.Left.Set(depositButtonRight + UICommon.PADDING, 0f);
+			searchBar.Width.Set(-depositButtonRight - 2 * UICommon.PADDING, 1f);
 			searchBar.Height.Set(0f, 1f);
 			topBar.Append(searchBar);
 
@@ -107,8 +115,8 @@ namespace MagicStorage.GUI {
 
 			InitFilterButtons();
 			topBar2.Append(filterButtons);
-			searchBar2.Left.Set(depositButtonRight + padding, 0f);
-			searchBar2.Width.Set(-depositButtonRight - 2 * padding, 1f);
+			searchBar2.Left.Set(depositButtonRight + UICommon.PADDING, 0f);
+			searchBar2.Width.Set(-depositButtonRight - 2 * UICommon.PADDING, 1f);
 			searchBar2.Height.Set(0f, 1f);
 			topBar2.Append(searchBar2);
 
@@ -118,14 +126,14 @@ namespace MagicStorage.GUI {
 			basePanel.Append(slotZone);
 
 			numRows = (items.Count + numColumns - 1) / numColumns;
-			displayRows = (int)slotZone.GetDimensions().Height / ((int)itemSlotHeight + padding);
+			displayRows = (int)slotZone.GetDimensions().Height / ((int)itemSlotHeight + UICommon.PADDING);
 			slotZone.SetDimensions(numColumns, displayRows);
 			int noDisplayRows = numRows - displayRows;
 			if (noDisplayRows < 0) {
 				noDisplayRows = 0;
 			}
 			scrollBarMaxViewSize = 1 + noDisplayRows;
-			scrollBar.Height.Set(displayRows * (itemSlotHeight + padding), 0f);
+			scrollBar.Height.Set(displayRows * (itemSlotHeight + UICommon.PADDING), 0f);
 			scrollBar.Left.Set(-20f, 1f);
 			scrollBar.SetView(scrollBarViewSize, scrollBarMaxViewSize);
 			slotZone.Append(scrollBar);
@@ -171,6 +179,7 @@ namespace MagicStorage.GUI {
 		internal static void Unload() {
 			sortButtons = null;
 			filterButtons = null;
+			basePanel = null;
 		}
 
 		private static void InitSortButtons() {
@@ -220,7 +229,7 @@ namespace MagicStorage.GUI {
 		public static void Update(GameTime gameTime) {
 			oldMouse = curMouse;
 			curMouse = Mouse.GetState();
-			if (Main.playerInventory && Main.player[Main.myPlayer].GetModPlayer<StoragePlayer>().ViewingStorage().X >= 0 && !StoragePlayer.IsStorageCrafting()) {
+			if (Main.playerInventory && Main.player[Main.myPlayer].GetModPlayer<StoragePlayer>().ViewingStorage().X >= 0) {
 				if (StorageGUI.curMouse.RightButton == ButtonState.Released) {
 					ResetSlotFocus();
 				}
@@ -236,7 +245,8 @@ namespace MagicStorage.GUI {
 			}
 		}
 
-		public static void Draw(TEStorageHeart heart) {
+		public static void Draw(TEStorageHeart heart, bool offset = false) {
+			doOffset = offset;
 			Player player = Main.player[Main.myPlayer];
 			StoragePlayer modPlayer = player.GetModPlayer<StoragePlayer>();
 			Initialize();
@@ -299,7 +309,7 @@ namespace MagicStorage.GUI {
 		}
 
 		public static void RefreshItems() {
-			if (StoragePlayer.IsStorageCrafting()) {
+			if (StoragePlayer.IsOnlyStorageCrafting()) {
 				CraftingGUI.RefreshItems();
 				return;
 			}
@@ -328,7 +338,7 @@ namespace MagicStorage.GUI {
 				if (MouseClicked) {
 					if (TryDepositAll()) {
 						RefreshItems();
-						Main.PlaySound(SoundID.Grab, -1, -1, 1);
+						Main.PlaySound(SoundID.Grab);
 					}
 				}
 			}

@@ -31,15 +31,10 @@ namespace MagicStorage.Components {
 			Main.tileTable[Type] = true;
 			Main.tileFrameImportant[Type] = true;
 			Main.tileNoAttach[Type] = false;
-			//TileObjectData.newTile.AnchorWall = true;
-			//TileObjectData.newTile.AnchorBottom = new AnchorData(Terraria.Enums.AnchorType.None, 0, 0);
 			AnchorData d = TileObjectData.newTile.AnchorBottom;
 			d.type |= Terraria.Enums.AnchorType.EmptyTile;
-			//d.tileCount = 0;
 			d.checkStart = 0;
 			TileObjectData.newTile.AnchorBottom = d;
-			//TileObjectData.newTile.AnchorLeft = new AnchorData(Terraria.Enums.AnchorType.None, 0, 0);
-			//TileObjectData.newTile.AnchorRight = new AnchorData(Terraria.Enums.AnchorType.None, 0, 0);
 			TileObjectData.newTile.Width = 2;
 			TileObjectData.newTile.Height = 2;
 			TileObjectData.newTile.Origin = new Point16(0, 1);
@@ -73,7 +68,7 @@ namespace MagicStorage.Components {
 		}
 
 		public virtual int ItemType(int frameX, int frameY) {
-			return mod.ItemType("StorageComponent");
+			return mod.ItemType(nameof(StorageComponent));
 		}
 
 		public static bool IsStorageComponent(Point16 point) {

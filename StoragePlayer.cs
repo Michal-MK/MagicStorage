@@ -62,11 +62,11 @@ namespace MagicStorage {
 			if (StorageGUI.searchBar2 != null) {
 				StorageGUI.searchBar2.Reset();
 			}
-			if (CraftingGUI.searchBar != null) {
-				CraftingGUI.searchBar.Reset();
+			if (CraftingGUI.itemNameSearch != null) {
+				CraftingGUI.itemNameSearch.Reset();
 			}
-			if (CraftingGUI.searchBar2 != null) {
-				CraftingGUI.searchBar2.Reset();
+			if (CraftingGUI.modNameSearch != null) {
+				CraftingGUI.modNameSearch.Reset();
 			}
 		}
 
@@ -110,7 +110,7 @@ namespace MagicStorage {
 			}
 			int oldType = item.type;
 			int oldStack = item.stack;
-			if (StorageCrafting()) {
+			if (Crafting()) {
 				if (Main.netMode == NetmodeID.SinglePlayer) {
 					GetCraftingAccess().TryDepositStation(item);
 				}
@@ -163,10 +163,18 @@ namespace MagicStorage {
 				return false;
 			}
 			Tile tile = Main.tile[storageAccess.X, storageAccess.Y];
-			return tile != null && tile.type == mod.TileType("CraftingAccess");
+			return tile != null && (tile.type == mod.TileType(nameof(CraftingAccess)) || tile.type == mod.TileType(nameof(CraftingStorageAccess)));
+		}
+		
+		public bool Crafting() {
+			if (storageAccess.X < 0 || storageAccess.Y < 0) {
+				return false;
+			}
+			Tile tile = Main.tile[storageAccess.X, storageAccess.Y];
+			return tile != null && (tile.type == mod.TileType(nameof(CraftingAccess)));
 		}
 
-		public static bool IsStorageCrafting() {
+		public static bool IsOnlyStorageCrafting() {
 			return Main.player[Main.myPlayer].GetModPlayer<StoragePlayer>().StorageCrafting();
 		}
 	}

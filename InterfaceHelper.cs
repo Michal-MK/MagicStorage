@@ -30,6 +30,8 @@ namespace MagicStorage {
 			StoragePlayer modPlayer = player.GetModPlayer<StoragePlayer>();
 			Point16 storageAccess = modPlayer.ViewingStorage();
 			if (!Main.playerInventory || storageAccess.X < 0 || storageAccess.Y < 0) {
+				StorageGUI.Unload();
+				CraftingGUI.Unload();
 				return true;
 			}
 			ModTile modTile = TileLoader.GetTile(Main.tile[storageAccess.X, storageAccess.Y].type);
@@ -40,7 +42,11 @@ namespace MagicStorage {
 			if (heart == null) {
 				return true;
 			}
-			if (modTile is CraftingAccess) {
+			if (modTile is CraftingStorageAccess) {
+				CraftingGUI.Draw(heart);
+				StorageGUI.Draw(heart, true);
+			}
+			else if (modTile is CraftingAccess) {
 				CraftingGUI.Draw(heart);
 			}
 			else {

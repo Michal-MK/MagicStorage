@@ -6,11 +6,11 @@ using Terraria.ModLoader;
 namespace MagicStorage.Components {
 	public class StorageHeart : StorageAccess {
 		public override ModTileEntity GetTileEntity() {
-			return mod.GetTileEntity("TEStorageHeart");
+			return mod.GetTileEntity(nameof(TEStorageHeart));
 		}
 
 		public override int ItemType(int frameX, int frameY) {
-			return mod.ItemType("StorageHeart");
+			return mod.ItemType(nameof(StorageHeart));
 		}
 
 		public override bool HasSmartInteract() {
@@ -24,10 +24,10 @@ namespace MagicStorage.Components {
 		public override bool NewRightClick(int i, int j) {
 			Player player = Main.player[Main.myPlayer];
 			Item item = player.inventory[player.selectedItem];
-			if (item.type == mod.ItemType("Locator") || item.type == mod.ItemType("LocatorDisk") || item.type == mod.ItemType("PortableAccess")) {
-				//if (Main.tile[i, j].frameX % 36 == 18) {
-				//	i--;
-				//}
+			if (item.type == mod.ItemType(nameof(Locator)) || item.type == mod.ItemType(nameof(LocatorDisk)) || item.type == mod.ItemType(nameof(PortableAccess))) {
+				if (Main.tile[i, j].frameX % 36 == 18) {
+					i--;
+				}
 				if (Main.tile[i, j].frameY % 36 == 18) {
 					j--;
 				}

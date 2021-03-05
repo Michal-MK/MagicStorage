@@ -5,11 +5,11 @@ using Terraria.ModLoader;
 namespace MagicStorage.Components {
 	public class CraftingAccess : StorageAccess {
 		public override ModTileEntity GetTileEntity() {
-			return mod.GetTileEntity("TECraftingAccess");
+			return mod.GetTileEntity(nameof(TECraftingAccess));
 		}
 
 		public override int ItemType(int frameX, int frameY) {
-			return mod.ItemType("CraftingAccess");
+			return mod.ItemType(nameof(CraftingAccess));
 		}
 
 		public override bool HasSmartInteract() {

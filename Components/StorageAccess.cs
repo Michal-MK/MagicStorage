@@ -9,7 +9,7 @@ using Terraria.Localization;
 namespace MagicStorage.Components {
 	public class StorageAccess : StorageComponent {
 		public override int ItemType(int frameX, int frameY) {
-			return mod.ItemType("StorageAccess");
+			return mod.ItemType(nameof(StorageAccess));
 		}
 
 		public override bool HasSmartInteract() {
@@ -37,9 +37,9 @@ namespace MagicStorage.Components {
 		}
 
 		public override bool NewRightClick(int i, int j) {
-			//if (Main.tile[i, j].frameX % 36 == 18) {
-			//	i--;
-			//}
+			if (Main.tile[i, j].frameX % 36 == 18) {
+				i--;
+			}
 			if (Main.tile[i, j].frameY % 36 == 18) {
 				j--;
 			}
