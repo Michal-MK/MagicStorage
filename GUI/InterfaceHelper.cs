@@ -1,6 +1,7 @@
 using MagicStorage.Components;
 using MagicStorage.GUI;
 using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Terraria;
@@ -28,7 +29,7 @@ namespace MagicStorage {
 		public static bool DrawStorageGUI() {
 			Player player = Main.player[Main.myPlayer];
 			StoragePlayer modPlayer = player.GetModPlayer<StoragePlayer>();
-			Point16 storageAccess = modPlayer.ViewingStorage();
+			(Point16 storageAccess, Type _) = modPlayer.ViewingStorage();
 			if (!Main.playerInventory || storageAccess.X < 0 || storageAccess.Y < 0) {
 				StorageGUI.Unload();
 				CraftingGUI.Unload();

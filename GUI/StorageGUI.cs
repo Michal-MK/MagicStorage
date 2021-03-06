@@ -10,6 +10,7 @@ using Terraria.GameContent.UI.Elements;
 using Terraria.Localization;
 using Terraria.UI;
 using Terraria.ID;
+using Terraria.DataStructures;
 
 namespace MagicStorage.GUI {
 	public static class StorageGUI {
@@ -25,7 +26,7 @@ namespace MagicStorage.GUI {
 			}
 		}
 
-		private static UIPanel basePanel;
+		private static UIPanel storagePanel;
 		private static float panelTop;
 		private static float panelLeft;
 		private static float panelWidth;
@@ -53,7 +54,7 @@ namespace MagicStorage.GUI {
 		private static float scrollBarMaxViewSize = 2f;
 
 		private static List<Item> items = new List<Item>();
-		private static List<bool> didMatCheck = new List<bool>();
+		//private static List<bool> didMatCheck = new List<bool>();
 		private static int numRows;
 		private static int displayRows;
 
@@ -74,22 +75,22 @@ namespace MagicStorage.GUI {
 			float ingredientWidth = CraftingGUI.AVAILABLE_INGREDIENT_NUM_COLS * (smallSlotWidth + UICommon.PADDING) + 20f + UICommon.PADDING;
 			ingredientWidth += 12 * 2;
 
-			panelLeft = 20f + (doOffset ? craftingPanelWidth + ingredientWidth: 0);
-			basePanel = new UIPanel();
-			float innerPanelLeft = panelLeft + basePanel.PaddingLeft;
+			panelLeft = 20f + (doOffset ? craftingPanelWidth + ingredientWidth : 0);
+			storagePanel = new UIPanel();
+			float innerPanelLeft = panelLeft + storagePanel.PaddingLeft;
 			float innerPanelWidth = numColumns * (itemSlotWidth + UICommon.PADDING) + 20f + UICommon.PADDING;
-			panelWidth = basePanel.PaddingLeft + innerPanelWidth + basePanel.PaddingRight;
+			panelWidth = storagePanel.PaddingLeft + innerPanelWidth + storagePanel.PaddingRight;
 			panelHeight = Main.screenHeight - panelTop - 60f;
-			basePanel.Left.Set(panelLeft, 0f);
-			basePanel.Top.Set(panelTop, 0f);
-			basePanel.Width.Set(panelWidth, 0f);
-			basePanel.Height.Set(panelHeight, 0f);
-			basePanel.Recalculate();
+			storagePanel.Left.Set(panelLeft, 0f);
+			storagePanel.Top.Set(panelTop, 0f);
+			storagePanel.Width.Set(panelWidth, 0f);
+			storagePanel.Height.Set(panelHeight, 0f);
+			storagePanel.Recalculate();
 
 			topBar = new UIElement();
 			topBar.Width.Set(0f, 1f);
 			topBar.Height.Set(32f, 0f);
-			basePanel.Append(topBar);
+			storagePanel.Append(topBar);
 
 			InitSortButtons();
 			topBar.Append(sortButtons);
@@ -111,7 +112,7 @@ namespace MagicStorage.GUI {
 			topBar2.Width.Set(0f, 1f);
 			topBar2.Height.Set(32f, 0f);
 			topBar2.Top.Set(36f, 0f);
-			basePanel.Append(topBar2);
+			storagePanel.Append(topBar2);
 
 			InitFilterButtons();
 			topBar2.Append(filterButtons);
@@ -123,7 +124,7 @@ namespace MagicStorage.GUI {
 			slotZone.Width.Set(0f, 1f);
 			slotZone.Top.Set(76f, 0f);
 			slotZone.Height.Set(-116f, 1f);
-			basePanel.Append(slotZone);
+			storagePanel.Append(slotZone);
 
 			numRows = (items.Count + numColumns - 1) / numColumns;
 			displayRows = (int)slotZone.GetDimensions().Height / ((int)itemSlotHeight + UICommon.PADDING);
@@ -141,7 +142,7 @@ namespace MagicStorage.GUI {
 			bottomBar.Width.Set(0f, 1f);
 			bottomBar.Height.Set(32f, 0f);
 			bottomBar.Top.Set(-32f, 1f);
-			basePanel.Append(bottomBar);
+			storagePanel.Append(bottomBar);
 
 			capacityText.Left.Set(6f, 0f);
 			capacityText.Top.Set(6f, 0f);
@@ -179,7 +180,7 @@ namespace MagicStorage.GUI {
 		internal static void Unload() {
 			sortButtons = null;
 			filterButtons = null;
-			basePanel = null;
+			storagePanel = null;
 		}
 
 		private static void InitSortButtons() {
@@ -229,14 +230,17 @@ namespace MagicStorage.GUI {
 		public static void Update(GameTime gameTime) {
 			oldMouse = curMouse;
 			curMouse = Mouse.GetState();
-			if (Main.playerInventory && Main.player[Main.myPlayer].GetModPlayer<StoragePlayer>().ViewingStorage().X >= 0) {
-				if (StorageGUI.curMouse.RightButton == ButtonState.Released) {
-					ResetSlotFocus();
+			if (Main.playerInventory) {
+				(Point16 Pos, Type Tile) = Main.player[Main.myPlayer].GetModPlayer<StoragePlayer>().ViewingStorage();
+				if ((Tile == typeof(StorageAccess) || Tile == typeof(StorageHeart)|| Tile == typeof(CraftingStorageAccess)) && Pos.X >= 0) {
+					if (curMouse.RightButton == ButtonState.Released) {
+						ResetSlotFocus();
+					}
+					if (storagePanel != null)
+						storagePanel.Update(gameTime);
+					UpdateScrollBar();
+					UpdateDepositButton();
 				}
-				if (basePanel != null)
-					basePanel.Update(gameTime);
-				UpdateScrollBar();
-				UpdateDepositButton();
 			}
 			else {
 				scrollBarFocus = false;
@@ -255,7 +259,7 @@ namespace MagicStorage.GUI {
 				player.showItemIcon = false;
 				InterfaceHelper.HideItemIconCache();
 			}
-			basePanel.Draw(Main.spriteBatch);
+			storagePanel.Draw(Main.spriteBatch);
 			slotZone.DrawText();
 			sortButtons.DrawText();
 			filterButtons.DrawText();
@@ -264,9 +268,9 @@ namespace MagicStorage.GUI {
 		private static Item GetItem(int slot, ref int context) {
 			int index = slot + numColumns * (int)Math.Round(scrollBar.ViewPosition);
 			Item item = index < items.Count ? items[index] : new Item();
-			if (!item.IsAir && !didMatCheck[index]) {
+			if (!item.IsAir/* && !didMatCheck[index]*/) {
 				item.checkMat();
-				didMatCheck[index] = true;
+				//didMatCheck[index] = true;
 			}
 			return item;
 		}
@@ -309,12 +313,14 @@ namespace MagicStorage.GUI {
 		}
 
 		public static void RefreshItems() {
-			if (StoragePlayer.IsOnlyStorageCrafting()) {
+			if (Main.player[Main.myPlayer].GetModPlayer<StoragePlayer>().tileType == typeof(CraftingAccess)) {
 				CraftingGUI.RefreshItems();
+			}
+			if (StoragePlayer.IsOnlyStorageCrafting()) {
 				return;
 			}
 			items.Clear();
-			didMatCheck.Clear();
+			//didMatCheck.Clear();
 			TEStorageHeart heart = GetHeart();
 			if (heart == null) {
 				return;
@@ -326,9 +332,9 @@ namespace MagicStorage.GUI {
 			FilterMode filterMode = (FilterMode)filterButtons.Choice;
 
 			items.AddRange(ItemSorter.SortAndFilter(heart.GetStoredItems(), sortMode, filterMode, searchBar2.Text, searchBar.Text));
-			for (int k = 0; k < items.Count; k++) {
-				didMatCheck.Add(false);
-			}
+			//for (int k = 0; k < items.Count; k++) {
+			//	didMatCheck.Add(false);
+			//}
 		}
 
 		private static void UpdateDepositButton() {

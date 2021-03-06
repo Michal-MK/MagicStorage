@@ -1,3 +1,4 @@
+using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
@@ -13,7 +14,7 @@ namespace MagicStorage {
 			try {
 				Player player = Main.player[Main.myPlayer];
 				StoragePlayer modPlayer = player.GetModPlayer<StoragePlayer>();
-				Point16 storageAccess = modPlayer.ViewingStorage();
+				(Point16 storageAccess, Type t) = modPlayer.ViewingStorage();
 				return storageAccess.X < 0 || storageAccess.Y < 0;
 			}
 			catch {

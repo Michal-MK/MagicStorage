@@ -1,6 +1,6 @@
-author = blushiemagic_tmp
-version = 0.01
-displayName = Magic Storage Test
+author = blushiemagic & Michal-MK
+version = 0.1
+displayName = Magic Storage Refresh
 hideCode = false
 hideResources = false
 includeSource = true

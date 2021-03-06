@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameInput;
@@ -74,7 +75,7 @@ namespace MagicStorage.Components {
 			player.chest = -1;
 			Main.stackSplit = 600;
 			Point16 toOpen = new Point16(i, j);
-			Point16 prevOpen = modPlayer.ViewingStorage();
+			(Point16 prevOpen, Type t) = modPlayer.ViewingStorage();
 			if (prevOpen == toOpen) {
 				modPlayer.CloseStorage();
 				Main.PlaySound(SoundID.MenuClose, -1, -1, 1);
@@ -82,7 +83,7 @@ namespace MagicStorage.Components {
 			}
 			else {
 				bool hadOtherOpen = prevOpen.X >= 0 && prevOpen.Y >= 0;
-				modPlayer.OpenStorage(toOpen);
+				modPlayer.OpenStorage(toOpen, GetType());
 				modPlayer.timeSinceOpen = 0;
 				if (PlayerInput.GrappleAndInteractAreShared) {
 					PlayerInput.Triggers.JustPressed.Grapple = false;

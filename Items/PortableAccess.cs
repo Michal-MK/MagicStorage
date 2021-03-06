@@ -5,6 +5,7 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using MagicStorage.Items.Base;
+using System;
 
 namespace MagicStorage.Items {
 	public class PortableAccess : Locator {
@@ -79,7 +80,7 @@ namespace MagicStorage.Items {
 			player.chest = -1;
 			Main.stackSplit = 600;
 			Point16 toOpen = location;
-			Point16 prevOpen = modPlayer.ViewingStorage();
+			(Point16 prevOpen, Type _) = modPlayer.ViewingStorage();
 			if (prevOpen == toOpen) {
 				modPlayer.CloseStorage();
 				Main.PlaySound(SoundID.MenuClose, -1, -1, 1);
@@ -87,7 +88,7 @@ namespace MagicStorage.Items {
 			}
 			else {
 				bool hadOtherOpen = prevOpen.X >= 0 && prevOpen.Y >= 0;
-				modPlayer.OpenStorage(toOpen, true);
+				modPlayer.OpenStorage(toOpen, typeof(StorageAccess), true);
 				modPlayer.timeSinceOpen = 0;
 				Main.playerInventory = true;
 				Main.recBigList = false;

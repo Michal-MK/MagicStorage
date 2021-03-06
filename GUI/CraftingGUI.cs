@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.GameContent.UI.Elements;
 using Terraria.ID;
 using Terraria.Localization;
@@ -129,6 +130,8 @@ namespace MagicStorage.GUI {
 		private static List<Recipe> nextRecipes = new List<Recipe>();
 		private static List<bool> nextRecipeAvailable = new List<bool>();
 
+		private static ManualResetEventSlim evnt = new ManualResetEventSlim();
+
 		public static void Initialize() {
 			lock (recipeLOCK) {
 				recipes = nextRecipes;
@@ -213,19 +216,11 @@ namespace MagicStorage.GUI {
 			recipeText.Top.Set(stationZone.Top.Pixels + stationZone.ActualHeight + UICommon.PADDING * 2, 0f);
 			recipesPanel.Append(recipeText);
 
-			//UIDebug dbg = new UIDebug();
-
-			//dbg.Width.Set(0f, 1f);
-			//dbg.Top.Set(recipeText.GetDimensions().Y + recipeText.GetDimensions().Height, 0f);
-			//dbg.Height.Set(200f, 1f);
-
 			recipeZone.Width.Set(0f, 1f);
 			recipeZone.Top.Set(recipeText.Top.Pixels + recipeText.GetDimensions().Height + UICommon.PADDING * 3, 0f);
 			numRows = (recipes.Count + AVAILABLE_RECIPES_NUM_COLS - 1) / AVAILABLE_RECIPES_NUM_COLS;
-			float h = panelHeight - recipeText.Top.Pixels - recipeText.GetDimensions().Height - UICommon.PADDING * 2;
-			recipeZone.Height.Set(h, 0f);
+			recipeZone.Height.Set(panelHeight - recipeText.Top.Pixels - recipeText.GetDimensions().Height - UICommon.PADDING * 2, 0f);
 
-			//recipesPanel.Append(dbg);
 			recipesPanel.Append(recipeZone);
 
 			numRows = (recipes.Count + AVAILABLE_RECIPES_NUM_COLS - 1) / AVAILABLE_RECIPES_NUM_COLS;
@@ -311,6 +306,8 @@ namespace MagicStorage.GUI {
 			resultZone.Width.Set(itemSlotWidth, 0f);
 			resultZone.Height.Set(itemSlotHeight, 0f);
 			ingredientsPanel.Append(resultZone);
+
+			evnt.Set();
 		}
 
 		private static void InitLangStuff() {
@@ -410,25 +407,29 @@ namespace MagicStorage.GUI {
 			sortButtons = null;
 			filterButtons = null;
 			recipeButtons = null;
+			evnt.Reset();
 		}
 
 		public static void Update(GameTime gameTime) {
 			try {
 				oldMouse = StorageGUI.oldMouse;
 				curMouse = StorageGUI.curMouse;
-				if (Main.playerInventory && Main.player[Main.myPlayer].GetModPlayer<StoragePlayer>().ViewingStorage().X >= 0 && StoragePlayer.IsOnlyStorageCrafting()) {
-					if (curMouse.RightButton == ButtonState.Released) {
-						ResetSlotFocus();
+				if (Main.playerInventory) {
+					(Point16 Pos, Type Tile) = Main.player[Main.myPlayer].GetModPlayer<StoragePlayer>().ViewingStorage();
+					if (Pos.X >= 0 && Tile == typeof(CraftingAccess) || Tile == typeof(CraftingStorageAccess)) {
+						if (curMouse.RightButton == ButtonState.Released) {
+							ResetSlotFocus();
+						}
+						if (recipesPanel != null) {
+							recipesPanel.Update(gameTime);
+						}
+						if (ingredientsPanel != null) {
+							ingredientsPanel.Update(gameTime);
+						}
+						UpdateRecipeText();
+						UpdateScrollBar();
+						UpdateCraftButton();
 					}
-					if (recipesPanel != null) {
-						recipesPanel.Update(gameTime);
-					}
-					if (ingredientsPanel != null) {
-						ingredientsPanel.Update(gameTime);
-					}
-					UpdateRecipeText();
-					UpdateScrollBar();
-					UpdateCraftButton();
 				}
 				else {
 					scrollBarFocus = 0;
@@ -749,6 +750,7 @@ namespace MagicStorage.GUI {
 		}
 
 		private static void RefreshRecipes() {
+			evnt.Wait();
 			while (true) {
 				try {
 					SortMode sortMode;
@@ -774,6 +776,9 @@ namespace MagicStorage.GUI {
 					catch (InvalidOperationException) {
 					}
 					catch (KeyNotFoundException) {
+					}
+					catch (NullReferenceException) {
+						//UI Closed
 					}
 					lock (recipeLOCK) {
 						nextRecipes = new List<Recipe>();

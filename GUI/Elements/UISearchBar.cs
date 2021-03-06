@@ -131,7 +131,7 @@ namespace MagicStorage {
 		}
 
 		protected override void DrawSelf(SpriteBatch spriteBatch) {
-			Texture2D texture = ModContent.GetTexture("MagicStorage/SearchBar");
+			Texture2D texture = ModContent.GetTexture("MagicStorage/Textures/UI/SearchBar");
 			CalculatedStyle dim = GetDimensions();
 			const int P = UICommon.PADDING;
 			int innerWidth = (int)dim.Width - 2 * P;

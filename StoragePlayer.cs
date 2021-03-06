@@ -5,11 +5,13 @@ using Terraria.ModLoader;
 using Terraria.UI;
 using Terraria.ID;
 using MagicStorage.GUI;
+using System;
 
 namespace MagicStorage {
 	public class StoragePlayer : ModPlayer {
 		public int timeSinceOpen = 1;
-		private Point16 storageAccess = new Point16(-1, -1);
+		public Point16 storageAccess = new Point16(-1, -1);
+		public Type tileType;
 		public bool remoteAccess = false;
 
 		public override void UpdateDead() {
@@ -47,10 +49,16 @@ namespace MagicStorage {
 			}
 		}
 
-		public void OpenStorage(Point16 point, bool remote = false) {
+		public void OpenStorage(Point16 point, Type tile, bool remote = false) {
 			storageAccess = point;
 			remoteAccess = remote;
-			StorageGUI.RefreshItems();
+			tileType = tile;
+			if (tileType == typeof(StorageAccess) || tileType == typeof(StorageHeart)) {
+				StorageGUI.RefreshItems();
+			}
+			if (tileType == typeof(CraftingAccess) || tileType == typeof(CraftingStorageAccess)) {
+				CraftingGUI.RefreshItems();
+			}
 		}
 
 		public void CloseStorage() {
@@ -70,8 +78,8 @@ namespace MagicStorage {
 			}
 		}
 
-		public Point16 ViewingStorage() {
-			return storageAccess;
+		public (Point16 Pos, Type Tile) ViewingStorage() {
+			return (storageAccess, tileType);
 		}
 
 		public static void GetItem(Item item, bool toMouse) {
@@ -175,7 +183,7 @@ namespace MagicStorage {
 		}
 
 		public static bool IsOnlyStorageCrafting() {
-			return Main.player[Main.myPlayer].GetModPlayer<StoragePlayer>().StorageCrafting();
+			return Main.player[Main.myPlayer].GetModPlayer<StoragePlayer>().Crafting();
 		}
 	}
 }

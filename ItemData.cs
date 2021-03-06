@@ -3,17 +3,17 @@ using Terraria;
 
 namespace MagicStorage {
 	public struct ItemData {
-		public readonly int Type;
-		public readonly int Prefix;
+		public int Type { get; }
+		public int Prefix { get; }
 
 		public ItemData(int type, int prefix = 0) {
-			this.Type = type;
-			this.Prefix = prefix;
+			Type = type;
+			Prefix = prefix;
 		}
 
 		public ItemData(Item item) {
-			this.Type = item.netID;
-			this.Prefix = item.prefix;
+			Type = item.netID;
+			Prefix = item.prefix;
 		}
 
 		public override bool Equals(Object other) {
