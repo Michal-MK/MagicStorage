@@ -6,11 +6,11 @@ using Terraria.ModLoader;
 namespace MagicStorage.Components {
 	public class CreativeStorageUnit : StorageComponent {
 		public override ModTileEntity GetTileEntity() {
-			return mod.GetTileEntity("TECreativeStorageUnit");
+			return mod.GetTileEntity(nameof(TECreativeStorageUnit));
 		}
 
 		public override int ItemType(int frameX, int frameY) {
-			return mod.ItemType("CreativeStorageUnit");
+			return mod.ItemType(nameof(CreativeStorageUnit));
 		}
 
 		public override void PostDraw(int i, int j, SpriteBatch spriteBatch) {

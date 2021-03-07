@@ -20,128 +20,135 @@ using CraftingAccess = MagicStorage.Components.CraftingAccess;
 using CraftingStorageAccess = MagicStorage.Components.CraftingStorageAccess;
 
 namespace MagicStorage.GUI {
-	public static class CraftingGUI {
+	public class CraftingGUINew : GUIBase {
 
 		public const int AVAILABLE_RECIPES_NUM_COLS = 10;
 		public const int AVAILABLE_INGREDIENT_NUM_COLS = 7;
 		public const float RECIPES_SCALE = 0.85f;
 		public const float INGREDIENTS_SCALE = 0.7f;
-		private const float TOP_BAR_HEIGHT = 32f;
+		public const float TOP_BAR_HEIGHT = 32f;
 
-
-		private const int START_MAX_CRAFT_TIMER = 20;
-		private const int SMART_MAX_CLICK_TIMER = 20;
-
-		// Padding between Item Slots
-
-		// Element Spacing
-		private const int SPACING = UICommon.PADDING * 3;
+		public const int START_MAX_CRAFT_TIMER = 20;
+		public const int SMART_MAX_CLICK_TIMER = 20;
 
 		// The left offset from the screen
-		private const float PANEL_LEFT = 20;
+		public const float PANEL_LEFT = 20;
 
-		public static MouseState curMouse;
-		public static MouseState oldMouse;
+		private readonly UIPanel recipesPanel = new UIPanel();
+		private float panelTop;
+		private float panelWidth;
+		private float panelHeight;
 
-		public static bool MouseClicked => curMouse.LeftButton == ButtonState.Pressed && oldMouse.LeftButton == ButtonState.Released;
+		private readonly UIElement recipesTopBar = new UIElement();
+		private UIButtonChoice sortButtons;
+		private UIButtonChoice recipeButtons;
+		private UISearchBar itemNameSearch;
 
-		private static UIPanel recipesPanel;
-		private static float panelTop;
-		private static float panelWidth;
-		private static float panelHeight;
+		private readonly UIElement ingredientsTopBar = new UIElement();
+		private UIButtonChoice filterButtons;
+		private UISearchBar modNameSearch;
 
-		private static UIElement recipesTopBar;
-		internal static UISearchBar itemNameSearch;
-		private static UIButtonChoice sortButtons;
-		private static UIButtonChoice recipeButtons;
-		private static UIElement ingredientsTopBar;
-		private static UIButtonChoice filterButtons;
-		internal static UISearchBar modNameSearch;
+		private UIText stationText;
+		private readonly UISlotZone stationZone;
 
-		private static UIText stationText;
-		private static UISlotZone stationZone = new UISlotZone(HoverStation, GetStation, RECIPES_SCALE);
-		private static UIText recipeText;
-		private static UISlotZone recipeZone = new UISlotZone(HoverRecipe, GetRecipe, RECIPES_SCALE);
+		private UIText recipeText;
+		private readonly UISlotZone recipeZone;
 
-		internal static UIScrollbar scrollBar = new UIScrollbar();
-		private static int scrollBarFocus = 0;
-		private static int scrollBarFocusMouseStart;
-		private static float scrollBarFocusPositionStart;
-		private static float scrollBarViewSize = 1f;
-		private static float scrollBarMaxViewSize = 2f;
+		private readonly UIScrollbar recipeZoneScrollBar = new UIScrollbar();
+		private int recipeScrollBarFocus = 0;
+		private int recipeScrollBarFocusMouseStart;
+		private float recipeScrollBarFocusPositionStart;
+		private const float RECIPE_SCROLLBAR_VIEW_SIZE = 1f;
+		private float recipeScrollBarMaxViewSize = 2f;
 
-		private static List<Item> items = new List<Item>();
-		private static Dictionary<int, int> itemCounts = new Dictionary<int, int>();
-		private static bool[] adjTiles = new bool[TileLoader.TileCount];
-		private static bool adjWater = false;
-		private static bool adjLava = false;
-		private static bool adjHoney = false;
-		private static bool zoneSnow = false;
-		private static bool alchemyTable = false;
-		private static List<Recipe> recipes = new List<Recipe>();
-		private static List<bool> recipeAvailable = new List<bool>();
-		private static Recipe selectedRecipe = null;
-		private static int numRows;
-		private static int displayRows;
-		private static bool slotFocus = false;
+		private readonly List<Item> items = new List<Item>();
+		private readonly Dictionary<int, int> itemCounts = new Dictionary<int, int>();
+		private bool[] adjTiles = new bool[TileLoader.TileCount];
+		private bool adjWater = false;
+		private bool adjLava = false;
+		private bool adjHoney = false;
+		private bool zoneSnow = false;
+		private bool alchemyTable = false;
 
-		private static UIElement bottomBar = new UIElement();
-		private static UIText capacityText;
+		private List<Recipe> recipes = new List<Recipe>();
+		private List<bool> recipeAvailable = new List<bool>();
+		private Recipe selectedRecipe = null;
+		private int numRows;
+		private int displayRows;
+		private bool slotFocus = false;
 
-		private static UIPanel ingredientsPanel;
-		private static float ingredientTop;
-		private static float ingredientLeft;
-		private static float ingredientWidth;
-		private static float ingredientHeight;
+		private readonly UIElement bottomBar = new UIElement();
+		private UIText capacityText;
 
-		private static UIText recipePanelHeader;
-		private static UIText ingredientText;
-		private static UISlotZone ingredientZone = new UISlotZone(HoverItem, GetIngredient, INGREDIENTS_SCALE);
-		private static UIText requiresObjHeader;
-		private static UIText requiresObjText;
-		private static UIText storedItemsText;
 
-		private static UISlotZone storageZone = new UISlotZone(HoverStorage, GetStorage, INGREDIENTS_SCALE);
-		private static int numRows2;
-		private static int displayRows2;
-		private static List<Item> storageItems = new List<Item>();
-		private static List<ItemData> blockStorageItems = new List<ItemData>();
+		private readonly UIPanel ingredientsPanel = new UIPanel();
+		private float ingredientTop;
+		private float ingredientLeft;
+		private float ingredientWidth;
+		private float ingredientHeight;
 
-		internal static UIScrollbar scrollBar2 = new UIScrollbar();
-		private static float scrollBar2ViewSize = 1f;
-		private static float scrollBar2MaxViewSize = 2f;
+		private UIText recipePanelHeader;
+		private UIText ingredientText;
 
-		internal static UITextPanel<LocalizedText> craftButton;
-		private static Item result = null;
-		private static UISlotZone resultZone = new UISlotZone(HoverResult, GetResult, RECIPES_SCALE);
+		private readonly UISlotZone ingredientZone;
+		private UIText requiresObjHeader;
+		private UIText requiresObjText;
 
-		private static int craftTimer = 0;
-		private static int maxCraftTimer = START_MAX_CRAFT_TIMER;
-		private static int rightClickTimer = 0;
-		private static int maxRightClickTimer = SMART_MAX_CLICK_TIMER;
+		private UIText storedItemsText;
 
-		private static readonly object threadLOCK = new object();
-		private static readonly object recipeLOCK = new object();
-		private static readonly object itemsLOCK = new object();
+		private readonly UISlotZone availableItems;
+		private int availableItemsRows;
+		private int availableItemsDisplayRows;
 
-		private static bool threadRunning = false;
-		internal static bool threadNeedsRestart = false;
-		private static SortMode threadSortMode;
-		private static FilterMode threadFilterMode;
-		private static List<Recipe> threadRecipes = new List<Recipe>();
-		private static List<bool> threadRecipeAvailable = new List<bool>();
-		private static List<Recipe> nextRecipes = new List<Recipe>();
-		private static List<bool> nextRecipeAvailable = new List<bool>();
+		private readonly List<Item> storageItems = new List<Item>();
+		private readonly List<ItemData> blockStorageItems = new List<ItemData>();
 
-		private static ManualResetEventSlim evnt = new ManualResetEventSlim();
+		private readonly UIScrollbar availableItemsScrollBar = new UIScrollbar();
+		private const float AVAILABLE_ITEMS_SCROLLBAR_VIEW_SIZE = 1f;
+		private float availableItemsScrollBarMaxViewSize = 2f;
 
-		public static void Initialize() {
+		private UITextPanel<LocalizedText> craftButton;
+		private Item result = null;
+		private readonly UISlotZone resultZone;
+
+		private int craftTimer = 0;
+		private int maxCraftTimer = START_MAX_CRAFT_TIMER;
+		private int rightClickTimer = 0;
+		private int maxRightClickTimer = SMART_MAX_CLICK_TIMER;
+
+		private readonly object threadLOCK = new object();
+		private readonly object recipeLOCK = new object();
+		private readonly object itemsLOCK = new object();
+
+		private bool threadRunning = false;
+		internal bool threadNeedsRestart = false;
+		private SortMode threadSortMode;
+		private FilterMode threadFilterMode;
+		private List<Recipe> threadRecipes = new List<Recipe>();
+		private List<bool> threadRecipeAvailable = new List<bool>();
+		private List<Recipe> nextRecipes = new List<Recipe>();
+		private List<bool> nextRecipeAvailable = new List<bool>();
+
+		private readonly ManualResetEventSlim evnt = new ManualResetEventSlim();
+
+		public CraftingGUINew() {
+			stationZone = new UISlotZone(HoverStation, GetStation, RECIPES_SCALE);
+			recipeZone = new UISlotZone(HoverRecipe, GetRecipe, RECIPES_SCALE);
+			availableItems = new UISlotZone(HoverStorage, GetStorage, INGREDIENTS_SCALE);
+			ingredientZone = new UISlotZone(HoverItem, GetIngredient, INGREDIENTS_SCALE);
+			resultZone = new UISlotZone(HoverResult, GetResult, RECIPES_SCALE);
+
+			InitLangStuff();
+			InitFilterButtons();
+			InitFilterButtons();
+			InitSortButtons();
+		}
+
+		public void Initialize() {
 			lock (recipeLOCK) {
 				recipes = nextRecipes;
 				recipeAvailable = nextRecipeAvailable;
 			}
-
-			InitLangStuff();
 
 			float itemSlotWidth = Main.inventoryBackTexture.Width * RECIPES_SCALE;
 			float itemSlotHeight = Main.inventoryBackTexture.Height * RECIPES_SCALE;
@@ -151,8 +158,6 @@ namespace MagicStorage.GUI {
 			panelTop = Main.instance.invBottom + 60;
 			panelHeight = Main.screenHeight - panelTop - 60;
 
-			recipesPanel = new UIPanel();
-
 			float innerPanelWidth = AVAILABLE_RECIPES_NUM_COLS * (itemSlotWidth + UICommon.PADDING) + 20f + UICommon.PADDING;
 			panelWidth = recipesPanel.PaddingLeft + innerPanelWidth + recipesPanel.PaddingRight;
 			recipesPanel.Left.Set(PANEL_LEFT, 0f);
@@ -160,9 +165,6 @@ namespace MagicStorage.GUI {
 			recipesPanel.Width.Set(panelWidth, 0f);
 			recipesPanel.Height.Set(panelHeight, 0f);
 			recipesPanel.Recalculate();
-
-
-			ingredientsPanel = new UIPanel();
 
 			ingredientTop = panelTop;
 			ingredientLeft = PANEL_LEFT + panelWidth;
@@ -176,7 +178,6 @@ namespace MagicStorage.GUI {
 			ingredientsPanel.Height.Set(ingredientHeight, 0f);
 			ingredientsPanel.Recalculate();
 
-			recipesTopBar = new UIElement();
 			recipesTopBar.Width.Set(0f, 1f);
 			recipesTopBar.Height.Set(TOP_BAR_HEIGHT, 0f);
 			recipesPanel.Append(recipesTopBar);
@@ -195,7 +196,6 @@ namespace MagicStorage.GUI {
 			itemNameSearch.Height.Set(0f, 1f);
 			recipesTopBar.Append(itemNameSearch);
 
-			ingredientsTopBar = new UIElement();
 			ingredientsTopBar.Width.Set(0f, 1f);
 			ingredientsTopBar.Height.Set(TOP_BAR_HEIGHT, 0f);
 			ingredientsTopBar.Top.Set(TOP_BAR_HEIGHT + UICommon.PADDING, 0f);
@@ -234,11 +234,11 @@ namespace MagicStorage.GUI {
 			if (noDisplayRows < 0) {
 				noDisplayRows = 0;
 			}
-			scrollBarMaxViewSize = 1 + noDisplayRows;
-			scrollBar.Height.Set(displayRows * (itemSlotHeight + UICommon.PADDING), 0f);
-			scrollBar.Left.Set(-20f, 1f);
-			scrollBar.SetView(scrollBarViewSize, scrollBarMaxViewSize);
-			recipeZone.Append(scrollBar);
+			recipeScrollBarMaxViewSize = 1 + noDisplayRows;
+			recipeZoneScrollBar.Height.Set(displayRows * (itemSlotHeight + UICommon.PADDING), 0f);
+			recipeZoneScrollBar.Left.Set(-20f, 1f);
+			recipeZoneScrollBar.SetView(RECIPE_SCROLLBAR_VIEW_SIZE, recipeScrollBarMaxViewSize);
+			recipeZone.Append(recipeZoneScrollBar);
 
 			bottomBar.Width.Set(0f, 1f);
 			bottomBar.Height.Set(TOP_BAR_HEIGHT, 0f);
@@ -279,22 +279,22 @@ namespace MagicStorage.GUI {
 			storedItemsText.Top.Set(190f, 0f);
 			ingredientsPanel.Append(storedItemsText);
 
-			storageZone.Top.Set(214f, 0f);
-			storageZone.Width.Set(0f, 1f);
-			storageZone.Height.Set(-214f - 36, 1f);
-			ingredientsPanel.Append(storageZone);
-			numRows2 = (storageItems.Count + AVAILABLE_INGREDIENT_NUM_COLS - 1) / AVAILABLE_INGREDIENT_NUM_COLS;
-			displayRows2 = (int)storageZone.GetDimensions().Height / ((int)smallSlotHeight + UICommon.PADDING);
-			storageZone.SetDimensions(AVAILABLE_INGREDIENT_NUM_COLS, displayRows2);
-			int noDisplayRows2 = numRows2 - displayRows2;
+			availableItems.Top.Set(214f, 0f);
+			availableItems.Width.Set(0f, 1f);
+			availableItems.Height.Set(-214f - 36, 1f);
+			ingredientsPanel.Append(availableItems);
+			availableItemsRows = (storageItems.Count + AVAILABLE_INGREDIENT_NUM_COLS - 1) / AVAILABLE_INGREDIENT_NUM_COLS;
+			availableItemsDisplayRows = (int)availableItems.GetDimensions().Height / ((int)smallSlotHeight + UICommon.PADDING);
+			availableItems.SetDimensions(AVAILABLE_INGREDIENT_NUM_COLS, availableItemsDisplayRows);
+			int noDisplayRows2 = availableItemsRows - availableItemsDisplayRows;
 			if (noDisplayRows2 < 0) {
 				noDisplayRows2 = 0;
 			}
-			scrollBar2MaxViewSize = 1 + noDisplayRows2;
-			scrollBar2.Height.Set(displayRows2 * (smallSlotHeight + UICommon.PADDING), 0f);
-			scrollBar2.Left.Set(-20f, 1f);
-			scrollBar2.SetView(scrollBar2ViewSize, scrollBar2MaxViewSize);
-			storageZone.Append(scrollBar2);
+			availableItemsScrollBarMaxViewSize = 1 + noDisplayRows2;
+			availableItemsScrollBar.Height.Set(availableItemsDisplayRows * (smallSlotHeight + UICommon.PADDING), 0f);
+			availableItemsScrollBar.Left.Set(-20f, 1f);
+			availableItemsScrollBar.SetView(AVAILABLE_ITEMS_SCROLLBAR_VIEW_SIZE, availableItemsScrollBarMaxViewSize);
+			availableItems.Append(availableItemsScrollBar);
 
 			craftButton.Top.Set(-32f, 1f);
 			craftButton.Width.Set(100f, 0f);
@@ -313,107 +313,70 @@ namespace MagicStorage.GUI {
 			evnt.Set();
 		}
 
-		private static void InitLangStuff() {
-			if (itemNameSearch == null) {
-				itemNameSearch = new UISearchBar(Locale.Get(Locale.C.SAERCH_NAME));
-			}
-			if (modNameSearch == null) {
-				modNameSearch = new UISearchBar(Locale.Get(Locale.C.SAERCH_MOD));
-			}
-			if (stationText == null) {
-				stationText = new UIText(Locale.Get(Locale.C.CRAFT_STATIONS));
-			}
-			if (recipeText == null) {
-				recipeText = new UIText(Locale.Get(Locale.C.RECIPES));
-			}
-			if (capacityText == null) {
-				capacityText = new UIText(Locale.Get(Locale.C.ITEMS));
-			}
-			if (recipePanelHeader == null) {
-				recipePanelHeader = new UIText(Locale.Get(Locale.C.SEL_RECIPE));
-			}
-			if (ingredientText == null) {
-				ingredientText = new UIText(Locale.Get(Locale.C.INGREDS));
-			}
-			if (requiresObjHeader == null) {
-				requiresObjHeader = new UIText(Locale.Get(Locale.C.L.REQUIRED_OBJS));
-			}
-			if (requiresObjText == null) {
-				requiresObjText = new UIText("");
-			}
-			if (storedItemsText == null) {
-				storedItemsText = new UIText(Locale.Get(Locale.C.STORED_ITEMS));
-			}
-			if (craftButton == null) {
-				craftButton = new UITextPanel<LocalizedText>(Locale.Get(Locale.C.L.CRAFT));
-			}
+		private void InitLangStuff() {
+			itemNameSearch = new UISearchBar(Locale.Get(Locale.C.SAERCH_NAME));
+			modNameSearch = new UISearchBar(Locale.Get(Locale.C.SAERCH_MOD));
+			stationText = new UIText(Locale.Get(Locale.C.CRAFT_STATIONS));
+			recipeText = new UIText(Locale.Get(Locale.C.RECIPES));
+			capacityText = new UIText(Locale.Get(Locale.C.ITEMS));
+			recipePanelHeader = new UIText(Locale.Get(Locale.C.SEL_RECIPE));
+			ingredientText = new UIText(Locale.Get(Locale.C.INGREDS));
+			requiresObjHeader = new UIText(Locale.Get(Locale.C.L.REQUIRED_OBJS));
+			requiresObjText = new UIText("");
+			storedItemsText = new UIText(Locale.Get(Locale.C.STORED_ITEMS));
+			craftButton = new UITextPanel<LocalizedText>(Locale.Get(Locale.C.L.CRAFT));
 		}
 
-		private static void InitSortButtons() {
-			if (sortButtons == null) {
-				sortButtons = new UIButtonChoice(new Texture2D[]
-				{
-					Main.inventorySortTexture[0],
-					MagicStorage.Instance.GetTexture("Textures/Sorting/SortID"),
-					MagicStorage.Instance.GetTexture("Textures/Sorting/SortName")
-				},
-				new LocalizedText[]
-				{
-					Locale.Get(Locale.C.SORT_DEF),
-					Locale.Get(Locale.C.SORT_ID),
-					Locale.Get(Locale.C.SORT_NAME)
-				});
-			}
+		private void InitSortButtons() {
+			sortButtons = new UIButtonChoice(new Texture2D[] {
+				Main.inventorySortTexture[0],
+				MagicStorage.Instance.GetTexture("Textures/Sorting/SortID"),
+				MagicStorage.Instance.GetTexture("Textures/Sorting/SortName")
+			}, new LocalizedText[] {
+				Locale.Get(Locale.C.SORT_DEF),
+				Locale.Get(Locale.C.SORT_ID),
+				Locale.Get(Locale.C.SORT_NAME)
+			});
 		}
 
-		private static void InitRecipeButtons() {
-			if (recipeButtons == null) {
-				recipeButtons = new UIButtonChoice(new Texture2D[]
-				{
-					MagicStorage.Instance.GetTexture("Textures/Filtering/RecipeAvailable"),
-					MagicStorage.Instance.GetTexture("Textures/Filtering/RecipeAll")
-				},
-				new LocalizedText[]
-				{
-					Locale.Get(Locale.C.RECIPE_AVAIL),
-					Locale.Get(Locale.C.RECIPE_ALL),
-				});
-			}
+		private void InitRecipeButtons() {
+			recipeButtons = new UIButtonChoice(new Texture2D[] {
+				MagicStorage.Instance.GetTexture("Textures/Filtering/RecipeAvailable"),
+				MagicStorage.Instance.GetTexture("Textures/Filtering/RecipeAll")
+			}, new LocalizedText[] {
+				Locale.Get(Locale.C.RECIPE_AVAIL),
+				Locale.Get(Locale.C.RECIPE_ALL),
+			});
 		}
 
-		private static void InitFilterButtons() {
-			if (filterButtons == null) {
-				filterButtons = new UIButtonChoice(new Texture2D[]
-				{
-					MagicStorage.Instance.GetTexture("Textures/Filtering/FilterAll"),
-					MagicStorage.Instance.GetTexture("Textures/Filtering/FilterMelee"),
-					MagicStorage.Instance.GetTexture("Textures/Filtering/FilterPickaxe"),
-					MagicStorage.Instance.GetTexture("Textures/Filtering/FilterArmor"),
-					MagicStorage.Instance.GetTexture("Textures/Filtering/FilterPotion"),
-					MagicStorage.Instance.GetTexture("Textures/Filtering/FilterTile"),
-					MagicStorage.Instance.GetTexture("Textures/Filtering/FilterMisc"),
-				},
-				new LocalizedText[]
-				{
-					Locale.Get(Locale.C.FILTER_ALL),
-					Locale.Get(Locale.C.FILTER_WEAP),
-					Locale.Get(Locale.C.FILTER_TOOL),
-					Locale.Get(Locale.C.FILTER_EQUIP),
-					Locale.Get(Locale.C.FILTER_POT),
-					Locale.Get(Locale.C.FILTER_TILE),
-					Locale.Get(Locale.C.FILTER_MISC),
-				});
-			}
+		private void InitFilterButtons() {
+			filterButtons = new UIButtonChoice(new Texture2D[] {
+				MagicStorage.Instance.GetTexture("Textures/Filtering/FilterAll"),
+				MagicStorage.Instance.GetTexture("Textures/Filtering/FilterMelee"),
+				MagicStorage.Instance.GetTexture("Textures/Filtering/FilterPickaxe"),
+				MagicStorage.Instance.GetTexture("Textures/Filtering/FilterArmor"),
+				MagicStorage.Instance.GetTexture("Textures/Filtering/FilterPotion"),
+				MagicStorage.Instance.GetTexture("Textures/Filtering/FilterTile"),
+				MagicStorage.Instance.GetTexture("Textures/Filtering/FilterMisc"),
+			}, new LocalizedText[] {
+				Locale.Get(Locale.C.FILTER_ALL),
+				Locale.Get(Locale.C.FILTER_WEAP),
+				Locale.Get(Locale.C.FILTER_TOOL),
+				Locale.Get(Locale.C.FILTER_EQUIP),
+				Locale.Get(Locale.C.FILTER_POT),
+				Locale.Get(Locale.C.FILTER_TILE),
+				Locale.Get(Locale.C.FILTER_MISC),
+			});
 		}
 
-		internal static void Unload() {
+		internal void Unload() {
 			sortButtons = null;
 			filterButtons = null;
 			recipeButtons = null;
 			evnt.Reset();
 		}
 
-		public static void Update(GameTime gameTime) {
+		public void Update(GameTime gameTime) {
 			try {
 				oldMouse = StorageGUI.oldMouse;
 				curMouse = StorageGUI.curMouse;
@@ -435,7 +398,7 @@ namespace MagicStorage.GUI {
 					}
 				}
 				else {
-					scrollBarFocus = 0;
+					recipeScrollBarFocus = 0;
 					selectedRecipe = null;
 					craftTimer = 0;
 					maxCraftTimer = START_MAX_CRAFT_TIMER;
@@ -445,7 +408,7 @@ namespace MagicStorage.GUI {
 			catch (Exception e) { Main.NewTextMultiline(e.ToString()); }
 		}
 
-		public static void Draw(TEStorageHeart heart) {
+		public void Draw(TEStorageHeart heart) {
 			try {
 				Player player = Main.player[Main.myPlayer];
 
@@ -465,7 +428,7 @@ namespace MagicStorage.GUI {
 				stationZone.DrawText();
 				recipeZone.DrawText();
 				ingredientZone.DrawText();
-				storageZone.DrawText();
+				availableItems.DrawText();
 				resultZone.DrawText();
 				sortButtons.DrawText();
 				recipeButtons.DrawText();
@@ -474,7 +437,7 @@ namespace MagicStorage.GUI {
 			catch (Exception e) { Main.NewTextMultiline(e.ToString()); }
 		}
 
-		private static Item GetStation(int slot, ref int context) {
+		private Item GetStation(int slot, ref int context) {
 			Item[] stations = GetCraftingStations();
 			if (stations == null || slot >= stations.Length) {
 				return new Item();
@@ -482,11 +445,11 @@ namespace MagicStorage.GUI {
 			return stations[slot];
 		}
 
-		private static Item GetRecipe(int slot, ref int context) {
+		private Item GetRecipe(int slot, ref int context) {
 			if (threadRunning) {
 				return new Item();
 			}
-			int index = slot + AVAILABLE_RECIPES_NUM_COLS * (int)Math.Round(scrollBar.ViewPosition);
+			int index = slot + AVAILABLE_RECIPES_NUM_COLS * (int)Math.Round(recipeZoneScrollBar.ViewPosition);
 			Item item = index < recipes.Count ? recipes[index].createItem : new Item();
 			if (!item.IsAir && recipes[index] == selectedRecipe) {
 				context = 6;
@@ -497,7 +460,7 @@ namespace MagicStorage.GUI {
 			return item;
 		}
 
-		private static Item GetIngredient(int slot, ref int context) {
+		private Item GetIngredient(int slot, ref int context) {
 			if (selectedRecipe == null || slot >= selectedRecipe.requiredItem.Length) {
 				return new Item();
 			}
@@ -523,8 +486,8 @@ namespace MagicStorage.GUI {
 			return item;
 		}
 
-		private static Item GetStorage(int slot, ref int context) {
-			int index = slot + AVAILABLE_INGREDIENT_NUM_COLS * (int)Math.Round(scrollBar2.ViewPosition);
+		private Item GetStorage(int slot, ref int context) {
+			int index = slot + AVAILABLE_INGREDIENT_NUM_COLS * (int)Math.Round(availableItemsScrollBar.ViewPosition);
 			Item item = index < storageItems.Count ? storageItems[index] : new Item();
 			if (blockStorageItems.Contains(new ItemData(item))) {
 				context = 3;
@@ -532,11 +495,11 @@ namespace MagicStorage.GUI {
 			return item;
 		}
 
-		private static Item GetResult(int slot, ref int context) {
+		private Item GetResult(int slot, ref int context) {
 			return slot == 0 && result != null ? result : new Item();
 		}
 
-		private static void UpdateRecipeText() {
+		private void UpdateRecipeText() {
 			if (selectedRecipe == null) {
 				requiresObjText.SetText("");
 			}
@@ -588,51 +551,51 @@ namespace MagicStorage.GUI {
 			}
 		}
 
-		private static void UpdateScrollBar() {
+		private void UpdateScrollBar() {
 			if (slotFocus) {
-				scrollBarFocus = 0;
+				recipeScrollBarFocus = 0;
 				return;
 			}
-			Rectangle dim = scrollBar.GetClippingRectangle(Main.spriteBatch);
-			Vector2 boxPos = new Vector2(dim.X, dim.Y + dim.Height * (scrollBar.ViewPosition / scrollBarMaxViewSize));
+			Rectangle dim = recipeZoneScrollBar.GetClippingRectangle(Main.spriteBatch);
+			Vector2 boxPos = new Vector2(dim.X, dim.Y + dim.Height * (recipeZoneScrollBar.ViewPosition / recipeScrollBarMaxViewSize));
 			float boxWidth = 20f * Main.UIScale;
-			float boxHeight = dim.Height * (scrollBarViewSize / scrollBarMaxViewSize);
-			Rectangle dim2 = scrollBar2.GetClippingRectangle(Main.spriteBatch);
-			Vector2 box2Pos = new Vector2(dim2.X, dim2.Y + dim2.Height * (scrollBar2.ViewPosition / scrollBar2MaxViewSize));
-			float box2Height = dim2.Height * (scrollBar2ViewSize / scrollBar2MaxViewSize);
-			if (scrollBarFocus > 0) {
+			float boxHeight = dim.Height * (RECIPE_SCROLLBAR_VIEW_SIZE / recipeScrollBarMaxViewSize);
+			Rectangle dim2 = availableItemsScrollBar.GetClippingRectangle(Main.spriteBatch);
+			Vector2 box2Pos = new Vector2(dim2.X, dim2.Y + dim2.Height * (availableItemsScrollBar.ViewPosition / availableItemsScrollBarMaxViewSize));
+			float box2Height = dim2.Height * (AVAILABLE_ITEMS_SCROLLBAR_VIEW_SIZE / availableItemsScrollBarMaxViewSize);
+			if (recipeScrollBarFocus > 0) {
 				if (curMouse.LeftButton == ButtonState.Released) {
-					scrollBarFocus = 0;
+					recipeScrollBarFocus = 0;
 				}
 				else {
-					int difference = curMouse.Y - scrollBarFocusMouseStart;
-					if (scrollBarFocus == 1) {
-						scrollBar.ViewPosition = scrollBarFocusPositionStart + (float)difference / boxHeight;
+					int difference = curMouse.Y - recipeScrollBarFocusMouseStart;
+					if (recipeScrollBarFocus == 1) {
+						recipeZoneScrollBar.ViewPosition = recipeScrollBarFocusPositionStart + (float)difference / boxHeight;
 					}
-					else if (scrollBarFocus == 2) {
-						scrollBar2.ViewPosition = scrollBarFocusPositionStart + (float)difference / box2Height;
+					else if (recipeScrollBarFocus == 2) {
+						availableItemsScrollBar.ViewPosition = recipeScrollBarFocusPositionStart + (float)difference / box2Height;
 					}
 				}
 			}
 			else if (MouseClicked) {
 				if (curMouse.X > boxPos.X && curMouse.X < boxPos.X + boxWidth && curMouse.Y > boxPos.Y - 3f && curMouse.Y < boxPos.Y + boxHeight + 4f) {
-					scrollBarFocus = 1;
-					scrollBarFocusMouseStart = curMouse.Y;
-					scrollBarFocusPositionStart = scrollBar.ViewPosition;
+					recipeScrollBarFocus = 1;
+					recipeScrollBarFocusMouseStart = curMouse.Y;
+					recipeScrollBarFocusPositionStart = recipeZoneScrollBar.ViewPosition;
 				}
 				else if (curMouse.X > box2Pos.X && curMouse.X < box2Pos.X + boxWidth && curMouse.Y > box2Pos.Y - 3f && curMouse.Y < box2Pos.Y + box2Height + 4f) {
-					scrollBarFocus = 2;
-					scrollBarFocusMouseStart = curMouse.Y;
-					scrollBarFocusPositionStart = scrollBar2.ViewPosition;
+					recipeScrollBarFocus = 2;
+					recipeScrollBarFocusMouseStart = curMouse.Y;
+					recipeScrollBarFocusPositionStart = availableItemsScrollBar.ViewPosition;
 				}
 			}
-			if (scrollBarFocus == 0) {
+			if (recipeScrollBarFocus == 0) {
 				int difference = oldMouse.ScrollWheelValue / 250 - curMouse.ScrollWheelValue / 250;
-				scrollBar.ViewPosition += difference;
+				recipeZoneScrollBar.ViewPosition += difference;
 			}
 		}
 
-		private static void UpdateCraftButton() {
+		private void UpdateCraftButton() {
 			Rectangle dim = InterfaceHelper.GetFullRectangle(craftButton);
 			bool flag = false;
 			if (curMouse.X > dim.X && curMouse.X < dim.X + dim.Width && curMouse.Y > dim.Y && curMouse.Y < dim.Y + dim.Height) {
@@ -667,24 +630,24 @@ namespace MagicStorage.GUI {
 			}
 		}
 
-		private static TEStorageHeart GetHeart() {
+		private TEStorageHeart GetHeart() {
 			Player player = Main.player[Main.myPlayer];
 			StoragePlayer modPlayer = player.GetModPlayer<StoragePlayer>();
 			return modPlayer.GetStorageHeart();
 		}
 
-		private static TECraftingAccess GetCraftingEntity() {
+		private TECraftingAccess GetCraftingEntity() {
 			Player player = Main.player[Main.myPlayer];
 			StoragePlayer modPlayer = player.GetModPlayer<StoragePlayer>();
 			return modPlayer.GetCraftingAccess();
 		}
 
-		private static Item[] GetCraftingStations() {
+		private Item[] GetCraftingStations() {
 			TECraftingAccess ent = GetCraftingEntity();
 			return ent?.stations;
 		}
 
-		public static void RefreshItems() {
+		public void RefreshItems() {
 			items.Clear();
 			TEStorageHeart heart = GetHeart();
 			if (heart == null) {
@@ -751,7 +714,7 @@ namespace MagicStorage.GUI {
 			}
 		}
 
-		private static void RefreshRecipes() {
+		private void RefreshRecipes() {
 			evnt.Wait();
 			while (true) {
 				try {
@@ -800,7 +763,7 @@ namespace MagicStorage.GUI {
 			}
 		}
 
-		private static void AnalyzeIngredients() {
+		private void AnalyzeIngredients() {
 			Player player = Main.player[Main.myPlayer];
 			itemCounts.Clear();
 			if (adjTiles.Length != player.adjTile.Length) {
@@ -888,7 +851,7 @@ namespace MagicStorage.GUI {
 			adjTiles[MagicStorage.Instance.TileType(nameof(Components.CraftingAccess))] = true;
 		}
 
-		private static bool IsAvailable(Recipe recipe) {
+		private bool IsAvailable(Recipe recipe) {
 			foreach (int tile in recipe.requiredTile) {
 				if (tile == -1) {
 					break;
@@ -940,7 +903,7 @@ namespace MagicStorage.GUI {
 			return true;
 		}
 
-		private static bool PassesBlock(Recipe recipe) {
+		private bool PassesBlock(Recipe recipe) {
 			foreach (Item ingredient in recipe.requiredItem) {
 				if (ingredient.type == ItemID.None) {
 					break;
@@ -969,7 +932,7 @@ namespace MagicStorage.GUI {
 			return true;
 		}
 
-		private static void RefreshStorageItems() {
+		private void RefreshStorageItems() {
 			storageItems.Clear();
 			result = null;
 			if (selectedRecipe != null) {
@@ -994,11 +957,11 @@ namespace MagicStorage.GUI {
 			}
 		}
 
-		private static bool RecipeGroupMatch(Recipe recipe, int type1, int type2) {
+		private bool RecipeGroupMatch(Recipe recipe, int type1, int type2) {
 			return recipe.useWood(type1, type2) || recipe.useSand(type1, type2) || recipe.useIronBar(type1, type2) || recipe.useFragment(type1, type2) || recipe.AcceptedByItemGroups(type1, type2) || recipe.usePressurePlate(type1, type2);
 		}
 
-		private static void HoverStation(int slot, ref int hoverSlot) {
+		private void HoverStation(int slot, ref int hoverSlot) {
 			TECraftingAccess ent = GetCraftingEntity();
 			if (ent == null || slot >= ent.stations.Length) {
 				return;
@@ -1040,9 +1003,9 @@ namespace MagicStorage.GUI {
 			hoverSlot = slot;
 		}
 
-		private static void HoverRecipe(int slot, ref int hoverSlot) {
+		private void HoverRecipe(int slot, ref int hoverSlot) {
 			int visualSlot = slot;
-			slot += AVAILABLE_RECIPES_NUM_COLS * (int)Math.Round(scrollBar.ViewPosition);
+			slot += AVAILABLE_RECIPES_NUM_COLS * (int)Math.Round(recipeZoneScrollBar.ViewPosition);
 			if (slot < recipes.Count) {
 				if (MouseClicked) {
 					selectedRecipe = recipes[slot];
@@ -1053,13 +1016,13 @@ namespace MagicStorage.GUI {
 			}
 		}
 
-		private static void HoverItem(int slot, ref int hoverSlot) {
+		private void HoverItem(int slot, ref int hoverSlot) {
 			hoverSlot = slot;
 		}
 
-		private static void HoverStorage(int slot, ref int hoverSlot) {
+		private void HoverStorage(int slot, ref int hoverSlot) {
 			int visualSlot = slot;
-			slot += AVAILABLE_INGREDIENT_NUM_COLS * (int)Math.Round(scrollBar2.ViewPosition);
+			slot += AVAILABLE_INGREDIENT_NUM_COLS * (int)Math.Round(availableItemsScrollBar.ViewPosition);
 			if (slot < storageItems.Count) {
 				if (MouseClicked) {
 					ItemData data = new ItemData(storageItems[slot]);
@@ -1074,7 +1037,7 @@ namespace MagicStorage.GUI {
 			}
 		}
 
-		private static void HoverResult(int slot, ref int hoverSlot) {
+		private void HoverResult(int slot, ref int hoverSlot) {
 			if (slot != 0) {
 				return;
 			}
@@ -1116,7 +1079,7 @@ namespace MagicStorage.GUI {
 			}
 		}
 
-		private static void SlotFocusLogic() {
+		private void SlotFocusLogic() {
 			if (result == null || result.IsAir || (!Main.mouseItem.IsAir && (!ItemData.Matches(Main.mouseItem, result) || Main.mouseItem.stack >= Main.mouseItem.maxStack))) {
 				ResetSlotFocus();
 			}
@@ -1146,13 +1109,13 @@ namespace MagicStorage.GUI {
 			}
 		}
 
-		private static void ResetSlotFocus() {
+		private void ResetSlotFocus() {
 			slotFocus = false;
 			rightClickTimer = 0;
 			maxRightClickTimer = SMART_MAX_CLICK_TIMER;
 		}
 
-		private static Item DoWithdraw(int slot) {
+		private Item DoWithdraw(int slot) {
 			TECraftingAccess access = GetCraftingEntity();
 			if (Main.netMode == NetmodeID.SinglePlayer) {
 				Item result = access.TryWithdrawStation(slot);
@@ -1166,7 +1129,7 @@ namespace MagicStorage.GUI {
 			}
 		}
 
-		private static Item DoStationSwap(Item item, int slot) {
+		private Item DoStationSwap(Item item, int slot) {
 			TECraftingAccess access = GetCraftingEntity();
 			if (Main.netMode == NetmodeID.SinglePlayer) {
 				Item result = access.DoStationSwap(item, slot);
@@ -1180,7 +1143,7 @@ namespace MagicStorage.GUI {
 			}
 		}
 
-		private static void TryCraft() {
+		private void TryCraft() {
 			List<Item> availableItems = new List<Item>(storageItems.Where(item => !blockStorageItems.Contains(new ItemData(item))).Select(item => item.Clone()));
 			List<Item> toWithdraw = new List<Item>();
 			for (int k = 0; k < selectedRecipe.requiredItem.Length; k++) {
@@ -1237,7 +1200,7 @@ namespace MagicStorage.GUI {
 			}
 		}
 
-		internal static List<Item> DoCraft(TEStorageHeart heart, List<Item> toWithdraw, Item result) {
+		internal List<Item> DoCraft(TEStorageHeart heart, List<Item> toWithdraw, Item result) {
 			List<Item> items = new List<Item>();
 			foreach (Item tryWithdraw in toWithdraw) {
 				Item withdrawn = heart.TryWithdraw(tryWithdraw);
@@ -1263,13 +1226,13 @@ namespace MagicStorage.GUI {
 			return items;
 		}
 
-		private static bool TryDepositResult(Item item) {
+		private bool TryDepositResult(Item item) {
 			int oldStack = item.stack;
 			DoDepositResult(item);
 			return oldStack != item.stack;
 		}
 
-		private static void DoDepositResult(Item item) {
+		private void DoDepositResult(Item item) {
 			TEStorageHeart heart = GetHeart();
 			if (Main.netMode == NetmodeID.SinglePlayer) {
 				heart.DepositItem(item);
@@ -1280,7 +1243,7 @@ namespace MagicStorage.GUI {
 			}
 		}
 
-		private static Item DoWithdrawResult(Item item, bool toInventory = false) {
+		private Item DoWithdrawResult(Item item, bool toInventory = false) {
 			TEStorageHeart heart = GetHeart();
 			if (Main.netMode == NetmodeID.SinglePlayer) {
 				return heart.TryWithdraw(item);

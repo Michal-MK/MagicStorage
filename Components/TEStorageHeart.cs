@@ -15,7 +15,7 @@ namespace MagicStorage.Components {
 		private int compactStage = 0;
 
 		public override bool ValidTile(Tile tile) {
-			return tile.type == mod.TileType("StorageHeart") && tile.frameX == 0 && tile.frameY == 0;
+			return tile.type == mod.TileType(nameof(StorageHeart)) && tile.frameX == 0 && tile.frameY == 0;
 		}
 
 		public override TEStorageHeart GetHeart() {

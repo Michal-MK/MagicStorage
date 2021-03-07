@@ -6,11 +6,11 @@ using Terraria.ModLoader;
 namespace MagicStorage.Components {
 	public class RemoteAccess : StorageAccess {
 		public override ModTileEntity GetTileEntity() {
-			return mod.GetTileEntity("TERemoteAccess");
+			return mod.GetTileEntity(nameof(TERemoteAccess));
 		}
 
 		public override int ItemType(int frameX, int frameY) {
-			return mod.ItemType("RemoteAccess");
+			return mod.ItemType(nameof(RemoteAccess));
 		}
 
 		public override bool HasSmartInteract() {
@@ -25,7 +25,7 @@ namespace MagicStorage.Components {
 		public override bool NewRightClick(int i, int j) {
 			Player player = Main.player[Main.myPlayer];
 			Item item = player.inventory[player.selectedItem];
-			if (item.type == mod.ItemType("Locator") || item.type == mod.ItemType("LocatorDisk")) {
+			if (item.type == mod.ItemType(nameof(Locator)) || item.type == mod.ItemType(nameof(LocatorDisk))) {
 				if (Main.tile[i, j].frameX % 36 == 18) {
 					i--;
 				}
@@ -36,7 +36,7 @@ namespace MagicStorage.Components {
 				Locator locator = (Locator)item.modItem;
 				string message;
 				if (ent.TryLocate(locator.location, out message)) {
-					if (item.type == mod.ItemType("LocatorDisk")) {
+					if (item.type == mod.ItemType(nameof(LocatorDisk))) {
 						locator.location = new Point16(-1, -1);
 					}
 					else {

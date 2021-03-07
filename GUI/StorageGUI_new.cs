@@ -13,56 +13,56 @@ using Terraria.ID;
 using Terraria.DataStructures;
 
 namespace MagicStorage.GUI {
-	public static class StorageGUI {
+	public class StorageGUINew : GUIBase {
 		private const int NUM_COLS = 10;
 		public const float INV_SCALE = 0.85f;
 
-		public static MouseState curMouse;
-		public static MouseState oldMouse;
-
-		public static bool MouseClicked => curMouse.LeftButton == ButtonState.Pressed && oldMouse.LeftButton == ButtonState.Released;
-		public static bool OffseLeft { get; set; } = false;
+		public bool OffseLeft { get; set; } = false;
 
 
-		private static UIPanel storagePanel;
-		private static float panelTop;
-		private static float panelLeft;
-		private static float panelWidth;
-		private static float panelHeight;
+		private UIPanel storagePanel;
+		private float panelTop;
+		private float panelLeft;
+		private float panelWidth;
+		private float panelHeight;
 
-		private static UIElement upperTopBar;
-		internal static UISearchBar nameSearchBar;
-		private static UIButtonChoice sortButtons;
-		internal static UITextPanel<LocalizedText> depositButton;
+		private UIElement upperTopBar;
+		internal UISearchBar nameSearchBar;
+		private UIButtonChoice sortButtons;
+		internal UITextPanel<LocalizedText> depositButton;
 
-		private static UIElement lowerTopBar;
-		private static UIButtonChoice filterButtons;
-		internal static UISearchBar modSearchBar;
+		private UIElement lowerTopBar;
+		private UIButtonChoice filterButtons;
+		internal UISearchBar modSearchBar;
 
-		private static UISlotZone itemsZone = new UISlotZone(HoverItemSlot, GetItem, INV_SCALE);
-		private static int slotFocus = -1;
-		private static int rightClickTimer = 0;
+		private UISlotZone itemsZone;
+		private int slotFocus = -1;
+		private int rightClickTimer = 0;
 		private const int STRAT_MAX_RIGHTCLICK_TIMER_TICKS = 20;
-		private static int maxRightClickTimer = STRAT_MAX_RIGHTCLICK_TIMER_TICKS;
+		private int maxRightClickTimer = STRAT_MAX_RIGHTCLICK_TIMER_TICKS;
 
 		internal static UIScrollbar itemsScrollBar = new UIScrollbar();
-		private static bool scrollBarHasFocus = false;
-		private static int scrollBarFocusMouseStart;
-		private static float scrollBarFocusPositionStart;
+		private bool scrollBarHasFocus = false;
+		private int scrollBarFocusMouseStart;
+		private float scrollBarFocusPositionStart;
 		private const float SCROLLBAR_SIZE = 1f;
-		private static float scrollBarMaxViewSize = 2f;
+		private float scrollBarMaxViewSize = 2f;
 
-		private static List<Item> items = new List<Item>();
-		private static int numRows;
-		private static int displayRows;
+		private List<Item> items = new List<Item>();
+		private int numRows;
+		private int displayRows;
 
-		private static UIElement bottomBar = new UIElement();
-		private static UIText capacityText;
+		private UIElement bottomBar = new UIElement();
+		private UIText capacityText;
 
-		public static void Initialize() {
+		public StorageGUINew() {
+			itemsZone = new UISlotZone(HoverItemSlot, GetItem, INV_SCALE);
+		}
+
+		public void Initialize() {
 			InitLangStuff();
-			float itemSlotWidth = Main.inventoryBackTexture.Width;
-			float itemSlotHeight = Main.inventoryBackTexture.Height;
+			float itemSlotWidth = Main.inventoryBackTexture.Width * INV_SCALE;
+			float itemSlotHeight = Main.inventoryBackTexture.Height * INV_SCALE;
 			float smallSlotWidth = Main.inventoryBackTexture.Width * CraftingGUI.INGREDIENTS_SCALE;
 
 
@@ -159,7 +159,7 @@ namespace MagicStorage.GUI {
 			bottomBar.Append(capacityText);
 		}
 
-		private static void InitLangStuff() {
+		private void InitLangStuff() {
 			if (depositButton == null) {
 				depositButton = new UITextPanel<LocalizedText>(Locale.Get(Locale.C.DEPOSIT_ALL));
 			}
@@ -174,13 +174,13 @@ namespace MagicStorage.GUI {
 			}
 		}
 
-		internal static void Unload() {
+		internal void Unload() {
 			sortButtons = null;
 			filterButtons = null;
 			storagePanel = null;
 		}
 
-		private static void InitSortButtons() {
+		private void InitSortButtons() {
 			if (sortButtons == null) {
 				sortButtons = new UIButtonChoice(new Texture2D[]
 				{
@@ -199,7 +199,7 @@ namespace MagicStorage.GUI {
 			}
 		}
 
-		private static void InitFilterButtons() {
+		private void InitFilterButtons() {
 			if (filterButtons == null) {
 				filterButtons = new UIButtonChoice(new Texture2D[]
 				{
@@ -224,7 +224,7 @@ namespace MagicStorage.GUI {
 			}
 		}
 
-		public static void Update(GameTime gameTime) {
+		public void Update(GameTime gameTime) {
 			oldMouse = curMouse;
 			curMouse = Mouse.GetState();
 			if (Main.playerInventory) {
@@ -246,7 +246,7 @@ namespace MagicStorage.GUI {
 			}
 		}
 
-		public static void Draw(TEStorageHeart heart, bool offset = false) {
+		public void Draw(TEStorageHeart heart, bool offset = false) {
 			OffseLeft = offset;
 			Player player = Main.player[Main.myPlayer];
 			StoragePlayer modPlayer = player.GetModPlayer<StoragePlayer>();
@@ -262,7 +262,7 @@ namespace MagicStorage.GUI {
 			filterButtons.DrawText();
 		}
 
-		private static Item GetItem(int slot, ref int context) {
+		private Item GetItem(int slot, ref int context) {
 			int index = slot + NUM_COLS * (int)Math.Round(itemsScrollBar.ViewPosition);
 			Item item = index < items.Count ? items[index] : new Item();
 			if (!item.IsAir) {
@@ -271,7 +271,7 @@ namespace MagicStorage.GUI {
 			return item;
 		}
 
-		private static void UpdateScrollBar() {
+		private void UpdateScrollBar() {
 			if (slotFocus >= 0) {
 				scrollBarHasFocus = false;
 				return;
@@ -302,13 +302,13 @@ namespace MagicStorage.GUI {
 			}
 		}
 
-		private static TEStorageHeart GetHeart() {
+		private TEStorageHeart GetHeart() {
 			Player player = Main.player[Main.myPlayer];
 			StoragePlayer modPlayer = player.GetModPlayer<StoragePlayer>();
 			return modPlayer.GetStorageHeart();
 		}
 
-		public static void RefreshItems() {
+		public void RefreshItems() {
 			if (Main.player[Main.myPlayer].GetModPlayer<StoragePlayer>().tileType == typeof(CraftingAccess)) {
 				CraftingGUI.RefreshItems();
 			}
@@ -329,7 +329,7 @@ namespace MagicStorage.GUI {
 			items.AddRange(ItemSorter.SortAndFilter(heart.GetStoredItems(), sortMode, filterMode, modSearchBar.Text, nameSearchBar.Text));
 		}
 
-		private static void UpdateDepositButton() {
+		private void UpdateDepositButton() {
 			Rectangle dim = InterfaceHelper.GetFullRectangle(depositButton);
 			if (curMouse.X > dim.X && curMouse.X < dim.X + dim.Width && curMouse.Y > dim.Y && curMouse.Y < dim.Y + dim.Height) {
 				depositButton.BackgroundColor = new Color(73, 94, 171);
@@ -345,13 +345,13 @@ namespace MagicStorage.GUI {
 			}
 		}
 
-		private static void ResetSlotFocus() {
+		private void ResetSlotFocus() {
 			slotFocus = -1;
 			rightClickTimer = 0;
 			maxRightClickTimer = STRAT_MAX_RIGHTCLICK_TIMER_TICKS;
 		}
 
-		private static void HoverItemSlot(int slot, ref int hoverSlot) {
+		private void HoverItemSlot(int slot, ref int hoverSlot) {
 			Player player = Main.player[Main.myPlayer];
 			int visualSlot = slot;
 			slot += NUM_COLS * (int)Math.Round(itemsScrollBar.ViewPosition);
@@ -392,7 +392,7 @@ namespace MagicStorage.GUI {
 			}
 		}
 
-		private static void SlotFocusLogic() {
+		private void SlotFocusLogic() {
 			if (slotFocus >= items.Count || (!Main.mouseItem.IsAir && (!ItemData.Matches(Main.mouseItem, items[slotFocus]) || Main.mouseItem.stack >= Main.mouseItem.maxStack))) {
 				ResetSlotFocus();
 			}
@@ -421,13 +421,13 @@ namespace MagicStorage.GUI {
 			}
 		}
 
-		private static bool TryDeposit(Item item) {
+		private bool TryDeposit(Item item) {
 			int oldStack = item.stack;
 			DoDeposit(item);
 			return oldStack != item.stack;
 		}
 
-		private static void DoDeposit(Item item) {
+		private void DoDeposit(Item item) {
 			TEStorageHeart heart = GetHeart();
 			if (Main.netMode == NetmodeID.SinglePlayer) {
 				heart.DepositItem(item);
@@ -438,7 +438,7 @@ namespace MagicStorage.GUI {
 			}
 		}
 
-		private static bool TryDepositAll() {
+		private bool TryDepositAll() {
 			Player player = Main.player[Main.myPlayer];
 			TEStorageHeart heart = GetHeart();
 			bool changed = false;
@@ -469,7 +469,7 @@ namespace MagicStorage.GUI {
 			return changed;
 		}
 
-		private static Item DoWithdraw(Item item, bool toInventory = false) {
+		private Item DoWithdraw(Item item, bool toInventory = false) {
 			TEStorageHeart heart = GetHeart();
 			if (Main.netMode == NetmodeID.SinglePlayer) {
 				return heart.TryWithdraw(item);

@@ -15,7 +15,7 @@ namespace MagicStorage {
 		//TODO this hack
 		private static List<UISearchBar> searchBars = new List<UISearchBar>();
 
-		private readonly LocalizedText hintText = Language.GetText("Mods.MagicStorage.Search");
+		private readonly LocalizedText hintText = Locale.Get(Locale.C.SEARCH);
 
 		private string text = "";
 		public string Text => text;

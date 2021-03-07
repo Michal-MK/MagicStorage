@@ -64,11 +64,11 @@ namespace MagicStorage {
 		public void CloseStorage() {
 			storageAccess = new Point16(-1, -1);
 			Main.blockInput = false;
-			if (StorageGUI.searchBar != null) {
-				StorageGUI.searchBar.Reset();
+			if (StorageGUI.nameSearchBar != null) {
+				StorageGUI.nameSearchBar.Reset();
 			}
-			if (StorageGUI.searchBar2 != null) {
-				StorageGUI.searchBar2.Reset();
+			if (StorageGUI.modSearchBar != null) {
+				StorageGUI.modSearchBar.Reset();
 			}
 			if (CraftingGUI.itemNameSearch != null) {
 				CraftingGUI.itemNameSearch.Reset();

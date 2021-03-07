@@ -5,6 +5,7 @@ using Terraria.DataStructures;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 using Terraria.ID;
+using MagicStorage.Items;
 
 namespace MagicStorage.Components {
 	public class StorageUnit : StorageComponent {
@@ -15,7 +16,7 @@ namespace MagicStorage.Components {
 		}
 
 		public override ModTileEntity GetTileEntity() {
-			return mod.GetTileEntity("TEStorageUnit");
+			return mod.GetTileEntity(nameof(TEStorageUnit));
 		}
 
 		public override void MouseOver(int i, int j) {
@@ -27,31 +28,31 @@ namespace MagicStorage.Components {
 			int type;
 			switch (style) {
 				case 1:
-					type = mod.ItemType("StorageUnitDemonite");
+					type = mod.ItemType(nameof(StorageUnitDemonite));
 					break;
 				case 2:
-					type = mod.ItemType("StorageUnitCrimtane");
+					type = mod.ItemType(nameof(StorageUnitCrimtane));
 					break;
 				case 3:
-					type = mod.ItemType("StorageUnitHellstone");
+					type = mod.ItemType(nameof(StorageUnitHellstone));
 					break;
 				case 4:
-					type = mod.ItemType("StorageUnitHallowed");
+					type = mod.ItemType(nameof(StorageUnitHallowed));
 					break;
 				case 5:
-					type = mod.ItemType("StorageUnitBlueChlorophyte");
+					type = mod.ItemType(nameof(StorageUnitBlueChlorophyte));
 					break;
 				case 6:
-					type = mod.ItemType("StorageUnitLuminite");
+					type = mod.ItemType(nameof(StorageUnitLuminite));
 					break;
 				case 7:
-					type = mod.ItemType("StorageUnitTerra");
+					type = mod.ItemType(nameof(StorageUnitTerra));
 					break;
 				case 8:
-					type = mod.ItemType("StorageUnitTiny");
+					type = mod.ItemType(nameof(StorageUnitTiny));
 					break;
 				default:
-					type = mod.ItemType("StorageUnit");
+					type = mod.ItemType(nameof(StorageUnit));
 					break;
 			}
 			return type;
@@ -79,9 +80,9 @@ namespace MagicStorage.Components {
 			}
 			TEStorageUnit storageUnit = (TEStorageUnit)TileEntity.ByPosition[new Point16(i, j)];
 			Main.player[Main.myPlayer].tileInteractionHappened = true;
-			string activeString = storageUnit.Inactive ? "Inactive" : "Active";
-			string fullnessString = storageUnit.NumItems + " / " + storageUnit.Capacity + " Items";
-			Main.NewText(activeString + ", " + fullnessString);
+			string activeString = storageUnit.Inactive ? Locale.GetStr(Locale.C.INACTIVE) : Locale.GetStr(Locale.C.ACTIVE);
+			string fullnessString = $"{storageUnit.NumItems} / {storageUnit.Capacity} {Locale.GetStr(Locale.C.ITEMS)}";
+			Main.NewText($"{activeString}, {fullnessString}");
 			return base.NewRightClick(i, j);
 		}
 
@@ -90,31 +91,31 @@ namespace MagicStorage.Components {
 			Item item = player.inventory[player.selectedItem];
 			int style = Main.tile[i, j].frameY / 36;
 			bool success = false;
-			if (style == 0 && item.type == mod.ItemType("UpgradeDemonite")) {
+			if (style == 0 && item.type == mod.ItemType(nameof(UpgradeDemonite))) {
 				SetStyle(i, j, 1);
 				success = true;
 			}
-			else if (style == 0 && item.type == mod.ItemType("UpgradeCrimtane")) {
+			else if (style == 0 && item.type == mod.ItemType(nameof(UpgradeCrimtane))) {
 				SetStyle(i, j, 2);
 				success = true;
 			}
-			else if ((style == 1 || style == 2) && item.type == mod.ItemType("UpgradeHellstone")) {
+			else if ((style == 1 || style == 2) && item.type == mod.ItemType(nameof(UpgradeHellstone))) {
 				SetStyle(i, j, 3);
 				success = true;
 			}
-			else if (style == 3 && item.type == mod.ItemType("UpgradeHallowed")) {
+			else if (style == 3 && item.type == mod.ItemType(nameof(UpgradeHallowed))) {
 				SetStyle(i, j, 4);
 				success = true;
 			}
-			else if (style == 4 && item.type == mod.ItemType("UpgradeBlueChlorophyte")) {
+			else if (style == 4 && item.type == mod.ItemType(nameof(UpgradeBlueChlorophyte))) {
 				SetStyle(i, j, 5);
 				success = true;
 			}
-			else if (style == 5 && item.type == mod.ItemType("UpgradeLuminite")) {
+			else if (style == 5 && item.type == mod.ItemType(nameof(UpgradeLuminite))) {
 				SetStyle(i, j, 6);
 				success = true;
 			}
-			else if (style == 6 && item.type == mod.ItemType("UpgradeTerra")) {
+			else if (style == 6 && item.type == mod.ItemType(nameof(UpgradeTerra))) {
 				SetStyle(i, j, 7);
 				success = true;
 			}

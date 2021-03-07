@@ -72,7 +72,7 @@ namespace MagicStorage.Components {
 
 		public static IEnumerable<Point16> AdjacentComponents(Point16 point) {
 			List<Point16> points = new List<Point16>();
-			bool isConnector = Main.tile[point.X, point.Y].type == MagicStorage.Instance.TileType("StorageConnector");
+			bool isConnector = Main.tile[point.X, point.Y].type == MagicStorage.Instance.TileType(nameof(StorageConnector));
 			foreach (Point16 add in (isConnector ? checkNeighbors1x1 : checkNeighbors)) {
 				int checkX = point.X + add.X;
 				int checkY = point.Y + add.Y;
@@ -92,7 +92,7 @@ namespace MagicStorage.Components {
 						points.Add(check);
 					}
 				}
-				else if (tile.type == MagicStorage.Instance.TileType("StorageConnector")) {
+				else if (tile.type == MagicStorage.Instance.TileType(nameof(StorageConnector))) {
 					Point16 check = new Point16(checkX, checkY);
 					if (!points.Contains(check)) {
 						points.Add(check);

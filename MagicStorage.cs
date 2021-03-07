@@ -223,6 +223,48 @@ namespace MagicStorage {
 			text.AddTranslation(GameCulture.Spanish, "Mostrar todas las recetas");
 			text.AddTranslation(GameCulture.Chinese, "显示全部配方");
 			AddTranslation(text);
+
+			text = CreateTranslation("Items");
+			text.SetDefault("Items");
+			text.AddTranslation(GameCulture.French, "Articles");
+			text.AddTranslation(GameCulture.Spanish, "Artículos");
+			text.AddTranslation(GameCulture.Chinese, "项目");
+			AddTranslation(text);
+
+			text = CreateTranslation("Loading");
+			text.SetDefault("Loading");
+			text.AddTranslation(GameCulture.French, "Chargement");
+			text.AddTranslation(GameCulture.Spanish, "Cargando");
+			text.AddTranslation(GameCulture.Chinese, "载入中");
+			AddTranslation(text);
+
+			text = CreateTranslation("NotConnectedToSH");
+			text.SetDefault("This access point is not connected to a Storage Heart!");
+			text.AddTranslation(GameCulture.French, "Ce point d'accès n'est pas connecté à un Storage Heart!");
+			text.AddTranslation(GameCulture.Spanish, "¡Este punto de acceso no está conectado a un Storage Heart!");
+			text.AddTranslation(GameCulture.Chinese, "该访问点未连接到Storage Heart！");
+			AddTranslation(text);
+
+			text = CreateTranslation("LocatorSavedSuccess");
+			text.SetDefault("Locator configuration saved successfully!");
+			text.AddTranslation(GameCulture.French, "La configuration du localisateur a été enregistrée avec succès!");
+			text.AddTranslation(GameCulture.Spanish, "¡La configuración del localizador se guardó correctamente!");
+			text.AddTranslation(GameCulture.Chinese, "定位器配置成功保存！");
+			AddTranslation(text);
+
+			text = CreateTranslation("Active");
+			text.SetDefault("Active");
+			text.AddTranslation(GameCulture.French, "Actif");
+			text.AddTranslation(GameCulture.Spanish, "Activo");
+			text.AddTranslation(GameCulture.Chinese, "积极的");
+			AddTranslation(text);
+
+			text = CreateTranslation("Inactive");
+			text.SetDefault("Inactive");
+			text.AddTranslation(GameCulture.French, "Inactif");
+			text.AddTranslation(GameCulture.Spanish, "Inactivo");
+			text.AddTranslation(GameCulture.Chinese, "不活跃");
+			AddTranslation(text);
 		}
 
 		public override void AddRecipeGroups() {

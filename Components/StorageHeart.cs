@@ -36,7 +36,7 @@ namespace MagicStorage.Components {
 				if (player.selectedItem == 58) {
 					Main.mouseItem = item.Clone();
 				}
-				Main.NewText("Locator successfully set to: X=" + i + ", Y=" + j);
+				Main.NewText(Locale.Get(Locale.C.LOCATOR_SUCCESS));
 				return true;
 			}
 			else {

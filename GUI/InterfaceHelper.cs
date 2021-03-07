@@ -13,20 +13,18 @@ namespace MagicStorage {
 	public static class InterfaceHelper {
 		private static FieldInfo _itemIconCacheTimeInfo;
 
+
 		public static void Initialize() {
 			_itemIconCacheTimeInfo = typeof(Main).GetField("_itemIconCacheTime", BindingFlags.NonPublic | BindingFlags.Static);
 		}
 
 		public static void ModifyInterfaceLayers(List<GameInterfaceLayer> layers) {
-			for (int k = 0; k < layers.Count; k++) {
-				if (layers[k].Name == "Vanilla: Inventory") {
-					layers.Insert(k + 1, new LegacyGameInterfaceLayer("MagicStorage: StorageAccess", DrawStorageGUI, InterfaceScaleType.UI));
-					k++;
-				}
-			}
+			int mouseItemIndex = layers.FindIndex(layer => layer.Name == "Vanilla: Inventory");
+			layers.Insert(mouseItemIndex, new LegacyGameInterfaceLayer("MagicStorage: StorageAccess", DrawStorageGUI, InterfaceScaleType.UI));
 		}
 
 		public static bool DrawStorageGUI() {
+			Main.inventoryScale = 0.85f;
 			Player player = Main.player[Main.myPlayer];
 			StoragePlayer modPlayer = player.GetModPlayer<StoragePlayer>();
 			(Point16 storageAccess, Type _) = modPlayer.ViewingStorage();
@@ -43,6 +41,7 @@ namespace MagicStorage {
 			if (heart == null) {
 				return true;
 			}
+
 			if (modTile is CraftingStorageAccess) {
 				CraftingGUI.Draw(heart);
 				StorageGUI.Draw(heart, true);
@@ -53,6 +52,7 @@ namespace MagicStorage {
 			else {
 				StorageGUI.Draw(heart);
 			}
+			Main.instance.MouseText($"[{Main.mouseX},{Main.mouseY}]");
 			return true;
 		}
 

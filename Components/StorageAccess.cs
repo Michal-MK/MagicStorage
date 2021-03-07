@@ -46,7 +46,7 @@ namespace MagicStorage.Components {
 			}
 			Player player = Main.player[Main.myPlayer];
 			if (GetHeart(i, j) == null) {
-				Main.NewText("This access is not connected to a Storage Heart!");
+				Main.NewText(Locale.GetStr(Locale.C.NOT_CONNECTED));
 				return true;
 			}
 			StoragePlayer modPlayer = player.GetModPlayer<StoragePlayer>();

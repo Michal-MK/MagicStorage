@@ -8,7 +8,7 @@ namespace MagicStorage.Components {
 		private Point16 locator = new Point16(-1, -1);
 
 		public override bool ValidTile(Tile tile) {
-			return tile.type == mod.TileType("RemoteAccess") && tile.frameX == 0 && tile.frameY == 0;
+			return tile.type == mod.TileType(nameof(RemoteAccess)) && tile.frameX == 0 && tile.frameY == 0;
 		}
 
 		public override TEStorageHeart GetHeart() {
