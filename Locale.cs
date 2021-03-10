@@ -28,7 +28,7 @@ namespace MagicStorage {
 			public const string SORT_DEF = BASE + "SortDefault";
 			public const string SORT_ID = BASE + "SortID";
 			public const string SORT_NAME = BASE + "SortName";
-			public const string SORT_STACK = BASE + "SoSortStackrtName";
+			public const string SORT_STACK = BASE + "SortStack";
 
 			public const string RECIPE_AVAIL = BASE + "RecipeAvailable";
 			public const string RECIPE_ALL = BASE + "RecipeAll";

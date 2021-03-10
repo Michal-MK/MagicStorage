@@ -46,16 +46,16 @@ namespace MagicStorage.Components {
 			}
 		}
 
-		private static IEnumerable<Point16> checkNeighbors = new Point16[]
+		private static IEnumerable<Point16> checkNeighbors2x2 = new Point16[]
 		{
 			new Point16(-1, 0),
+			new Point16(-1, 1),
 			new Point16(0, -1),
 			new Point16(1, -1),
 			new Point16(2, 0),
 			new Point16(2, 1),
 			new Point16(1, 2),
-			new Point16(0, 2),
-			new Point16(-1, 1)
+			new Point16(0, 2)
 		};
 
 		private static IEnumerable<Point16> checkNeighbors1x1 = new Point16[]
@@ -66,6 +66,28 @@ namespace MagicStorage.Components {
 			new Point16(0, 1)
 		};
 
+		private static IEnumerable<Point16> checkNeighbors2x1 = new Point16[]
+		{
+			new Point16(-1, 0),
+			new Point16(0, -1),
+			new Point16(0, 1),
+			new Point16(1, -1),
+			new Point16(1, 1),
+			new Point16(2, 0),
+		};
+
+		private static IEnumerable<Point16> checkNeighbors3x1 = new Point16[]
+		{
+			new Point16(-1, 0),
+			new Point16(0, -1),
+			new Point16(0, 1),
+			new Point16(1, -1),
+			new Point16(1, 1),
+			new Point16(2, -1),
+			new Point16(2, 1),
+			new Point16(3, 0),
+		};
+
 		public IEnumerable<Point16> AdjacentComponents() {
 			return AdjacentComponents(Position);
 		}
@@ -73,7 +95,10 @@ namespace MagicStorage.Components {
 		public static IEnumerable<Point16> AdjacentComponents(Point16 point) {
 			List<Point16> points = new List<Point16>();
 			bool isConnector = Main.tile[point.X, point.Y].type == MagicStorage.Instance.TileType(nameof(StorageConnector));
-			foreach (Point16 add in (isConnector ? checkNeighbors1x1 : checkNeighbors)) {
+			bool isLargeSocket = Main.tile[point.X, point.Y].type == MagicStorage.Instance.TileType(nameof(CraftingTileSocketLarge));
+			bool isSocket = Main.tile[point.X, point.Y].type == MagicStorage.Instance.TileType(nameof(CraftingTileSocket));
+
+			foreach (Point16 add in (isConnector ? checkNeighbors1x1 : isLargeSocket ? checkNeighbors3x1 : isSocket ? checkNeighbors2x1 : checkNeighbors2x2)) {
 				int checkX = point.X + add.X;
 				int checkY = point.Y + add.Y;
 				Tile tile = Main.tile[checkX, checkY];
@@ -81,6 +106,9 @@ namespace MagicStorage.Components {
 					continue;
 				}
 				if (TileLoader.GetTile(tile.type) is StorageComponent) {
+					if (tile.frameX == 36) {
+						checkX -= 2;
+					}
 					if (tile.frameX % 36 == 18) {
 						checkX--;
 					}

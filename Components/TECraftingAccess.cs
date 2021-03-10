@@ -9,7 +9,7 @@ namespace MagicStorage.Components {
 		public Item[] stations = new Item[10];
 
 		public TECraftingAccess() {
-			for (int k = 0; k < 10; k++) {
+			for (int k = 0; k < stations.Length; k++) {
 				stations[k] = new Item();
 			}
 		}

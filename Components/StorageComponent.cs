@@ -11,6 +11,7 @@ namespace MagicStorage.Components {
 
 		public StorageComponent() {
 			tileTexture = "MagicStorage/Textures/Tiles/" + GetType().Name;
+
 		}
 
 		public static Point16 killTile = new Point16(-1, -1);
@@ -69,11 +70,6 @@ namespace MagicStorage.Components {
 
 		public virtual int ItemType(int frameX, int frameY) {
 			return mod.ItemType(nameof(StorageComponent));
-		}
-
-		public static bool IsStorageComponent(Point16 point) {
-			Tile tile = Main.tile[point.X, point.Y];
-			return tile.active() && TileLoader.GetTile(tile.type) is StorageComponent;
 		}
 
 		public int CanPlace(int i, int j, int type, int style, int direction) {

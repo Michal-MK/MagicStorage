@@ -26,7 +26,8 @@ namespace MagicStorage {
 				ReceiveOperationResult(reader);
 			}
 			else if (type == MessageType.RefreshNetworkItems) {
-				StorageGUI.RefreshItems();
+				MagicStorage.Instance.guiM?.StorageGUI.RefreshItems();
+				//StorageGUI.RefreshItems();
 			}
 			else if (type == MessageType.ClientSendTEUpdate) {
 				ReceiveClientSendTEUpdate(reader, sender);
@@ -412,7 +413,8 @@ namespace MagicStorage {
 				toWithdraw.Add(ItemIO.Receive(reader, true));
 			}
 			Item result = ItemIO.Receive(reader, true);
-			List<Item> items = CraftingGUI.DoCraft(heart, toWithdraw, result);
+			//List<Item> items = CraftingGUI.DoCraft(heart, toWithdraw, result);
+			List<Item> items = MagicStorage.Instance.guiM.CraftingGUI.DoCraft(heart, toWithdraw, result);
 			if (items.Count > 0) {
 				ModPacket packet = MagicStorage.Instance.GetPacket();
 				packet.Write((byte)MessageType.CraftResult);

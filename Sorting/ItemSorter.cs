@@ -111,7 +111,10 @@ namespace MagicStorage.Sorting {
 			BTree<Recipe> sortedTree = new BTree<Recipe>(func);
 			foreach (Recipe recipe in filteredRecipes) {
 				sortedTree.Insert(recipe);
-				if (CraftingGUI.threadNeedsRestart) {
+				//if (CraftingGUI.threadNeedsRestart) {
+				//	return new List<Recipe>();
+				//}	
+				if (MagicStorage.Instance.guiM.CraftingGUI.threadNeedsRestart) {
 					return new List<Recipe>();
 				}
 			}

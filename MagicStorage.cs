@@ -9,6 +9,7 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.UI;
 using System.Linq;
+using MagicStorage.Components;
 
 namespace MagicStorage {
 	public class MagicStorage : Mod {
@@ -17,6 +18,7 @@ namespace MagicStorage {
 		public static Mod legendMod;
 
 		public static readonly Version requiredVersion = new Version(0, 11);
+
 
 		public override void Load() {
 			if (ModLoader.version < requiredVersion) {
@@ -27,14 +29,29 @@ namespace MagicStorage {
 			legendMod = ModLoader.GetMod("LegendOfTerraria3");
 			bluemagicMod = ModLoader.GetMod("Bluemagic");
 			AddTranslations();
+			guiM = new GUIManager();
+		}
+
+		public static Dictionary<int, int> tilesToItems = new Dictionary<int, int>();
+
+		public override void PostSetupContent() {
+			for (int i = 0; i < ItemLoader.ItemCount; i++) {
+				Item item = new Item();
+				item.SetDefaults(i);
+				if (!tilesToItems.ContainsKey(item.createTile)) {
+					tilesToItems.Add(item.createTile, item.type);
+				}
+			}
+			StorageConnector.SetupConnectors();
 		}
 
 		public override void Unload() {
 			Instance = null;
 			bluemagicMod = null;
 			legendMod = null;
-			StorageGUI.Unload();
-			CraftingGUI.Unload();
+			tilesToItems.Clear();
+			//StorageGUI.Unload();
+			//CraftingGUI.Unload();
 		}
 
 		private void AddTranslations() {
@@ -308,20 +325,25 @@ namespace MagicStorage {
 			string Any(int itemID) => $"{Language.GetText(Constants.ANY).Value} {Lang.GetItemNameValue(itemID)}";
 		}
 
+		public GUIManager guiM;
+
 		public override void HandlePacket(BinaryReader reader, int whoAmI) {
 			NetHelper.HandlePacket(reader, whoAmI);
 		}
 
 		public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers) {
-			InterfaceHelper.ModifyInterfaceLayers(layers);
+			//InterfaceHelper.ModifyInterfaceLayers(layers);
+			guiM.UILayersHook(layers);
 		}
 
 		public override void PostUpdateInput() {
 			if (!Main.instance.IsActive) {
 				return;
 			}
-			StorageGUI.Update(null);
-			CraftingGUI.Update(null);
+
+			guiM?.Update(null);
+			//StorageGUI.Update(null);
+			//CraftingGUI.Update(null);
 		}
 	}
 }

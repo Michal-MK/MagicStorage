@@ -6,6 +6,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader.IO;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace MagicStorage.Components {
 	public class TEStorageHeart : TEStorageCenter {
@@ -23,10 +24,44 @@ namespace MagicStorage.Components {
 		}
 
 		public IEnumerable<TEAbstractStorageUnit> GetStorageUnits() {
-			return storageUnits.Concat(remoteAccesses.Where(remoteAccess => TileEntity.ByPosition.ContainsKey(remoteAccess) && TileEntity.ByPosition[remoteAccess] is TERemoteAccess)
+			return storageUnits.
+				Concat(remoteAccesses
+				.Where(remoteAccess => TileEntity.ByPosition.ContainsKey(remoteAccess) && TileEntity.ByPosition[remoteAccess] is TERemoteAccess)
 				.SelectMany(remoteAccess => ((TERemoteAccess)TileEntity.ByPosition[remoteAccess]).storageUnits))
 				.Where(storageUnit => TileEntity.ByPosition.ContainsKey(storageUnit) && TileEntity.ByPosition[storageUnit] is TEAbstractStorageUnit)
 				.Select(storageUnit => (TEAbstractStorageUnit)TileEntity.ByPosition[storageUnit]);
+		}
+
+		public IEnumerable<CraftingTileSocket> GetCraftingSockets() {
+			List<CraftingTileSocket> sockets = new List<CraftingTileSocket>();
+			HashSet<Point16> explored = new HashSet<Point16>();
+			explored.Add(Position);
+			Queue<Point16> toExplore = new Queue<Point16>();
+			foreach (Point16 point in AdjacentComponents(Position)) {
+				if (!explored.Contains(point)) {
+					toExplore.Enqueue(point);
+				}
+			}
+			while (toExplore.Count != 0) {
+				Point16 explore = toExplore.Dequeue();
+				if (!explored.Contains(explore) && explore != StorageComponent.killTile) {
+					explored.Add(explore);
+					if (Main.tile[explore.X, explore.Y].type == ModContent.GetInstance<CraftingTileSocket>().Type ||
+						Main.tile[explore.X, explore.Y].type == ModContent.GetInstance<CraftingTileSocketLarge>().Type) {
+						CraftingTileSocket cts = new CraftingTileSocket(explore);
+						if (cts.GetItemTypeFromTileAbove() != -1) {
+							sockets.Add(cts);
+						}
+					}
+					foreach (Point16 point in AdjacentComponents(explore)) {
+						if (!explored.Contains(point)) {
+							toExplore.Enqueue(point);
+						}
+					}
+				}
+
+			}
+			return sockets;
 		}
 
 		public IEnumerable<Item> GetStoredItems() {

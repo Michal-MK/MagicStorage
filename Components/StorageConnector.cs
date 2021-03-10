@@ -5,12 +5,26 @@ using Terraria.DataStructures;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 using Terraria.ID;
+using System.Reflection;
+using System.Linq;
+using System;
 
 namespace MagicStorage.Components {
 	public class StorageConnector : ModTile {
 
+		private static HashSet<ushort> tilesToConnect = new HashSet<ushort>();
+
 		public StorageConnector() {
 			tileTexture = "MagicStorage/Textures/Tiles/" + GetType().Name;
+		}
+
+		public static void SetupConnectors() {
+			for (ushort i = 0; i < TileLoader.TileCount; i++) {
+				ModTile mt = TileLoader.GetTile(i);
+				if (mt is StorageComponent || mt is StorageConnector) {
+					tilesToConnect.Add(i);
+				}
+			}
 		}
 
 
@@ -83,16 +97,16 @@ namespace MagicStorage.Components {
 		public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak) {
 			int frameX = 0;
 			int frameY = 0;
-			if (WorldGen.InWorld(i - 1, j) && Main.tile[i - 1, j].active() && Main.tile[i - 1, j].type == Type) {
+			if (WorldGen.InWorld(i - 1, j) && Main.tile[i - 1, j].active() && tilesToConnect.Contains(Main.tile[i - 1, j].type)) {
 				frameX += 18;
 			}
-			if (WorldGen.InWorld(i + 1, j) && Main.tile[i + 1, j].active() && Main.tile[i + 1, j].type == Type) {
+			if (WorldGen.InWorld(i + 1, j) && Main.tile[i + 1, j].active() && tilesToConnect.Contains(Main.tile[i + 1, j].type)) {
 				frameX += 36;
 			}
-			if (WorldGen.InWorld(i, j - 1) && Main.tile[i, j - 1].active() && Main.tile[i, j - 1].type == Type) {
+			if (WorldGen.InWorld(i, j - 1) && Main.tile[i, j - 1].active() && tilesToConnect.Contains(Main.tile[i, j - 1].type)) {
 				frameY += 18;
 			}
-			if (WorldGen.InWorld(i, j + 1) && Main.tile[i, j + 1].active() && Main.tile[i, j + 1].type == Type) {
+			if (WorldGen.InWorld(i, j + 1) && Main.tile[i, j + 1].active() && tilesToConnect.Contains(Main.tile[i, j + 1].type)) {
 				frameY += 36;
 			}
 			Main.tile[i, j].frameX = (short)frameX;

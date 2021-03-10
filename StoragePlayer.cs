@@ -20,6 +20,7 @@ namespace MagicStorage {
 			}
 		}
 
+
 		public override void ResetEffects() {
 			if (player.whoAmI != Main.myPlayer) {
 				return;
@@ -49,32 +50,66 @@ namespace MagicStorage {
 			}
 		}
 
+		//public void OpenStorage(Point16 point, Type tile, bool remote = false) {
+		//	storageAccess = point;
+		//	remoteAccess = remote;
+		//	tileType = tile;
+		//	if (tileType == typeof(StorageAccess) || tileType == typeof(StorageHeart)) {
+		//		StorageGUI.RefreshItems();
+		//	}
+		//	if (tileType == typeof(CraftingAccess) || tileType == typeof(CraftingStorageAccess)) {
+		//		CraftingGUI.RefreshItems();
+		//	}
+		//}	
+
 		public void OpenStorage(Point16 point, Type tile, bool remote = false) {
 			storageAccess = point;
 			remoteAccess = remote;
 			tileType = tile;
 			if (tileType == typeof(StorageAccess) || tileType == typeof(StorageHeart)) {
-				StorageGUI.RefreshItems();
+				MagicStorage.Instance.guiM.StorageGUI.Active = true;
+				MagicStorage.Instance.guiM.StorageGUI.RefreshItems();
 			}
 			if (tileType == typeof(CraftingAccess) || tileType == typeof(CraftingStorageAccess)) {
-				CraftingGUI.RefreshItems();
+				MagicStorage.Instance.guiM.CraftingGUI.Active = true;
+				MagicStorage.Instance.guiM.CraftingGUI.RefreshItems();
 			}
 		}
 
 		public void CloseStorage() {
 			storageAccess = new Point16(-1, -1);
 			Main.blockInput = false;
-			if (StorageGUI.nameSearchBar != null) {
-				StorageGUI.nameSearchBar.Reset();
+			//if (StorageGUI.nameSearchBar != null || MagicStorage.Instance.guiM.StorageGUI.Active) {
+			//	StorageGUI.nameSearchBar.Reset();
+			//	MagicStorage.Instance.guiM?.StorageGUI.nameSearchBar.Reset();
+			//}
+			//if (StorageGUI.modSearchBar != null || MagicStorage.Instance.guiM.StorageGUI.Active) {
+			//	StorageGUI.modSearchBar.Reset();
+			//	MagicStorage.Instance.guiM.StorageGUI.modSearchBar.Reset();
+
+			//}
+			//if (CraftingGUI.itemNameSearch != null || MagicStorage.Instance.guiM.CraftingGUI.Active) {
+			//	CraftingGUI.itemNameSearch.Reset();
+			//	MagicStorage.Instance.guiM.CraftingGUI.nameSearchBar.Reset();
+
+			//}
+			//if (CraftingGUI.modNameSearch != null || MagicStorage.Instance.guiM.CraftingGUI.Active) {
+			//	CraftingGUI.modNameSearch.Reset();
+			//	MagicStorage.Instance.guiM.CraftingGUI.modSearchBar.Reset();
+			//}
+			
+			if ( MagicStorage.Instance.guiM.StorageGUI.Active) {
+				MagicStorage.Instance.guiM?.StorageGUI.nameSearchBar.Reset();
 			}
-			if (StorageGUI.modSearchBar != null) {
-				StorageGUI.modSearchBar.Reset();
+			if (MagicStorage.Instance.guiM.StorageGUI.Active) {
+				MagicStorage.Instance.guiM.StorageGUI.modSearchBar.Reset();
 			}
-			if (CraftingGUI.itemNameSearch != null) {
-				CraftingGUI.itemNameSearch.Reset();
+			if (MagicStorage.Instance.guiM.CraftingGUI.Active) {
+				MagicStorage.Instance.guiM.CraftingGUI.nameSearchBar.Reset();
+
 			}
-			if (CraftingGUI.modNameSearch != null) {
-				CraftingGUI.modNameSearch.Reset();
+			if (MagicStorage.Instance.guiM.CraftingGUI.Active) {
+				MagicStorage.Instance.guiM.CraftingGUI.modSearchBar.Reset();
 			}
 		}
 
@@ -138,7 +173,8 @@ namespace MagicStorage {
 			}
 			if (item.type != oldType || item.stack != oldStack) {
 				Main.PlaySound(SoundID.Grab, -1, -1, 1, 1f, 0f);
-				StorageGUI.RefreshItems();
+				//StorageGUI.RefreshItems();
+				MagicStorage.Instance.guiM?.StorageGUI.RefreshItems();
 			}
 			return true;
 		}

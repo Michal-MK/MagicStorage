@@ -11,11 +11,12 @@ using Terraria.Localization;
 using Terraria.UI;
 using Terraria.ID;
 using Terraria.DataStructures;
+using Terraria.GameInput;
 
 namespace MagicStorage.GUI {
 	public class StorageGUINew : GUIBase {
 		private const int NUM_COLS = 10;
-		public const float INV_SCALE = 0.85f;
+		private const float INV_SCALE = 1f;
 
 		public bool OffseLeft { get; set; } = false;
 
@@ -56,32 +57,26 @@ namespace MagicStorage.GUI {
 		private UIText capacityText;
 
 		public StorageGUINew() {
-			itemsZone = new UISlotZone(HoverItemSlot, GetItem, INV_SCALE);
+			itemsZone = new UISlotZone(this, HoverItemSlot, GetItem, INV_SCALE);
+			itemsZone.Append(itemsScrollBar);
 		}
 
 		public void Initialize() {
 			InitLangStuff();
-			float itemSlotWidth = Main.inventoryBackTexture.Width * INV_SCALE;
-			float itemSlotHeight = Main.inventoryBackTexture.Height * INV_SCALE;
-			float smallSlotWidth = Main.inventoryBackTexture.Width * CraftingGUI.INGREDIENTS_SCALE;
-
+			float smallSlotWidth = Main.inventoryBackTexture.Width * CraftingGUINew.INGREDIENTS_SCALE;
 
 			panelTop = Main.instance.invBottom + 60;
 
-			float innerCraftingPanelWidth = CraftingGUI.AVAILABLE_RECIPES_NUM_COLS * (itemSlotWidth + UICommon.PADDING) + 20f + UICommon.PADDING;
-			float craftingPanelWidth = 12 + innerCraftingPanelWidth + 12;
-			float ingredientWidth = CraftingGUI.AVAILABLE_INGREDIENT_NUM_COLS * (smallSlotWidth + UICommon.PADDING) + 20f + UICommon.PADDING;
+			float innerCraftingPanelWidth = MagicStorage.Instance.guiM.CraftingGUI.ActualWidth;
+			float ingredientWidth = CraftingGUINew.AVAILABLE_INGREDIENT_NUM_COLS * (smallSlotWidth + UICommon.PADDING) + 20f + UICommon.PADDING;
 			ingredientWidth += 12 * 2;
 
-			panelLeft = 20f + (OffseLeft ? craftingPanelWidth + ingredientWidth : 0);
+			panelLeft = 20f + (OffseLeft ? MagicStorage.Instance.guiM.CraftingGUI.HasRecipe ? innerCraftingPanelWidth + ingredientWidth : innerCraftingPanelWidth : 0);
 			storagePanel = new UIPanel();
-			float innerPanelWidth = NUM_COLS * (itemSlotWidth + UICommon.PADDING) + 20f + UICommon.PADDING;
-			panelWidth = storagePanel.PaddingLeft + innerPanelWidth + storagePanel.PaddingRight;
-			panelHeight = Main.screenHeight - panelTop - 60f;
+			panelWidth = itemsZone.ActualWidth + storagePanel.PaddingRight + storagePanel.PaddingLeft + 20 + UICommon.PADDING;
 			storagePanel.Left.Set(panelLeft, 0f);
 			storagePanel.Top.Set(panelTop, 0f);
 			storagePanel.Width.Set(panelWidth, 0f);
-			storagePanel.Height.Set(panelHeight, 0f);
 			storagePanel.Recalculate();
 
 			upperTopBar = new UIElement();
@@ -93,7 +88,7 @@ namespace MagicStorage.GUI {
 			upperTopBar.Append(sortButtons);
 
 			depositButton.Left.Set(sortButtons.GetDimensions().Width + 2 * UICommon.PADDING, 0f);
-			depositButton.Width.Set(128f, 0f);
+			depositButton.Width.Set(32 * 3 + 8 * 2 + 4, 0f);
 			depositButton.Height.Set(-2 * UICommon.PADDING, 1f);
 			depositButton.PaddingTop = 8f;
 			depositButton.PaddingBottom = 8f;
@@ -101,7 +96,7 @@ namespace MagicStorage.GUI {
 
 			float depositButtonRight = sortButtons.GetDimensions().Width + 2 * UICommon.PADDING + depositButton.GetDimensions().Width;
 			nameSearchBar.Left.Set(depositButtonRight + UICommon.PADDING, 0f);
-			nameSearchBar.Width.Set(-depositButtonRight - 2 * UICommon.PADDING, 1f);
+			nameSearchBar.Width.Set(-depositButtonRight - 1 * UICommon.PADDING, 1f);
 			nameSearchBar.Height.Set(0f, 1f);
 			upperTopBar.Append(nameSearchBar);
 
@@ -114,7 +109,7 @@ namespace MagicStorage.GUI {
 			InitFilterButtons();
 			lowerTopBar.Append(filterButtons);
 			modSearchBar.Left.Set(depositButtonRight + UICommon.PADDING, 0f);
-			modSearchBar.Width.Set(-depositButtonRight - 2 * UICommon.PADDING, 1f);
+			modSearchBar.Width.Set(-depositButtonRight - 1 * UICommon.PADDING, 1f);
 			modSearchBar.Height.Set(0f, 1f);
 			lowerTopBar.Append(modSearchBar);
 
@@ -124,21 +119,21 @@ namespace MagicStorage.GUI {
 			storagePanel.Append(itemsZone);
 
 			numRows = (items.Count + NUM_COLS - 1) / NUM_COLS;
-			displayRows = (int)itemsZone.GetDimensions().Height / ((int)itemSlotHeight + UICommon.PADDING);
+			displayRows = Math.Min(itemsZone.MaxRows, 8);
 			itemsZone.SetDimensions(NUM_COLS, displayRows);
 			int noDisplayRows = numRows - displayRows;
 			if (noDisplayRows < 0) {
 				noDisplayRows = 0;
 			}
 			scrollBarMaxViewSize = 1 + noDisplayRows;
-			itemsScrollBar.Height.Set(displayRows * (itemSlotHeight + UICommon.PADDING), 0f);
+			itemsScrollBar.Top.Set(4, 0);
+			itemsScrollBar.Height.Set(itemsZone.ActualHeight, 0f);
 			itemsScrollBar.Left.Set(-20f, 1f);
 			itemsScrollBar.SetView(SCROLLBAR_SIZE, scrollBarMaxViewSize);
-			itemsZone.Append(itemsScrollBar);
 
 			bottomBar.Width.Set(0f, 1f);
 			bottomBar.Height.Set(32f, 0f);
-			bottomBar.Top.Set(-32f, 1f);
+			bottomBar.Top.Set(itemsZone.Top.Pixels + itemsZone.ActualHeight, 0f);
 			storagePanel.Append(bottomBar);
 
 			capacityText.Left.Set(6f, 0f);
@@ -157,6 +152,9 @@ namespace MagicStorage.GUI {
 			}
 			capacityText.SetText($"{numItems}/{capacity} {Locale.GetStr(Locale.C.ITEMS)}");
 			bottomBar.Append(capacityText);
+			panelHeight = upperTopBar.Height.Pixels + lowerTopBar.Height.Pixels + itemsZone.ActualHeight + bottomBar.Height.Pixels + 32;
+			storagePanel.Height.Set(panelHeight, 0);
+			storagePanel.Recalculate();
 		}
 
 		private void InitLangStuff() {
@@ -164,10 +162,10 @@ namespace MagicStorage.GUI {
 				depositButton = new UITextPanel<LocalizedText>(Locale.Get(Locale.C.DEPOSIT_ALL));
 			}
 			if (nameSearchBar == null) {
-				nameSearchBar = new UISearchBar(Locale.Get(Locale.C.SAERCH_NAME));
+				nameSearchBar = new UISearchBar(this, Locale.Get(Locale.C.SAERCH_NAME));
 			}
 			if (modSearchBar == null) {
-				modSearchBar = new UISearchBar(Locale.Get(Locale.C.SAERCH_MOD));
+				modSearchBar = new UISearchBar(this, Locale.Get(Locale.C.SAERCH_MOD));
 			}
 			if (capacityText == null) {
 				capacityText = new UIText(Locale.Get(Locale.C.ITEMS));
@@ -182,7 +180,7 @@ namespace MagicStorage.GUI {
 
 		private void InitSortButtons() {
 			if (sortButtons == null) {
-				sortButtons = new UIButtonChoice(new Texture2D[]
+				sortButtons = new UIButtonChoice(this, new Texture2D[]
 				{
 					Main.inventorySortTexture[0],
 					MagicStorage.Instance.GetTexture("Textures/Sorting/SortID"),
@@ -201,7 +199,7 @@ namespace MagicStorage.GUI {
 
 		private void InitFilterButtons() {
 			if (filterButtons == null) {
-				filterButtons = new UIButtonChoice(new Texture2D[]
+				filterButtons = new UIButtonChoice(this, new Texture2D[]
 				{
 					MagicStorage.Instance.GetTexture("Textures/Filtering/FilterAll"),
 					MagicStorage.Instance.GetTexture("Textures/Filtering/FilterMelee"),
@@ -226,12 +224,13 @@ namespace MagicStorage.GUI {
 
 		public void Update(GameTime gameTime) {
 			oldMouse = curMouse;
-			curMouse = Mouse.GetState();
+			curMouse = PlayerInput.MouseInfo;
 			if (Main.playerInventory) {
 				(Point16 Pos, Type Tile) = Main.player[Main.myPlayer].GetModPlayer<StoragePlayer>().ViewingStorage();
 				if ((Tile == typeof(StorageAccess) || Tile == typeof(StorageHeart)|| Tile == typeof(CraftingStorageAccess)) && Pos.X >= 0) {
 					if (curMouse.RightButton == ButtonState.Released) {
 						ResetSlotFocus();
+						MagicStorage.Instance.guiM.WaitForUnpress = false;
 					}
 					if (storagePanel != null)
 						storagePanel.Update(gameTime);
@@ -308,9 +307,9 @@ namespace MagicStorage.GUI {
 			return modPlayer.GetStorageHeart();
 		}
 
-		public void RefreshItems() {
-			if (Main.player[Main.myPlayer].GetModPlayer<StoragePlayer>().tileType == typeof(CraftingAccess)) {
-				CraftingGUI.RefreshItems();
+		public override void RefreshItems() {
+			if (Main.player[Main.myPlayer].GetModPlayer<StoragePlayer>().tileType == typeof(CraftingStorageAccess)) {
+				MagicStorage.Instance.guiM?.CraftingGUI.RefreshItems();
 			}
 			if (StoragePlayer.IsOnlyStorageCrafting()) {
 				return;
@@ -387,7 +386,7 @@ namespace MagicStorage.GUI {
 				hoverSlot = visualSlot;
 			}
 
-			if (slotFocus >= 0) {
+			if (slotFocus >= 0 && !MagicStorage.Instance.guiM.WaitForUnpress) {
 				SlotFocusLogic();
 			}
 		}
