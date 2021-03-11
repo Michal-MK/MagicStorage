@@ -1,9 +1,10 @@
+using MagicStorage.Items;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
 
 namespace MagicStorage.Components {
-	public class CraftingAccess : StorageAccess {
+	public class TCraftingAccess : TStorageAccess {
 		public override ModTileEntity GetTileEntity() {
 			return mod.GetTileEntity(nameof(TECraftingAccess));
 		}
@@ -39,8 +40,7 @@ namespace MagicStorage.Components {
 			if (!TileEntity.ByPosition.ContainsKey(pos)) {
 				return;
 			}
-			TECraftingAccess access = TileEntity.ByPosition[new Point16(i, j)] as TECraftingAccess;
-			if (access != null) {
+			if (TileEntity.ByPosition[new Point16(i, j)] is TECraftingAccess access) {
 				foreach (Item item in access.stations) {
 					if (!item.IsAir) {
 						fail = true;

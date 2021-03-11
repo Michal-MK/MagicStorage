@@ -3,6 +3,7 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 using MagicStorage.Items.Base;
 using Terraria.ID;
+using MagicStorage.Components;
 
 namespace MagicStorage.Items {
 	public class StorageUnitTerra : BaseItem {
@@ -27,14 +28,14 @@ namespace MagicStorage.Items {
 			item.consumable = true;
 			item.rare = ItemRarityID.Purple;
 			item.value = Item.sellPrice(0, 0, 12, 0);
-			item.createTile = mod.TileType("StorageUnit");
+			item.createTile = mod.TileType(nameof(TStorageUnit));
 			item.placeStyle = 7;
 		}
 
 		public override void AddRecipes() {
 			ModRecipe recipe = new ModRecipe(mod);
-			recipe.AddIngredient(mod.ItemType("StorageUnitLuminite"));
-			recipe.AddIngredient(mod.ItemType("UpgradeTerra"));
+			recipe.AddIngredient(mod.ItemType(nameof(StorageUnitLuminite)));
+			recipe.AddIngredient(mod.ItemType(nameof(UpgradeTerra)));
 			recipe.SetResult(this);
 			recipe.AddRecipe();
 		}

@@ -42,7 +42,7 @@ namespace MagicStorage {
 					tilesToItems.Add(item.createTile, item.type);
 				}
 			}
-			StorageConnector.SetupConnectors();
+			TStorageConnector.SetupConnectors();
 		}
 
 		public override void Unload() {

@@ -18,9 +18,9 @@ using Terraria.Localization;
 using Terraria.Map;
 using Terraria.ModLoader;
 using Terraria.UI;
-using CraftingAccess = MagicStorage.Components.CraftingAccess;
-using CraftingStorageAccess = MagicStorage.Components.CraftingStorageAccess;
-using CraftingTileSocket = MagicStorage.Components.CraftingTileSocket;
+using TCraftingAccess = MagicStorage.Components.TCraftingAccess;
+using TCraftingStorageAccess = MagicStorage.Components.TCraftingStorageAccess;
+using TCraftingTileSocket = MagicStorage.Components.TCraftingTileSocket;
 
 namespace MagicStorage.GUI {
 	public class CraftingGUINew : GUIBase {
@@ -131,7 +131,7 @@ namespace MagicStorage.GUI {
 		private List<Recipe> nextRecipes = new List<Recipe>();
 		private List<bool> nextRecipeAvailable = new List<bool>();
 
-		IEnumerable<CraftingTileSocket> craftingTileSocketItems;
+		IEnumerable<TCraftingTileSocket> craftingTileSocketItems;
 
 		public float ActualWidth => panelWidth;
 		public float ActualHeight => panelHeight;
@@ -397,7 +397,7 @@ namespace MagicStorage.GUI {
 				curMouse = PlayerInput.MouseInfo;
 				if (Main.playerInventory) {
 					(Point16 Pos, Type Tile) = Main.player[Main.myPlayer].GetModPlayer<StoragePlayer>().ViewingStorage();
-					if (Pos.X >= 0 && (Tile == typeof(CraftingAccess) || Tile == typeof(CraftingStorageAccess))) {
+					if (Pos.X >= 0 && (Tile == typeof(TCraftingAccess) || Tile == typeof(TCraftingStorageAccess))) {
 						craftingTileSocketItems = GetHeart().GetCraftingSockets();
 						Main.NewText("Found: " + craftingTileSocketItems.Count() + " (non-empty) sockets: " + string.Join(", ", craftingTileSocketItems
 							.Select(s => { Item i = new Item(); i.SetDefaults(s.GetItemTypeFromTileAbove()); return i.Name; })));
@@ -438,7 +438,7 @@ namespace MagicStorage.GUI {
 					player.showItemIcon = false;
 					InterfaceHelper.HideItemIconCache();
 				}
-				recipesPanel.Draw(Main.spriteBatch);
+				//recipesPanel.Draw(Main.spriteBatch);
 				if (selectedRecipe != null) {
 					ingredientsPanel.Draw(Main.spriteBatch);
 				}
@@ -875,7 +875,7 @@ namespace MagicStorage.GUI {
 					zoneSnow = true;
 				}
 			}
-			adjTiles[MagicStorage.Instance.TileType(nameof(Components.CraftingAccess))] = true;
+			adjTiles[MagicStorage.Instance.TileType(nameof(Components.TCraftingAccess))] = true;
 		}
 
 		private bool IsAvailable(Recipe recipe) {

@@ -329,7 +329,7 @@ namespace MagicStorage {
 				}
 			}
 			Point16 pos = access.Position;
-			StorageAccess modTile = TileLoader.GetTile(Main.tile[pos.X, pos.Y].type) as StorageAccess;
+			TStorageAccess modTile = TileLoader.GetTile(Main.tile[pos.X, pos.Y].type) as TStorageAccess;
 			if (modTile != null) {
 				TEStorageHeart heart = modTile.GetHeart(pos.X, pos.Y);
 				if (heart != null) {

@@ -64,7 +64,7 @@ namespace MagicStorage.GUI {
 			}
 
 			ModTile modTile = TileLoader.GetTile(Main.tile[storageAccess.X, storageAccess.Y].type);
-			if (modTile == null || !(modTile is StorageAccess storageTile)) {
+			if (modTile == null || !(modTile is TStorageAccess storageTile)) {
 				return true;
 			}
 
@@ -73,7 +73,7 @@ namespace MagicStorage.GUI {
 				return true;
 			}
 
-			if (modTile is CraftingStorageAccess) {
+			if (modTile is TCraftingStorageAccess) {
 				if (!craftingGuiOldState) {
 					CraftingGUI.Active = true;
 				}
@@ -82,14 +82,14 @@ namespace MagicStorage.GUI {
 				}
 				WaitForUnpress = true;
 			}
-			else if (modTile is CraftingAccess) {
+			else if (modTile is TCraftingAccess) {
 				if (!craftingGuiOldState) {
 					CraftingGUI.Active = true;
 				}
 				StorageGUI.Active = false;
 				WaitForUnpress = true;
 			}
-			else if (modTile is StorageHeart || (!(modTile is CraftingAccess) && modTile is StorageAccess)) {
+			else if (modTile is TStorageHeart || (!(modTile is TCraftingAccess) && modTile is TStorageAccess)) {
 				if (!storageGuiOldState) {
 					StorageGUI.Active = true;
 				}

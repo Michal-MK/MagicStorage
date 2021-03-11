@@ -3,6 +3,7 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using MagicStorage.Items.Base;
+using MagicStorage.Components;
 
 namespace MagicStorage.Items {
 	public class StorageUnit : BaseItem {
@@ -25,12 +26,12 @@ namespace MagicStorage.Items {
 			item.consumable = true;
 			item.rare = ItemRarityID.White;
 			item.value = Item.sellPrice(0, 0, 6, 0);
-			item.createTile = mod.TileType("StorageUnit");
+			item.createTile = mod.TileType(nameof(TStorageUnit));
 		}
 
 		public override void AddRecipes() {
 			ModRecipe recipe = new ModRecipe(mod);
-			recipe.AddIngredient(mod.ItemType("StorageComponent"));
+			recipe.AddIngredient(mod.ItemType(nameof(StorageComponent)));
 			recipe.AddRecipeGroup("MagicStorage:AnyChest");
 			recipe.AddIngredient(ItemID.SilverBar, 10);
 			recipe.AddTile(TileID.WorkBenches);
@@ -38,7 +39,7 @@ namespace MagicStorage.Items {
 			recipe.AddRecipe();
 
 			recipe = new ModRecipe(mod);
-			recipe.AddIngredient(mod.ItemType("StorageComponent"));
+			recipe.AddIngredient(mod.ItemType(nameof(StorageComponent)));
 			recipe.AddRecipeGroup("MagicStorage:AnyChest");
 			recipe.AddIngredient(ItemID.TungstenBar, 10);
 			recipe.AddTile(TileID.WorkBenches);

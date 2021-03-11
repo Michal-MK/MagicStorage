@@ -8,20 +8,21 @@ using Terraria.ID;
 using System.Reflection;
 using System.Linq;
 using System;
+using MagicStorage.Items;
 
 namespace MagicStorage.Components {
-	public class StorageConnector : ModTile {
+	public class TStorageConnector : ModTile {
 
 		private static HashSet<ushort> tilesToConnect = new HashSet<ushort>();
 
-		public StorageConnector() {
-			tileTexture = "MagicStorage/Textures/Tiles/" + GetType().Name;
+		public TStorageConnector() {
+			tileTexture = "MagicStorage/Textures/Tiles/StorageConnector";
 		}
 
 		public static void SetupConnectors() {
 			for (ushort i = 0; i < TileLoader.TileCount; i++) {
 				ModTile mt = TileLoader.GetTile(i);
-				if (mt is StorageComponent || mt is StorageConnector) {
+				if (mt is TStorageComponent || mt is TStorageConnector) {
 					tilesToConnect.Add(i);
 				}
 			}
@@ -44,7 +45,7 @@ namespace MagicStorage.Components {
 			text.SetDefault("Magic Storage");
 			AddMapEntry(new Color(153, 107, 61), text);
 			dustType = 7;
-			drop = mod.ItemType("StorageConnector");
+			drop = mod.ItemType(nameof(StorageConnector));
 		}
 
 
@@ -62,13 +63,13 @@ namespace MagicStorage.Components {
 			Point16 startSearch = new Point16(i, j);
 			HashSet<Point16> explored = new HashSet<Point16> { startSearch };
 			Queue<Point16> toExplore = new Queue<Point16>();
-			foreach (Point16 point in TEStorageComponent.AdjacentComponents(startSearch)) {
+			foreach (Point16 point in TEStorageComponent.AdjacentComponents(startSearch, true)) {
 				toExplore.Enqueue(point);
 			}
 
 			while (toExplore.Count > 0) {
 				Point16 explore = toExplore.Dequeue();
-				if (!explored.Contains(explore) && explore != StorageComponent.killTile) {
+				if (!explored.Contains(explore) && explore != TStorageComponent.killTile) {
 					explored.Add(explore);
 					if (TEStorageCenter.IsStorageCenter(explore)) {
 						count++;
@@ -118,14 +119,14 @@ namespace MagicStorage.Components {
 			if (fail || effectOnly) {
 				return;
 			}
-			StorageComponent.killTile = new Point16(i, j);
+			TStorageComponent.killTile = new Point16(i, j);
 			if (Main.netMode == NetmodeID.MultiplayerClient) {
-				NetHelper.SendSearchAndRefresh(StorageComponent.killTile.X, StorageComponent.killTile.Y);
+				NetHelper.SendSearchAndRefresh(TStorageComponent.killTile.X, TStorageComponent.killTile.Y);
 			}
 			else {
-				TEStorageComponent.SearchAndRefreshNetwork(StorageComponent.killTile);
+				TEStorageComponent.SearchAndRefreshNetwork(TStorageComponent.killTile);
 			}
-			StorageComponent.killTile = new Point16(-1, -1);
+			TStorageComponent.killTile = new Point16(-1, -1);
 		}
 	}
 }

@@ -1,3 +1,4 @@
+using MagicStorage.Items;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -8,7 +9,7 @@ using Terraria.ID;
 using Terraria.Localization;
 
 namespace MagicStorage.Components {
-	public class StorageAccess : StorageComponent {
+	public class TStorageAccess : TStorageComponent {
 		public override int ItemType(int frameX, int frameY) {
 			return mod.ItemType(nameof(StorageAccess));
 		}
@@ -102,7 +103,7 @@ namespace MagicStorage.Components {
 			Rectangle frame = new Rectangle(tile.frameX, tile.frameY, 16, 16);
 			Color lightColor = Lighting.GetColor(i, j, Color.White);
 			Color color = Color.Lerp(lightColor, Color.White, Main.essScale);
-			spriteBatch.Draw(mod.GetTexture("Textures/Tiles/" + Name + "_Glow"), drawPos, frame, color);
+			spriteBatch.Draw(mod.GetTexture("Textures/Tiles/" + ActualName + "_Glow"), drawPos, frame, color);
 		}
 	}
 }

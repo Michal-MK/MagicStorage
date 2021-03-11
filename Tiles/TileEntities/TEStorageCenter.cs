@@ -21,7 +21,7 @@ namespace MagicStorage.Components {
 
 			while (toExplore.Count > 0) {
 				Point16 explore = toExplore.Dequeue();
-				if (!explored.Contains(explore) && explore != StorageComponent.killTile) {
+				if (!explored.Contains(explore) && explore != TStorageComponent.killTile) {
 					explored.Add(explore);
 					if (TileEntity.ByPosition.ContainsKey(explore) && TileEntity.ByPosition[explore] is TEAbstractStorageUnit) {
 						TEAbstractStorageUnit storageUnit = (TEAbstractStorageUnit)TileEntity.ByPosition[explore];

@@ -1,4 +1,5 @@
-﻿using MagicStorage.Items.Base;
+﻿using MagicStorage.Components;
+using MagicStorage.Items.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,12 +27,12 @@ namespace MagicStorage.Items {
 			item.consumable = true;
 			item.rare = ItemRarityID.Blue;
 			item.value = Item.sellPrice(0, 1, 16, 25);
-			item.createTile = mod.TileType(nameof(CraftingTileSocketLarge));
+			item.createTile = mod.TileType(nameof(TCraftingTileSocketLarge));
 		}
 
 		public override void AddRecipes() {
 			ModRecipe recipe = new ModRecipe(mod);
-			recipe.AddIngredient(null, "StorageComponent");
+			recipe.AddIngredient(null, nameof(StorageComponent));
 			recipe.AddTile(TileID.WorkBenches);
 			recipe.SetResult(this);
 			recipe.AddRecipe();

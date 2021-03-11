@@ -3,6 +3,7 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 using MagicStorage.Items.Base;
 using Terraria.ID;
+using MagicStorage.Components;
 
 namespace MagicStorage.Items {
 	public class StorageUnitHallowed : BaseItem {
@@ -27,14 +28,14 @@ namespace MagicStorage.Items {
 			item.consumable = true;
 			item.rare = ItemRarityID.LightRed;
 			item.value = Item.sellPrice(0, 1, 0, 0);
-			item.createTile = mod.TileType("StorageUnit");
+			item.createTile = mod.TileType(nameof(TStorageUnit));
 			item.placeStyle = 4;
 		}
 
 		public override void AddRecipes() {
 			ModRecipe recipe = new ModRecipe(mod);
-			recipe.AddIngredient(mod.ItemType("StorageUnitHellstone"));
-			recipe.AddIngredient(mod.ItemType("UpgradeHallowed"));
+			recipe.AddIngredient(mod.ItemType(nameof(StorageUnitHellstone)));
+			recipe.AddIngredient(mod.ItemType(nameof(UpgradeHallowed)));
 			recipe.SetResult(this);
 			recipe.AddRecipe();
 		}

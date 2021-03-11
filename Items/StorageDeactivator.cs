@@ -69,7 +69,7 @@ namespace MagicStorage.Items {
 		public override void AddRecipes() {
 			ModRecipe recipe = new ModRecipe(mod);
 			recipe.AddIngredient(ItemID.ActuationRod);
-			recipe.AddIngredient(null, "StorageComponent");
+			recipe.AddIngredient(null, nameof(StorageComponent));
 			recipe.AddTile(TileID.Anvils);
 			recipe.SetResult(this);
 			recipe.AddRecipe();

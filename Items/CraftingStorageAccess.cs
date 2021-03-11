@@ -3,6 +3,7 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using MagicStorage.Items.Base;
+using MagicStorage.Components;
 
 namespace MagicStorage.Items {
 	public class CraftingStorageAccess : BaseItem {
@@ -27,7 +28,7 @@ namespace MagicStorage.Items {
 			item.consumable = true;
 			item.rare = ItemRarityID.LightRed;
 			item.value = Item.sellPrice(0, 2, 16, 25);
-			item.createTile = mod.TileType(nameof(CraftingStorageAccess));
+			item.createTile = mod.TileType(nameof(TCraftingStorageAccess));
 		}
 
 		public override void AddRecipes() {

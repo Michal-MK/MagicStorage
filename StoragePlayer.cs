@@ -42,7 +42,7 @@ namespace MagicStorage {
 					CloseStorage();
 					Recipe.FindRecipes();
 				}
-				else if (!(TileLoader.GetTile(Main.tile[storageAccess.X, storageAccess.Y].type) is StorageAccess)) {
+				else if (!(TileLoader.GetTile(Main.tile[storageAccess.X, storageAccess.Y].type) is TStorageAccess)) {
 					Main.PlaySound(SoundID.MenuClose, -1, -1, 1);
 					CloseStorage();
 					Recipe.FindRecipes();
@@ -66,11 +66,11 @@ namespace MagicStorage {
 			storageAccess = point;
 			remoteAccess = remote;
 			tileType = tile;
-			if (tileType == typeof(StorageAccess) || tileType == typeof(StorageHeart)) {
+			if (tileType == typeof(TStorageAccess) || tileType == typeof(TStorageHeart)) {
 				MagicStorage.Instance.guiM.StorageGUI.Active = true;
 				MagicStorage.Instance.guiM.StorageGUI.RefreshItems();
 			}
-			if (tileType == typeof(CraftingAccess) || tileType == typeof(CraftingStorageAccess)) {
+			if (tileType == typeof(TCraftingAccess) || tileType == typeof(TCraftingStorageAccess)) {
 				MagicStorage.Instance.guiM.CraftingGUI.Active = true;
 				MagicStorage.Instance.guiM.CraftingGUI.RefreshItems();
 			}
@@ -189,10 +189,10 @@ namespace MagicStorage {
 			}
 			int tileType = tile.type;
 			ModTile modTile = TileLoader.GetTile(tileType);
-			if (modTile == null || !(modTile is StorageAccess)) {
+			if (modTile == null || !(modTile is TStorageAccess)) {
 				return null;
 			}
-			return ((StorageAccess)modTile).GetHeart(storageAccess.X, storageAccess.Y);
+			return ((TStorageAccess)modTile).GetHeart(storageAccess.X, storageAccess.Y);
 		}
 
 		public TECraftingAccess GetCraftingAccess() {
@@ -207,7 +207,7 @@ namespace MagicStorage {
 				return false;
 			}
 			Tile tile = Main.tile[storageAccess.X, storageAccess.Y];
-			return tile != null && (tile.type == mod.TileType(nameof(CraftingAccess)) || tile.type == mod.TileType(nameof(CraftingStorageAccess)));
+			return tile != null && (tile.type == mod.TileType(nameof(TCraftingAccess)) || tile.type == mod.TileType(nameof(TCraftingStorageAccess)));
 		}
 		
 		public bool Crafting() {
@@ -215,7 +215,7 @@ namespace MagicStorage {
 				return false;
 			}
 			Tile tile = Main.tile[storageAccess.X, storageAccess.Y];
-			return tile != null && (tile.type == mod.TileType(nameof(CraftingAccess)));
+			return tile != null && (tile.type == mod.TileType(nameof(TCraftingAccess)));
 		}
 
 		public static bool IsOnlyStorageCrafting() {

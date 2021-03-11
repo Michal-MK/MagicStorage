@@ -3,6 +3,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
 using Terraria.ID;
+using Microsoft.Xna.Framework;
 
 namespace MagicStorage.Components {
 	public abstract class TEStorageComponent : ModTileEntity {
@@ -46,7 +47,7 @@ namespace MagicStorage.Components {
 			}
 		}
 
-		private static IEnumerable<Point16> checkNeighbors2x2 = new Point16[]
+		private static Point16[] checkNeighbors2x2 = new Point16[]
 		{
 			new Point16(-1, 0),
 			new Point16(-1, 1),
@@ -58,7 +59,7 @@ namespace MagicStorage.Components {
 			new Point16(0, 2)
 		};
 
-		private static IEnumerable<Point16> checkNeighbors1x1 = new Point16[]
+		private static Point16[] checkNeighbors1x1 = new Point16[]
 		{
 			new Point16(-1, 0),
 			new Point16(0, -1),
@@ -66,47 +67,48 @@ namespace MagicStorage.Components {
 			new Point16(0, 1)
 		};
 
-		private static IEnumerable<Point16> checkNeighbors2x1 = new Point16[]
+		private static Point16[] checkNeighbors2x1 = new Point16[]
 		{
-			new Point16(-1, 0),
-			new Point16(0, -1),
+			//new Point16(-1, 0),
+			//new Point16(0, -1),
 			new Point16(0, 1),
-			new Point16(1, -1),
+			//new Point16(1, -1),
 			new Point16(1, 1),
-			new Point16(2, 0),
+			//new Point16(2, 0),
 		};
 
-		private static IEnumerable<Point16> checkNeighbors3x1 = new Point16[]
+		private static Point16[] checkNeighbors3x1 = new Point16[]
 		{
-			new Point16(-1, 0),
-			new Point16(0, -1),
+			//new Point16(-1, 0),
+			//new Point16(0, -1),
 			new Point16(0, 1),
-			new Point16(1, -1),
+			//new Point16(1, -1),
 			new Point16(1, 1),
-			new Point16(2, -1),
+			//new Point16(2, -1),
 			new Point16(2, 1),
-			new Point16(3, 0),
+			//new Point16(3, 0),
 		};
 
 		public IEnumerable<Point16> AdjacentComponents() {
 			return AdjacentComponents(Position);
 		}
 
-		public static IEnumerable<Point16> AdjacentComponents(Point16 point) {
+		public static IEnumerable<Point16> AdjacentComponents(Point16 point, bool isConnectorCanPlace = false) {
 			List<Point16> points = new List<Point16>();
-			bool isConnector = Main.tile[point.X, point.Y].type == MagicStorage.Instance.TileType(nameof(StorageConnector));
-			bool isLargeSocket = Main.tile[point.X, point.Y].type == MagicStorage.Instance.TileType(nameof(CraftingTileSocketLarge));
-			bool isSocket = Main.tile[point.X, point.Y].type == MagicStorage.Instance.TileType(nameof(CraftingTileSocket));
+			bool isConnector = Main.tile[point.X, point.Y].type == MagicStorage.Instance.TileType(nameof(TStorageConnector)) || isConnectorCanPlace;
+			bool isLargeSocket = Main.tile[point.X, point.Y].type == MagicStorage.Instance.TileType(nameof(TCraftingTileSocketLarge));
+			bool isSocket = Main.tile[point.X, point.Y].type == MagicStorage.Instance.TileType(nameof(TCraftingTileSocket));
 
 			foreach (Point16 add in (isConnector ? checkNeighbors1x1 : isLargeSocket ? checkNeighbors3x1 : isSocket ? checkNeighbors2x1 : checkNeighbors2x2)) {
 				int checkX = point.X + add.X;
 				int checkY = point.Y + add.Y;
 				Tile tile = Main.tile[checkX, checkY];
+				Dust.NewDust(new Vector2(checkX*16 + 4, checkY * 16 + 4), 1, 1, isConnector ? 60 : isLargeSocket || isSocket ? 61 : 62, Alpha:0, Scale: 0.3f);
 				if (!tile.active()) {
 					continue;
 				}
-				if (TileLoader.GetTile(tile.type) is StorageComponent) {
-					if (tile.frameX == 36) {
+				if (TileLoader.GetTile(tile.type) is TStorageComponent) {
+					if (tile.frameX == 36 && !(TileLoader.GetTile(tile.type) is TStorageUnit)) {
 						checkX -= 2;
 					}
 					if (tile.frameX % 36 == 18) {
@@ -120,7 +122,7 @@ namespace MagicStorage.Components {
 						points.Add(check);
 					}
 				}
-				else if (tile.type == MagicStorage.Instance.TileType(nameof(StorageConnector))) {
+				else if (tile.type == MagicStorage.Instance.TileType(nameof(TStorageConnector))) {
 					Point16 check = new Point16(checkX, checkY);
 					if (!points.Contains(check)) {
 						points.Add(check);
@@ -140,7 +142,7 @@ namespace MagicStorage.Components {
 
 			while (toExplore.Count > 0) {
 				Point16 explore = toExplore.Dequeue();
-				if (!explored.Contains(explore) && explore != StorageComponent.killTile) {
+				if (!explored.Contains(explore) && explore != TStorageComponent.killTile) {
 					explored.Add(explore);
 					if (TEStorageCenter.IsStorageCenter(explore)) {
 						return explore;

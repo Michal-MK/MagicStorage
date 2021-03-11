@@ -1,3 +1,4 @@
+using MagicStorage.Items;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using Terraria;
@@ -7,17 +8,17 @@ using Terraria.ModLoader;
 using Terraria.ObjectData;
 
 namespace MagicStorage.Components {
-	public class StorageComponent : ModTile {
+	public class TStorageComponent : ModTile {
 
-		public StorageComponent() {
-			tileTexture = "MagicStorage/Textures/Tiles/" + GetType().Name;
-
+		public TStorageComponent() {
+			tileTexture = "MagicStorage/Textures/Tiles/" + ActualName;
 		}
+
+		public string ActualName => GetType().Name.Remove(0, 1);
 
 		public static Point16 killTile = new Point16(-1, -1);
 
-		// Use StorageComponent_Highlight as the default highlight mask for subclasses
-		public override string HighlightTexture => "MagicStorage/Textures/Tiles/" + nameof(StorageComponent) + "_Highlight";
+		public override string HighlightTexture => "MagicStorage/Textures/Tiles/StorageComponent_Highlight";
 
 		public string tileTexture;
 
@@ -31,19 +32,13 @@ namespace MagicStorage.Components {
 			Main.tileSolidTop[Type] = true;
 			Main.tileTable[Type] = true;
 			Main.tileFrameImportant[Type] = true;
-			Main.tileNoAttach[Type] = false;
+			Main.tileNoAttach[Type] = true;
 			AnchorData d = TileObjectData.newTile.AnchorBottom;
-			d.type |= Terraria.Enums.AnchorType.EmptyTile;
-			d.checkStart = 0;
+			d.type |= Terraria.Enums.AnchorType.EmptyTile | Terraria.Enums.AnchorType.AlternateTile;
+			d.tileCount = 0;
 			TileObjectData.newTile.AnchorBottom = d;
-			TileObjectData.newTile.Width = 2;
-			TileObjectData.newTile.Height = 2;
 			TileObjectData.newTile.Origin = new Point16(0, 1);
-			TileObjectData.newTile.CoordinateHeights = new int[] { 16, 16 };
-			TileObjectData.newTile.CoordinateWidth = 16;
-			TileObjectData.newTile.CoordinatePadding = 2;
 			TileObjectData.newTile.HookCheck = new PlacementHook(CanPlace, -1, 0, true);
-			TileObjectData.newTile.UsesCustomCanPlace = true;
 			ModifyObjectData();
 			ModTileEntity tileEntity = GetTileEntity();
 			if (tileEntity != null) {
@@ -88,7 +83,7 @@ namespace MagicStorage.Components {
 
 			while (toExplore.Count > 0) {
 				Point16 explore = toExplore.Dequeue();
-				if (!explored.Contains(explore) && explore != StorageComponent.killTile) {
+				if (!explored.Contains(explore) && explore != TStorageComponent.killTile) {
 					explored.Add(explore);
 					if (TEStorageCenter.IsStorageCenter(explore)) {
 						count++;

@@ -3,6 +3,7 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 using MagicStorage.Items.Base;
 using Terraria.ID;
+using MagicStorage.Components;
 
 namespace MagicStorage.Items {
 	public class StorageUnitCrimtane : BaseItem {
@@ -27,14 +28,14 @@ namespace MagicStorage.Items {
 			item.consumable = true;
 			item.rare = ItemRarityID.Blue;
 			item.value = Item.sellPrice(0, 0, 32, 0);
-			item.createTile = mod.TileType("StorageUnit");
+			item.createTile = mod.TileType(nameof(TStorageUnit));
 			item.placeStyle = 2;
 		}
 
 		public override void AddRecipes() {
 			ModRecipe recipe = new ModRecipe(mod);
-			recipe.AddIngredient(mod.ItemType("StorageUnit"));
-			recipe.AddIngredient(mod.ItemType("UpgradeCrimtane"));
+			recipe.AddIngredient(mod.ItemType(nameof(StorageUnit)));
+			recipe.AddIngredient(mod.ItemType(nameof(UpgradeCrimtane)));
 			recipe.SetResult(this);
 			recipe.AddRecipe();
 		}

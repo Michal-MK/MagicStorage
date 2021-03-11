@@ -8,7 +8,7 @@ using Terraria.ID;
 using MagicStorage.Items;
 
 namespace MagicStorage.Components {
-	public class StorageUnit : StorageComponent {
+	public class TStorageUnit : TStorageComponent {
 		public override void ModifyObjectData() {
 			TileObjectData.newTile.StyleHorizontal = true;
 			TileObjectData.newTile.StyleMultiplier = 6;
@@ -157,7 +157,7 @@ namespace MagicStorage.Components {
 			Rectangle frame = new Rectangle(tile.frameX, tile.frameY, 16, 16);
 			Color lightColor = Lighting.GetColor(i, j, Color.White);
 			Color color = Color.Lerp(Color.White, lightColor, 0.5f);
-			spriteBatch.Draw(mod.GetTexture("Textures/Tiles/StorageUnit_Glow"), drawPos, frame, color);
+			spriteBatch.Draw(mod.GetTexture("Textures/Tiles/"+ ActualName +"_Glow"), drawPos, frame, color);
 		}
 	}
 }

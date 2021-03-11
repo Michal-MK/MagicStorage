@@ -16,7 +16,7 @@ namespace MagicStorage.Components {
 		private int compactStage = 0;
 
 		public override bool ValidTile(Tile tile) {
-			return tile.type == mod.TileType(nameof(StorageHeart)) && tile.frameX == 0 && tile.frameY == 0;
+			return tile.type == mod.TileType(nameof(TStorageHeart)) && tile.frameX == 0 && tile.frameY == 0;
 		}
 
 		public override TEStorageHeart GetHeart() {
@@ -32,8 +32,8 @@ namespace MagicStorage.Components {
 				.Select(storageUnit => (TEAbstractStorageUnit)TileEntity.ByPosition[storageUnit]);
 		}
 
-		public IEnumerable<CraftingTileSocket> GetCraftingSockets() {
-			List<CraftingTileSocket> sockets = new List<CraftingTileSocket>();
+		public IEnumerable<TCraftingTileSocket> GetCraftingSockets() {
+			List<TCraftingTileSocket> sockets = new List<TCraftingTileSocket>();
 			HashSet<Point16> explored = new HashSet<Point16>();
 			explored.Add(Position);
 			Queue<Point16> toExplore = new Queue<Point16>();
@@ -44,11 +44,11 @@ namespace MagicStorage.Components {
 			}
 			while (toExplore.Count != 0) {
 				Point16 explore = toExplore.Dequeue();
-				if (!explored.Contains(explore) && explore != StorageComponent.killTile) {
+				if (!explored.Contains(explore) && explore != TStorageComponent.killTile) {
 					explored.Add(explore);
-					if (Main.tile[explore.X, explore.Y].type == ModContent.GetInstance<CraftingTileSocket>().Type ||
-						Main.tile[explore.X, explore.Y].type == ModContent.GetInstance<CraftingTileSocketLarge>().Type) {
-						CraftingTileSocket cts = new CraftingTileSocket(explore);
+					if (Main.tile[explore.X, explore.Y].type == ModContent.GetInstance<TCraftingTileSocket>().Type ||
+						Main.tile[explore.X, explore.Y].type == ModContent.GetInstance<TCraftingTileSocketLarge>().Type) {
+						TCraftingTileSocket cts = new TCraftingTileSocket(explore);
 						if (cts.GetItemTypeFromTileAbove() != -1) {
 							sockets.Add(cts);
 						}

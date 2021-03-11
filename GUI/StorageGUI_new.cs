@@ -227,7 +227,7 @@ namespace MagicStorage.GUI {
 			curMouse = PlayerInput.MouseInfo;
 			if (Main.playerInventory) {
 				(Point16 Pos, Type Tile) = Main.player[Main.myPlayer].GetModPlayer<StoragePlayer>().ViewingStorage();
-				if ((Tile == typeof(StorageAccess) || Tile == typeof(StorageHeart)|| Tile == typeof(CraftingStorageAccess)) && Pos.X >= 0) {
+				if ((Tile == typeof(TStorageAccess) || Tile == typeof(TStorageHeart)|| Tile == typeof(TCraftingStorageAccess)) && Pos.X >= 0) {
 					if (curMouse.RightButton == ButtonState.Released) {
 						ResetSlotFocus();
 						MagicStorage.Instance.guiM.WaitForUnpress = false;
@@ -255,10 +255,12 @@ namespace MagicStorage.GUI {
 				player.showItemIcon = false;
 				InterfaceHelper.HideItemIconCache();
 			}
+
 			storagePanel.Draw(Main.spriteBatch);
 			itemsZone.DrawText();
 			sortButtons.DrawText();
 			filterButtons.DrawText();
+
 		}
 
 		private Item GetItem(int slot, ref int context) {
@@ -308,7 +310,7 @@ namespace MagicStorage.GUI {
 		}
 
 		public override void RefreshItems() {
-			if (Main.player[Main.myPlayer].GetModPlayer<StoragePlayer>().tileType == typeof(CraftingStorageAccess)) {
+			if (Main.player[Main.myPlayer].GetModPlayer<StoragePlayer>().tileType == typeof(TCraftingStorageAccess)) {
 				MagicStorage.Instance.guiM?.CraftingGUI.RefreshItems();
 			}
 			if (StoragePlayer.IsOnlyStorageCrafting()) {

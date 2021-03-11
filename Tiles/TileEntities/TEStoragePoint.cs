@@ -20,7 +20,7 @@ namespace MagicStorage.Components {
 
 			while (toExplore.Count > 0) {
 				Point16 explore = toExplore.Dequeue();
-				if (!explored.Contains(explore) && explore != StorageComponent.killTile) {
+				if (!explored.Contains(explore) && explore != TStorageComponent.killTile) {
 					explored.Add(explore);
 					if (TEStorageCenter.IsStorageCenter(explore)) {
 						center = explore;

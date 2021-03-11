@@ -3,6 +3,7 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 using MagicStorage.Items.Base;
 using Terraria.ID;
+using MagicStorage.Components;
 
 namespace MagicStorage.Items {
 	public class StorageUnitTiny : BaseItem {
@@ -27,7 +28,7 @@ namespace MagicStorage.Items {
 			item.consumable = true;
 			item.rare = ItemRarityID.White;
 			item.value = Item.sellPrice(0, 0, 6, 0);
-			item.createTile = mod.TileType("StorageUnit");
+			item.createTile = mod.TileType(nameof(TStorageUnit));
 			item.placeStyle = 8;
 		}
 	}

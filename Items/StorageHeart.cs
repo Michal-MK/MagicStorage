@@ -3,6 +3,7 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using MagicStorage.Items.Base;
+using MagicStorage.Components;
 
 namespace MagicStorage.Items {
 	public class StorageHeart : BaseItem {
@@ -26,12 +27,12 @@ namespace MagicStorage.Items {
 			item.consumable = true;
 			item.rare = ItemRarityID.Blue;
 			item.value = Item.sellPrice(0, 1, 35, 0);
-			item.createTile = mod.TileType("StorageHeart");
+			item.createTile = mod.TileType(nameof(TStorageHeart));
 		}
 
 		public override void AddRecipes() {
 			ModRecipe recipe = new ModRecipe(mod);
-			recipe.AddIngredient(null, "StorageComponent");
+			recipe.AddIngredient(null, nameof(StorageComponent));
 			recipe.AddRecipeGroup("MagicStorage:AnyDiamond", 3);
 			if (MagicStorage.legendMod == null) {
 				recipe.AddIngredient(ItemID.Emerald, 7);

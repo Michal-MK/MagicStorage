@@ -1,6 +1,7 @@
 ﻿using MagicStorage.Items.Base;
 using Terraria.Localization;
 using Terraria.ID;
+using MagicStorage.Components;
 
 namespace MagicStorage.Items {
 	public class CreativeStorageUnit : BaseItem {
@@ -23,7 +24,7 @@ namespace MagicStorage.Items {
 			item.useStyle = ItemUseStyleID.SwingThrow;
 			item.consumable = true;
 			item.rare = ItemRarityID.White;
-			item.createTile = mod.TileType("CreativeStorageUnit");
+			item.createTile = mod.TileType(nameof(TCreativeStorageUnit));
 		}
 	}
 }

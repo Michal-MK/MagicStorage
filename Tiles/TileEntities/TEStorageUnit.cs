@@ -59,7 +59,7 @@ namespace MagicStorage.Components {
 		}
 
 		public override bool ValidTile(Tile tile) {
-			return tile.type == mod.TileType("StorageUnit") && tile.frameX % 36 == 0 && tile.frameY % 36 == 0;
+			return tile.type == mod.TileType(nameof(TStorageUnit)) && tile.frameX % 36 == 0 && tile.frameY % 36 == 0;
 		}
 
 		public override bool HasSpaceInStackFor(Item check, bool locked = false) {
