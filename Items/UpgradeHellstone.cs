@@ -39,12 +39,7 @@ namespace MagicStorage.Items {
 		public override void AddRecipes() {
 			ModRecipe recipe = new ModRecipe(mod);
 			recipe.AddIngredient(ItemID.HellstoneBar, 10);
-			if (MagicStorage.legendMod == null) {
-				recipe.AddIngredient(ItemID.Topaz);
-			}
-			else {
-				recipe.AddRecipeGroup("MagicStorage:AnyTopaz");
-			}
+			recipe.AddIngredient(ItemID.Topaz);
 			recipe.AddTile(TileID.Anvils);
 			recipe.SetResult(this);
 			recipe.AddRecipe();

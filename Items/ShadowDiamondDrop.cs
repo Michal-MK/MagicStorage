@@ -2,6 +2,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using MagicStorage.Items.Base;
+using MagicStorage.Items;
 
 namespace MagicStorage.NPCs {
 	public class ShadowDiamondDrop : GlobalNPC {
@@ -65,7 +66,7 @@ namespace MagicStorage.NPCs {
 		}
 
 		private void DropDiamond(NPC npc, int stack) {
-			Item.NewItem(npc.position, npc.width, npc.height, mod.ItemType("ShadowDiamond"), stack);
+			Item.NewItem(npc.position, npc.width, npc.height, mod.ItemType(nameof(ShadowDiamond)), stack);
 		}
 	}
 }

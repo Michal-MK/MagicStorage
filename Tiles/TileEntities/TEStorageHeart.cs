@@ -32,38 +32,6 @@ namespace MagicStorage.Components {
 				.Select(storageUnit => (TEAbstractStorageUnit)TileEntity.ByPosition[storageUnit]);
 		}
 
-		public IEnumerable<TCraftingTileSocket> GetCraftingSockets() {
-			List<TCraftingTileSocket> sockets = new List<TCraftingTileSocket>();
-			HashSet<Point16> explored = new HashSet<Point16>();
-			explored.Add(Position);
-			Queue<Point16> toExplore = new Queue<Point16>();
-			foreach (Point16 point in AdjacentComponents(Position)) {
-				if (!explored.Contains(point)) {
-					toExplore.Enqueue(point);
-				}
-			}
-			while (toExplore.Count != 0) {
-				Point16 explore = toExplore.Dequeue();
-				if (!explored.Contains(explore) && explore != TStorageComponent.killTile) {
-					explored.Add(explore);
-					if (Main.tile[explore.X, explore.Y].type == ModContent.GetInstance<TCraftingTileSocket>().Type ||
-						Main.tile[explore.X, explore.Y].type == ModContent.GetInstance<TCraftingTileSocketLarge>().Type) {
-						TCraftingTileSocket cts = new TCraftingTileSocket(explore);
-						if (cts.GetItemTypeFromTileAbove() != -1) {
-							sockets.Add(cts);
-						}
-					}
-					foreach (Point16 point in AdjacentComponents(explore)) {
-						if (!explored.Contains(point)) {
-							toExplore.Enqueue(point);
-						}
-					}
-				}
-
-			}
-			return sockets;
-		}
-
 		public IEnumerable<Item> GetStoredItems() {
 			return GetStorageUnits().SelectMany(storageUnit => storageUnit.GetItems());
 		}

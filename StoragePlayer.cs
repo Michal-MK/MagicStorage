@@ -4,15 +4,20 @@ using Terraria.DataStructures;
 using Terraria.ModLoader;
 using Terraria.UI;
 using Terraria.ID;
-using MagicStorage.GUI;
 using System;
+using MagicStorage.Extensions;
+using Terraria.ObjectData;
 
 namespace MagicStorage {
 	public class StoragePlayer : ModPlayer {
-		public int timeSinceOpen = 1;
+
+		private bool postOpenCleanup;
 		public Point16 storageAccess = new Point16(-1, -1);
 		public Type tileType;
 		public bool remoteAccess = false;
+
+		public Point16 PlayerPosTiles => new Point16((int)(player.Center.X / 16f), (int)(player.Center.Y / 16f));
+
 
 		public override void UpdateDead() {
 			if (player.whoAmI == Main.myPlayer) {
@@ -20,53 +25,52 @@ namespace MagicStorage {
 			}
 		}
 
-
 		public override void ResetEffects() {
 			if (player.whoAmI != Main.myPlayer) {
 				return;
 			}
-			if (timeSinceOpen < 1) {
+
+			if (postOpenCleanup) {
 				player.talkNPC = -1;
 				Main.playerInventory = true;
-				timeSinceOpen++;
+				postOpenCleanup = false;
 			}
-			if (storageAccess.X >= 0 && storageAccess.Y >= 0 && (player.chest != -1 || !Main.playerInventory || player.sign > -1 || player.talkNPC > -1)) {
-				CloseStorage();
-				Recipe.FindRecipes();
-			}
-			else if (storageAccess.X >= 0 && storageAccess.Y >= 0) {
-				int playerX = (int)(player.Center.X / 16f);
-				int playerY = (int)(player.Center.Y / 16f);
-				if (!remoteAccess && (playerX < storageAccess.X - Player.tileRangeX || playerX > storageAccess.X + Player.tileRangeX + 1 || playerY < storageAccess.Y - Player.tileRangeY || playerY > storageAccess.Y + Player.tileRangeY + 1)) {
-					Main.PlaySound(SoundID.MenuClose, -1, -1, 1);
+
+			if (storageAccess.N0()) {
+				if (player.chest != -1 || !Main.playerInventory || player.sign > -1 || player.talkNPC > -1) {
 					CloseStorage();
 					Recipe.FindRecipes();
 				}
-				else if (!(TileLoader.GetTile(Main.tile[storageAccess.X, storageAccess.Y].type) is TStorageAccess)) {
-					Main.PlaySound(SoundID.MenuClose, -1, -1, 1);
-					CloseStorage();
-					Recipe.FindRecipes();
+				else {
+					if ((!remoteAccess && !InRange(PlayerPosTiles, storageAccess)) ||
+						!(TileLoader.GetTile(Main.tile[storageAccess.X, storageAccess.Y].type) is TStorageAccess)) {
+						Main.PlaySound(SoundID.MenuClose, -1, -1, 1);
+						CloseStorage();
+						Recipe.FindRecipes();
+					}
 				}
 			}
 		}
 
-		//public void OpenStorage(Point16 point, Type tile, bool remote = false) {
-		//	storageAccess = point;
-		//	remoteAccess = remote;
-		//	tileType = tile;
-		//	if (tileType == typeof(StorageAccess) || tileType == typeof(StorageHeart)) {
-		//		StorageGUI.RefreshItems();
-		//	}
-		//	if (tileType == typeof(CraftingAccess) || tileType == typeof(CraftingStorageAccess)) {
-		//		CraftingGUI.RefreshItems();
-		//	}
-		//}	
+		public bool CanOpen(Point16 toOpen) {
+			return InRange(PlayerPosTiles, toOpen) || remoteAccess;
+		}
+
+		private bool InRange(Point16 position, Point16 target) {
+			TileObjectData tod = TileObjectData.GetTileData(Main.tile[target.X, target.Y]);
+			if (tod == null) return false;
+			return position.X >= target.X - Player.tileRangeX &&
+				   position.X < target.X + Player.tileRangeX + tod.Width &&
+				   position.Y >= target.Y - Player.tileRangeY &&
+				   position.Y < target.Y + Player.tileRangeY + tod.Height;
+		}
 
 		public void OpenStorage(Point16 point, Type tile, bool remote = false) {
 			storageAccess = point;
 			remoteAccess = remote;
 			tileType = tile;
-			if (tileType == typeof(TStorageAccess) || tileType == typeof(TStorageHeart)) {
+			if (tileType == typeof(TStorageAccess) || tileType == typeof(TStorageHeart) ||
+				tileType == typeof(TCraftingStorageAccess) || tileType == typeof(TRemoteAccess)) {
 				MagicStorage.Instance.guiM.StorageGUI.Active = true;
 				MagicStorage.Instance.guiM.StorageGUI.RefreshItems();
 			}
@@ -74,31 +78,14 @@ namespace MagicStorage {
 				MagicStorage.Instance.guiM.CraftingGUI.Active = true;
 				MagicStorage.Instance.guiM.CraftingGUI.RefreshItems();
 			}
+			postOpenCleanup = true;
 		}
 
 		public void CloseStorage() {
 			storageAccess = new Point16(-1, -1);
 			Main.blockInput = false;
-			//if (StorageGUI.nameSearchBar != null || MagicStorage.Instance.guiM.StorageGUI.Active) {
-			//	StorageGUI.nameSearchBar.Reset();
-			//	MagicStorage.Instance.guiM?.StorageGUI.nameSearchBar.Reset();
-			//}
-			//if (StorageGUI.modSearchBar != null || MagicStorage.Instance.guiM.StorageGUI.Active) {
-			//	StorageGUI.modSearchBar.Reset();
-			//	MagicStorage.Instance.guiM.StorageGUI.modSearchBar.Reset();
 
-			//}
-			//if (CraftingGUI.itemNameSearch != null || MagicStorage.Instance.guiM.CraftingGUI.Active) {
-			//	CraftingGUI.itemNameSearch.Reset();
-			//	MagicStorage.Instance.guiM.CraftingGUI.nameSearchBar.Reset();
-
-			//}
-			//if (CraftingGUI.modNameSearch != null || MagicStorage.Instance.guiM.CraftingGUI.Active) {
-			//	CraftingGUI.modNameSearch.Reset();
-			//	MagicStorage.Instance.guiM.CraftingGUI.modSearchBar.Reset();
-			//}
-			
-			if ( MagicStorage.Instance.guiM.StorageGUI.Active) {
+			if (MagicStorage.Instance.guiM.StorageGUI.Active) {
 				MagicStorage.Instance.guiM?.StorageGUI.nameSearchBar.Reset();
 			}
 			if (MagicStorage.Instance.guiM.StorageGUI.Active) {
@@ -106,11 +93,12 @@ namespace MagicStorage {
 			}
 			if (MagicStorage.Instance.guiM.CraftingGUI.Active) {
 				MagicStorage.Instance.guiM.CraftingGUI.nameSearchBar.Reset();
-
 			}
 			if (MagicStorage.Instance.guiM.CraftingGUI.Active) {
 				MagicStorage.Instance.guiM.CraftingGUI.modSearchBar.Reset();
 			}
+			MagicStorage.Instance.guiM.StorageGUI.Active = false;
+			MagicStorage.Instance.guiM.CraftingGUI.Active = false;
 		}
 
 		public (Point16 Pos, Type Tile) ViewingStorage() {
@@ -173,8 +161,7 @@ namespace MagicStorage {
 			}
 			if (item.type != oldType || item.stack != oldStack) {
 				Main.PlaySound(SoundID.Grab, -1, -1, 1, 1f, 0f);
-				//StorageGUI.RefreshItems();
-				MagicStorage.Instance.guiM?.StorageGUI.RefreshItems();
+				MagicStorage.Instance.guiM?.Refresh();
 			}
 			return true;
 		}
@@ -209,7 +196,7 @@ namespace MagicStorage {
 			Tile tile = Main.tile[storageAccess.X, storageAccess.Y];
 			return tile != null && (tile.type == mod.TileType(nameof(TCraftingAccess)) || tile.type == mod.TileType(nameof(TCraftingStorageAccess)));
 		}
-		
+
 		public bool Crafting() {
 			if (storageAccess.X < 0 || storageAccess.Y < 0) {
 				return false;

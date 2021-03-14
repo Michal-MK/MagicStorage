@@ -33,13 +33,8 @@ namespace MagicStorage.Items {
 		public override void AddRecipes() {
 			ModRecipe recipe = new ModRecipe(mod);
 			recipe.AddIngredient(null, nameof(StorageComponent));
-			recipe.AddRecipeGroup("MagicStorage:AnyDiamond", 1);
-			if (MagicStorage.legendMod == null) {
-				recipe.AddIngredient(ItemID.Topaz, 7);
-			}
-			else {
-				recipe.AddRecipeGroup("MagicStorage:AnyTopaz", 7);
-			}
+			recipe.AddRecipeGroup(Constants.ANY_DIA, 1);
+			recipe.AddIngredient(ItemID.Topaz, 7);
 			recipe.AddTile(TileID.WorkBenches);
 			recipe.SetResult(this);
 			recipe.AddRecipe();

@@ -39,12 +39,7 @@ namespace MagicStorage.Items {
 		public override void AddRecipes() {
 			ModRecipe recipe = new ModRecipe(mod);
 			recipe.AddIngredient(ItemID.DemoniteBar, 10);
-			if (MagicStorage.legendMod == null) {
-				recipe.AddIngredient(ItemID.Amethyst);
-			}
-			else {
-				recipe.AddRecipeGroup("MagicStorage:AnyAmethyst");
-			}
+			recipe.AddIngredient(ItemID.Amethyst);
 			recipe.AddTile(TileID.Anvils);
 			recipe.SetResult(this);
 			recipe.AddRecipe();

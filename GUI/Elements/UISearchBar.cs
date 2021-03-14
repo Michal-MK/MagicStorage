@@ -44,7 +44,7 @@ namespace MagicStorage {
 			cursorTimer++;
 			cursorTimer %= 60;
 
-			Rectangle dim = InterfaceHelper.GetFullRectangle(this);
+			Rectangle dim = GUIHelper.GetFullRectangle(this);
 			//MouseState mouse = StorageGUI.curMouse;
 			MouseState mouse = PlayerInput.MouseInfo;
 			bool mouseOver = mouse.X > dim.X && mouse.X < dim.X + dim.Width && mouse.Y > dim.Y && mouse.Y < dim.Y + dim.Height;

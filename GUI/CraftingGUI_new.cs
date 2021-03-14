@@ -212,19 +212,28 @@ namespace MagicStorage.GUI {
 			modSearchBar.Height.Set(0f, 1f);
 			ingredientsTopBar.Append(modSearchBar);
 			stationText.Top.Set(sortButtons.Height.Pixels + filterButtons.Height.Pixels + UICommon.PADDING * 4, 0f);
-			recipesPanel.Append(stationText);
+			if (!MagicStorage.Instance.guiM.StorageGUI.Active) {
+				recipesPanel.Append(stationText);
+			}
 
 			stationZone.Width.Set(0f, 1f);
 			stationZone.Height.Set(stationZone.ActualHeight, 0);
 			stationZone.Top.Set(stationText.Top.Pixels + stationText.GetDimensions().Height + UICommon.PADDING * 3, 0f);
 			stationZone.SetDimensions(10, 1);
-			recipesPanel.Append(stationZone);
-
+			if (!MagicStorage.Instance.guiM.StorageGUI.Active) {
+				recipesPanel.Append(stationZone);
+			}
 			recipeText.Top.Set(stationZone.Top.Pixels + stationZone.ActualHeight + UICommon.PADDING * 2, 0f);
-			recipesPanel.Append(recipeText);
-
+			if (!MagicStorage.Instance.guiM.StorageGUI.Active) {
+				recipesPanel.Append(recipeText);
+			}
 			recipeZone.Width.Set(0f, 1f);
-			recipeZone.Top.Set(recipeText.Top.Pixels + recipeText.GetDimensions().Height + UICommon.PADDING * 3, 0f);
+			if (MagicStorage.Instance.guiM.StorageGUI.Active) {
+				recipeZone.Top.Set(recipesTopBar.Top.Pixels + recipesTopBar.GetDimensions().Height * 2 + UICommon.PADDING * 3, 0f);
+			}
+			else {
+				recipeZone.Top.Set(recipeText.Top.Pixels + recipeText.GetDimensions().Height * 2 + UICommon.PADDING * 3, 0f);
+			}
 			numRows = (recipes.Count + AVAILABLE_RECIPES_NUM_COLS - 1) / AVAILABLE_RECIPES_NUM_COLS;
 			recipeZone.Height.Set(recipeZone.ActualHeight, 0f);
 
@@ -321,7 +330,7 @@ namespace MagicStorage.GUI {
 			ingredientsPanel.Height.Set(ingredientHeight, 0f);
 			ingredientsPanel.Recalculate();
 
-			panelHeight = bottomBar.Top.Pixels + bottomBar.Height.Pixels + 12 * 2;
+			panelHeight = bottomBar.Top.Pixels + bottomBar.Height.Pixels + 12 * 2 - 4;
 			recipesPanel.Height.Set(panelHeight, 0);
 			recipesPanel.Recalculate();
 			evnt.Set();
@@ -398,9 +407,8 @@ namespace MagicStorage.GUI {
 				if (Main.playerInventory) {
 					(Point16 Pos, Type Tile) = Main.player[Main.myPlayer].GetModPlayer<StoragePlayer>().ViewingStorage();
 					if (Pos.X >= 0 && (Tile == typeof(TCraftingAccess) || Tile == typeof(TCraftingStorageAccess))) {
-						craftingTileSocketItems = GetHeart().GetCraftingSockets();
-						Main.NewText("Found: " + craftingTileSocketItems.Count() + " (non-empty) sockets: " + string.Join(", ", craftingTileSocketItems
-							.Select(s => { Item i = new Item(); i.SetDefaults(s.GetItemTypeFromTileAbove()); return i.Name; })));
+						//Main.NewText("Found: " + craftingTileSocketItems.Count() + " (non-empty) sockets: " + string.Join(", ", craftingTileSocketItems
+						//	.Select(s => { Item i = new Item(); i.SetDefaults(s.GetItemTypeFromTileAbove()); return i.Name; })));
 						if (curMouse.RightButton == ButtonState.Released) {
 							ResetSlotFocus();
 							MagicStorage.Instance.guiM.WaitForUnpress = false;
@@ -413,7 +421,7 @@ namespace MagicStorage.GUI {
 						}
 						UpdateRecipeText();
 						UpdateScrollBar();
-						UpdateCraftButton();
+						UpdateCraftButton(TileEntity.ByPosition[Pos] as TECraftingAccess);
 					}
 				}
 				else {
@@ -436,9 +444,9 @@ namespace MagicStorage.GUI {
 				if (Main.mouseX > PANEL_LEFT && Main.mouseX < ingredientLeft + (selectedRecipe != null ? ingredientWidth : 0) && Main.mouseY > panelTop && Main.mouseY < panelTop + panelHeight) {
 					player.mouseInterface = true;
 					player.showItemIcon = false;
-					InterfaceHelper.HideItemIconCache();
+					GUIHelper.HideItemIconCache();
 				}
-				//recipesPanel.Draw(Main.spriteBatch);
+				recipesPanel.Draw(Main.spriteBatch);
 				if (selectedRecipe != null) {
 					ingredientsPanel.Draw(Main.spriteBatch);
 				}
@@ -446,7 +454,10 @@ namespace MagicStorage.GUI {
 				if (threadRunning) {
 					Utils.DrawBorderString(Main.spriteBatch, Locale.GetStr(Locale.C.LOADING), pos + new Vector2(8f, 8f), Color.White);
 				}
-				stationZone.DrawText();
+
+				if (!MagicStorage.Instance.guiM.StorageGUI.Active) {
+					stationZone.DrawText();
+				}
 				recipeZone.DrawText();
 				ingredientZone.DrawText();
 				availableItemsZone.DrawText();
@@ -616,8 +627,8 @@ namespace MagicStorage.GUI {
 			}
 		}
 
-		private void UpdateCraftButton() {
-			Rectangle dim = InterfaceHelper.GetFullRectangle(craftButton);
+		private void UpdateCraftButton(TECraftingAccess access) {
+			Rectangle dim = GUIHelper.GetFullRectangle(craftButton);
 			bool flag = false;
 			if (curMouse.X > dim.X && curMouse.X < dim.X + dim.Width && curMouse.Y > dim.Y && curMouse.Y < dim.Y + dim.Height) {
 				craftButton.BackgroundColor = new Color(73, 94, 171);
@@ -629,7 +640,7 @@ namespace MagicStorage.GUI {
 							if (maxCraftTimer <= 0) {
 								maxCraftTimer = 1;
 							}
-							TryCraft();
+							TryCraft(access);
 							RefreshItems();
 							MagicStorage.Instance.guiM?.StorageGUI.RefreshItems();
 							Main.PlaySound(SoundID.Grab, -1, -1, 1);
@@ -665,18 +676,23 @@ namespace MagicStorage.GUI {
 
 		private Item[] GetCraftingStations() {
 			TECraftingAccess ent = GetCraftingEntity();
-			if (craftingTileSocketItems == null) {
-				craftingTileSocketItems = GetHeart().GetCraftingSockets();
+			if (craftingTileSocketItems == null || (craftingTileSocketItems != null && !craftingTileSocketItems.SequenceEqual(GetHeart().sockets))) {
+				craftingTileSocketItems = GetHeart().sockets;
 			}
 			if (ent is TECraftingStorageAccess a) {
-				return craftingTileSocketItems.Select(s => { Item i = new Item(); i.SetDefaults(s.GetItemTypeFromTileAbove()); return i; }).ToArray();
+				return craftingTileSocketItems.Where(w => w.GetItemTypeFromTileAbove() != -1)
+				.Select(s => { Item i = new Item(); i.SetDefaults(s.GetItemTypeFromTileAbove()); return i; })
+				.ToArray();
 			}
-			return ent?.stations.Concat(craftingTileSocketItems.Select(s => { Item i = new Item(); i.SetDefaults(s.GetItemTypeFromTileAbove()); return i; })).ToArray();
+			return ent?.stations;
 		}
 
-		public override void RefreshItems() {
+		public override void RefreshItems(TEStorageCenter center = null) {
+			if (!Active) {
+				return;
+			}
 			items.Clear();
-			TEStorageHeart heart = GetHeart();
+			TEStorageHeart heart = center as TEStorageHeart ?? GetHeart();
 			if (heart == null) {
 				return;
 			}
@@ -1177,7 +1193,7 @@ namespace MagicStorage.GUI {
 			}
 		}
 
-		private void TryCraft() {
+		private void TryCraft(TECraftingAccess access) {
 			List<Item> availableItems = new List<Item>(storageItems.Where(item => !blockStorageItems.Contains(new ItemData(item))).Select(item => item.Clone()));
 			List<Item> toWithdraw = new List<Item>();
 			for (int k = 0; k < selectedRecipe.requiredItem.Length; k++) {
@@ -1225,39 +1241,13 @@ namespace MagicStorage.GUI {
 			ItemLoader.OnCraft(resultItem, selectedRecipe);
 
 			if (Main.netMode == NetmodeID.SinglePlayer) {
-				foreach (Item item in DoCraft(GetHeart(), toWithdraw, resultItem)) {
+				foreach (Item item in access.DoCraft(GetHeart(), toWithdraw, resultItem)) {
 					Main.player[Main.myPlayer].QuickSpawnClonedItem(item, item.stack);
 				}
 			}
 			else if (Main.netMode == NetmodeID.MultiplayerClient) {
-				NetHelper.SendCraftRequest(GetHeart().ID, toWithdraw, resultItem);
+				NetHelper.SendCraftRequest(GetHeart().ID, access.ID, toWithdraw, resultItem);
 			}
-		}
-
-		internal List<Item> DoCraft(TEStorageHeart heart, List<Item> toWithdraw, Item result) {
-			List<Item> items = new List<Item>();
-			foreach (Item tryWithdraw in toWithdraw) {
-				Item withdrawn = heart.TryWithdraw(tryWithdraw);
-				if (!withdrawn.IsAir) {
-					items.Add(withdrawn);
-				}
-				if (withdrawn.stack < tryWithdraw.stack) {
-					for (int k = 0; k < items.Count; k++) {
-						heart.DepositItem(items[k]);
-						if (items[k].IsAir) {
-							items.RemoveAt(k);
-							k--;
-						}
-					}
-					return items;
-				}
-			}
-			items.Clear();
-			heart.DepositItem(result);
-			if (!result.IsAir) {
-				items.Add(result);
-			}
-			return items;
 		}
 
 		private bool TryDepositResult(Item item) {

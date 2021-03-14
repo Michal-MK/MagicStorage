@@ -1,4 +1,7 @@
-﻿using Terraria.ModLoader;
+﻿using MagicStorage.Extensions;
+using System.Linq;
+using System.Reflection;
+using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 
 namespace MagicStorage {
@@ -20,57 +23,26 @@ namespace MagicStorage {
 		public static bool moonlordDiamond = false;
 
 		public override void Initialize() {
-			kingSlimeDiamond = false;
-			boss1Diamond = false;
-			boss2Diamond = false;
-			boss3Diamond = false;
-			queenBeeDiamond = false;
-			hardmodeDiamond = false;
-			mechBoss1Diamond = false;
-			mechBoss2Diamond = false;
-			mechBoss3Diamond = false;
-			plantBossDiamond = false;
-			golemBossDiamond = false;
-			fishronDiamond = false;
-			ancientCultistDiamond = false;
-			moonlordDiamond = false;
+			GetType().GetFields(BindingFlags.Public | BindingFlags.Static)
+				.Where(w => w.FieldType == typeof(bool) && w.Name.Contains("Diamond"))
+				.ForEach(f => f.SetValue(null, false));
 		}
 
 		public override TagCompound Save() {
 			TagCompound tag = new TagCompound();
-			tag["saveVersion"] = saveVersion;
-			tag["kingSlimeDiamond"] = kingSlimeDiamond;
-			tag["boss1Diamond"] = boss1Diamond;
-			tag["boss2Diamond"] = boss2Diamond;
-			tag["boss3Diamond"] = boss3Diamond;
-			tag["queenBeeDiamond"] = queenBeeDiamond;
-			tag["hardmodeDiamond"] = hardmodeDiamond;
-			tag["mechBoss1Diamond"] = mechBoss1Diamond;
-			tag["mechBoss2Diamond"] = mechBoss2Diamond;
-			tag["mechBoss3Diamond"] = mechBoss3Diamond;
-			tag["plantBossDiamond"] = plantBossDiamond;
-			tag["golemBossDiamond"] = golemBossDiamond;
-			tag["fishronDiamond"] = fishronDiamond;
-			tag["ancientCultistDiamond"] = ancientCultistDiamond;
-			tag["moonlordDiamond"] = moonlordDiamond;
+			tag[nameof(saveVersion)] = saveVersion;
+
+			PropertyInfo tagProp = tag.GetType().GetProperty("Item", BindingFlags.Public | BindingFlags.Instance);
+			GetType().GetFields(BindingFlags.Public | BindingFlags.Static)
+				.Where(w => w.FieldType == typeof(bool) && w.Name.Contains("Diamond"))
+				.ForEach(f => tagProp.SetValue(tag, f.GetValue(null), new[] { f.Name }));
 			return tag;
 		}
 
 		public override void Load(TagCompound tag) {
-			kingSlimeDiamond = tag.GetBool("kingSlimeDiamond");
-			boss1Diamond = tag.GetBool("boss1Diamond");
-			boss2Diamond = tag.GetBool("boss2Diamond");
-			boss3Diamond = tag.GetBool("boss3Diamond");
-			queenBeeDiamond = tag.GetBool("queenBeeDiamond");
-			hardmodeDiamond = tag.GetBool("hardmodeDiamond");
-			mechBoss1Diamond = tag.GetBool("mechBoss1Diamond");
-			mechBoss2Diamond = tag.GetBool("mechBoss2Diamond");
-			mechBoss3Diamond = tag.GetBool("mechBoss3Diamond");
-			plantBossDiamond = tag.GetBool("plantBossDiamond");
-			golemBossDiamond = tag.GetBool("golemBossDiamond");
-			fishronDiamond = tag.GetBool("fishronDiamond");
-			ancientCultistDiamond = tag.GetBool("ancientCultistDiamond");
-			moonlordDiamond = tag.GetBool("moonlordDiamond");
+			GetType().GetFields(BindingFlags.Public | BindingFlags.Static)
+				.Where(w => w.FieldType == typeof(bool) && w.Name.Contains("Diamond"))
+				.ForEach(f => f.SetValue(null, tag.GetBool(f.Name)));
 		}
 	}
 }

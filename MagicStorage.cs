@@ -10,12 +10,14 @@ using Terraria.ModLoader;
 using Terraria.UI;
 using System.Linq;
 using MagicStorage.Components;
+using MagicStorage.Items;
 
 namespace MagicStorage {
 	public class MagicStorage : Mod {
 		public static MagicStorage Instance;
-		public static Mod bluemagicMod;
-		public static Mod legendMod;
+		//This mod should provide an API that other mods can consume instead of going though other mod's internals
+		//public static Mod bluemagicMod;
+		//public static Mod legendMod;
 
 		public static readonly Version requiredVersion = new Version(0, 11);
 
@@ -25,9 +27,7 @@ namespace MagicStorage {
 				throw new Exception("Magic storage requires a tModLoader version of at least " + requiredVersion);
 			}
 			Instance = this;
-			InterfaceHelper.Initialize();
-			legendMod = ModLoader.GetMod("LegendOfTerraria3");
-			bluemagicMod = ModLoader.GetMod("Bluemagic");
+			GUIHelper.Initialize();
 			AddTranslations();
 			guiM = new GUIManager();
 		}
@@ -47,11 +47,7 @@ namespace MagicStorage {
 
 		public override void Unload() {
 			Instance = null;
-			bluemagicMod = null;
-			legendMod = null;
 			tilesToItems.Clear();
-			//StorageGUI.Unload();
-			//CraftingGUI.Unload();
 		}
 
 		private void AddTranslations() {
@@ -293,34 +289,10 @@ namespace MagicStorage {
 
 			string anySnowText = $"{Language.GetText(Constants.ANY).Value} {Language.GetTextValue("Mods.MagicStorage.SnowBiomeBlock")}";
 			RecipeGroup anySnowBiomeBlock = new RecipeGroup(() => anySnowText, ItemID.SnowBlock, ItemID.IceBlock, ItemID.PurpleIceBlock, ItemID.PinkIceBlock);
-			if (bluemagicMod != null) {
-				anySnowBiomeBlock.ValidItems.Add(bluemagicMod.ItemType("DarkBlueIce"));
-			}
 			RecipeGroup.RegisterGroup(Constants.ANY_SNOWBLOCK, anySnowBiomeBlock);
 
-			RecipeGroup anyDiamod = new RecipeGroup(() => Any(ItemID.Diamond), ItemID.Diamond, ItemType("ShadowDiamond"));
-			if (legendMod != null) {
-				anyDiamod.ValidItems.Add(legendMod.ItemType("GemChrysoberyl"));
-				anyDiamod.ValidItems.Add(legendMod.ItemType("GemAlexandrite"));
-			}
+			RecipeGroup anyDiamod = new RecipeGroup(() => Any(ItemID.Diamond), ItemID.Diamond, ItemType(nameof(ShadowDiamond)));
 			RecipeGroup.RegisterGroup(Constants.ANY_DIA, anyDiamod);
-
-			if (legendMod != null) {
-				RecipeGroup amethyst = new RecipeGroup(() => Any(ItemID.Amethyst), ItemID.Amethyst, legendMod.ItemType("GemOnyx"), legendMod.ItemType("GemSpinel"));
-				RecipeGroup.RegisterGroup(Constants.ANY_AME, amethyst);
-
-				RecipeGroup topaz = new RecipeGroup(() => Any(ItemID.Topaz), ItemID.Topaz, legendMod.ItemType("GemGarnet"));
-				RecipeGroup.RegisterGroup(Constants.ANY_TOPA, topaz);
-				
-				RecipeGroup sapphire = new RecipeGroup(() => Any(ItemID.Sapphire), ItemID.Sapphire, legendMod.ItemType("GemCharoite"));
-				RecipeGroup.RegisterGroup(Constants.ANY_SAPH, sapphire);
-				
-				RecipeGroup emerald = new RecipeGroup(() => Any(ItemID.Emerald), legendMod.ItemType("GemPeridot"));
-				RecipeGroup.RegisterGroup(Constants.ANY_EMER, emerald);
-				
-				RecipeGroup ruby = new RecipeGroup(() => Any(ItemID.Ruby), ItemID.Ruby, legendMod.ItemType("GemOpal"));
-				RecipeGroup.RegisterGroup(Constants.ANY_RUBY, ruby);
-			}
 
 			string Any(int itemID) => $"{Language.GetText(Constants.ANY).Value} {Lang.GetItemNameValue(itemID)}";
 		}
@@ -332,7 +304,6 @@ namespace MagicStorage {
 		}
 
 		public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers) {
-			//InterfaceHelper.ModifyInterfaceLayers(layers);
 			guiM.UILayersHook(layers);
 		}
 
@@ -340,10 +311,7 @@ namespace MagicStorage {
 			if (!Main.instance.IsActive) {
 				return;
 			}
-
 			guiM?.Update(null);
-			//StorageGUI.Update(null);
-			//CraftingGUI.Update(null);
 		}
 	}
 }

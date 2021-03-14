@@ -13,7 +13,9 @@ using Terraria.ObjectData;
 namespace MagicStorage.Components {
 	public class TCraftingTileSocket : TStorageComponent {
 
-		private readonly Point16 storedPosition;
+		private Point16 storedPosition;
+
+		public Point16 Position => storedPosition;
 
 		public TCraftingTileSocket() {
 			tileTexture = "MagicStorage/Textures/Tiles/" + ActualName;

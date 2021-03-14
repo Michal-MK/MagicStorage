@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Input;
+﻿using MagicStorage.Components;
+using Microsoft.Xna.Framework.Input;
 
 namespace MagicStorage.GUI {
 	public abstract class GUIBase {
@@ -10,6 +11,6 @@ namespace MagicStorage.GUI {
 
 		public bool MouseClicked => curMouse.LeftButton == ButtonState.Pressed && oldMouse.LeftButton == ButtonState.Released;
 
-		public abstract void RefreshItems();
+		public abstract void RefreshItems(TEStorageCenter center = null);
 	}
 }

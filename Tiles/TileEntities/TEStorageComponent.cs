@@ -7,12 +7,13 @@ using Microsoft.Xna.Framework;
 
 namespace MagicStorage.Components {
 	public abstract class TEStorageComponent : ModTileEntity {
+
+		public abstract bool ValidTile(Tile tile);
+
 		public override bool ValidTile(int i, int j) {
 			Tile tile = Main.tile[i, j];
 			return tile.active() && ValidTile(tile);
 		}
-
-		public abstract bool ValidTile(Tile tile);
 
 		public override int Hook_AfterPlacement(int i, int j, int type, int style, int direction) {
 			if (Main.netMode == NetmodeID.MultiplayerClient) {
@@ -41,14 +42,14 @@ namespace MagicStorage.Components {
 		public override void OnKill() {
 			if (Main.netMode == NetmodeID.MultiplayerClient) {
 				NetHelper.SendSearchAndRefresh(Position.X, Position.Y);
+				MagicStorage.Instance.guiM.Refresh();
 			}
 			else {
-				TEStorageComponent.SearchAndRefreshNetwork(Position);
+				SearchAndRefreshNetwork(Position);
 			}
 		}
 
-		private static Point16[] checkNeighbors2x2 = new Point16[]
-		{
+		private static Point16[] checkNeighbors2x2 = new Point16[] {
 			new Point16(-1, 0),
 			new Point16(-1, 1),
 			new Point16(0, -1),
@@ -59,34 +60,22 @@ namespace MagicStorage.Components {
 			new Point16(0, 2)
 		};
 
-		private static Point16[] checkNeighbors1x1 = new Point16[]
-		{
+		private static Point16[] checkNeighbors1x1 = new Point16[] {
 			new Point16(-1, 0),
 			new Point16(0, -1),
 			new Point16(1, 0),
 			new Point16(0, 1)
 		};
 
-		private static Point16[] checkNeighbors2x1 = new Point16[]
-		{
-			//new Point16(-1, 0),
-			//new Point16(0, -1),
+		private static Point16[] checkNeighbors2x1 = new Point16[] {
 			new Point16(0, 1),
-			//new Point16(1, -1),
 			new Point16(1, 1),
-			//new Point16(2, 0),
 		};
 
-		private static Point16[] checkNeighbors3x1 = new Point16[]
-		{
-			//new Point16(-1, 0),
-			//new Point16(0, -1),
+		private static Point16[] checkNeighbors3x1 = new Point16[] {
 			new Point16(0, 1),
-			//new Point16(1, -1),
 			new Point16(1, 1),
-			//new Point16(2, -1),
 			new Point16(2, 1),
-			//new Point16(3, 0),
 		};
 
 		public IEnumerable<Point16> AdjacentComponents() {
@@ -103,7 +92,10 @@ namespace MagicStorage.Components {
 				int checkX = point.X + add.X;
 				int checkY = point.Y + add.Y;
 				Tile tile = Main.tile[checkX, checkY];
-				Dust.NewDust(new Vector2(checkX*16 + 4, checkY * 16 + 4), 1, 1, isConnector ? 60 : isLargeSocket || isSocket ? 61 : 62, Alpha:0, Scale: 0.3f);
+				if (ModContent.GetInstance<MagicStorageConfig>().DebugDustParticles) {
+					Dust.NewDust(new Vector2(checkX * 16 + 4, checkY * 16 + 4), 1, 1, 
+						isConnector ? 60 : isLargeSocket || isSocket ? 61 : 62, Alpha: 0, Scale: 0.3f);
+				}
 				if (!tile.active()) {
 					continue;
 				}

@@ -85,6 +85,32 @@ namespace MagicStorage.Components {
 			return item;
 		}
 
+		public List<Item> DoCraft(TEStorageHeart heart, List<Item> toWithdraw, Item result) {
+			List<Item> items = new List<Item>();
+			foreach (Item tryWithdraw in toWithdraw) {
+				Item withdrawn = heart.TryWithdraw(tryWithdraw);
+				if (!withdrawn.IsAir) {
+					items.Add(withdrawn);
+				}
+				if (withdrawn.stack < tryWithdraw.stack) {
+					for (int k = 0; k < items.Count; k++) {
+						heart.DepositItem(items[k]);
+						if (items[k].IsAir) {
+							items.RemoveAt(k);
+							k--;
+						}
+					}
+					return items;
+				}
+			}
+			items.Clear();
+			heart.DepositItem(result);
+			if (!result.IsAir) {
+				items.Add(result);
+			}
+			return items;
+		}
+
 		public override TagCompound Save() {
 			TagCompound tag = new TagCompound();
 			IList<TagCompound> listStations = new List<TagCompound>();

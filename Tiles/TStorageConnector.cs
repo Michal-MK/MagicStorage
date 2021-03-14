@@ -122,6 +122,7 @@ namespace MagicStorage.Components {
 			TStorageComponent.killTile = new Point16(i, j);
 			if (Main.netMode == NetmodeID.MultiplayerClient) {
 				NetHelper.SendSearchAndRefresh(TStorageComponent.killTile.X, TStorageComponent.killTile.Y);
+				MagicStorage.Instance.guiM.Refresh();
 			}
 			else {
 				TEStorageComponent.SearchAndRefreshNetwork(TStorageComponent.killTile);

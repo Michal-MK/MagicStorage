@@ -76,16 +76,15 @@ namespace MagicStorage.Components {
 			player.chest = -1;
 			Main.stackSplit = 600;
 			Point16 toOpen = new Point16(i, j);
-			(Point16 prevOpen, Type t) = modPlayer.ViewingStorage();
+			(Point16 prevOpen, Type _) = modPlayer.ViewingStorage();
 			if (prevOpen == toOpen) {
 				modPlayer.CloseStorage();
 				Main.PlaySound(SoundID.MenuClose, -1, -1, 1);
 				Recipe.FindRecipes();
 			}
-			else {
+			else if (modPlayer.CanOpen(toOpen)) {
 				bool hadOtherOpen = prevOpen.X >= 0 && prevOpen.Y >= 0;
 				modPlayer.OpenStorage(toOpen, GetType());
-				modPlayer.timeSinceOpen = 0;
 				if (PlayerInput.GrappleAndInteractAreShared) {
 					PlayerInput.Triggers.JustPressed.Grapple = false;
 				}

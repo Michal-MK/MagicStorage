@@ -26,8 +26,8 @@ namespace MagicStorage {
 				ReceiveOperationResult(reader);
 			}
 			else if (type == MessageType.RefreshNetworkItems) {
-				MagicStorage.Instance.guiM?.StorageGUI.RefreshItems();
-				//StorageGUI.RefreshItems();
+				MagicStorage.Instance.guiM?.StorageGUI?.RefreshItems();
+				MagicStorage.Instance.guiM?.CraftingGUI?.RefreshItems();
 			}
 			else if (type == MessageType.ClientSendTEUpdate) {
 				ReceiveClientSendTEUpdate(reader, sender);
@@ -217,7 +217,7 @@ namespace MagicStorage {
 			if (Main.netMode == NetmodeID.Server) {
 				ModPacket packet = MagicStorage.Instance.GetPacket();
 				packet.Write((byte)MessageType.RefreshNetworkItems);
-				packet.Write(ent);
+				//packet.Write(ent);
 				packet.Send();
 			}
 		}
@@ -239,11 +239,8 @@ namespace MagicStorage {
 				ent.ID = id;
 				TileEntity.ByID[id] = ent;
 				TileEntity.ByPosition[ent.Position] = ent;
-				if (ent is TEStorageUnit) {
-					TEStorageHeart heart = ((TEStorageUnit)ent).GetHeart();
-					if (heart != null) {
-						heart.ResetCompactStage();
-					}
+				if (ent is TEStorageUnit unit) {
+					unit.GetHeart()?.ResetCompactStage();
 				}
 				NetMessage.SendData(MessageID.TileEntitySharing, -1, sender, null, id, ent.Position.X, ent.Position.Y);
 			}
@@ -329,8 +326,7 @@ namespace MagicStorage {
 				}
 			}
 			Point16 pos = access.Position;
-			TStorageAccess modTile = TileLoader.GetTile(Main.tile[pos.X, pos.Y].type) as TStorageAccess;
-			if (modTile != null) {
+			if (TileLoader.GetTile(Main.tile[pos.X, pos.Y].type) is TStorageAccess modTile) {
 				TEStorageHeart heart = modTile.GetHeart(pos.X, pos.Y);
 				if (heart != null) {
 					SendRefreshNetworkItems(heart.ID);
@@ -354,7 +350,6 @@ namespace MagicStorage {
 				if (total > Main.mouseItem.maxStack) {
 					total = Main.mouseItem.maxStack;
 				}
-				int difference = total - Main.mouseItem.stack;
 				Main.mouseItem.stack = total;
 				item.stack -= total;
 			}
@@ -378,17 +373,18 @@ namespace MagicStorage {
 		public static void ReceiveResetCompactStage(BinaryReader reader) {
 			if (Main.netMode == NetmodeID.Server) {
 				int ent = reader.ReadInt32();
-				if (TileEntity.ByID[ent] is TEStorageHeart) {
-					((TEStorageHeart)TileEntity.ByID[ent]).ResetCompactStage();
+				if (TileEntity.ByID[ent] is TEStorageHeart heart) {
+					heart.ResetCompactStage();
 				}
 			}
 		}
 
-		public static void SendCraftRequest(int heart, List<Item> toWithdraw, Item result) {
+		public static void SendCraftRequest(int heart, int craftingAccess, List<Item> toWithdraw, Item result) {
 			if (Main.netMode == NetmodeID.MultiplayerClient) {
 				ModPacket packet = MagicStorage.Instance.GetPacket();
 				packet.Write((byte)MessageType.CraftRequest);
 				packet.Write(heart);
+				packet.Write(craftingAccess);
 				packet.Write(toWithdraw.Count);
 				foreach (Item item in toWithdraw) {
 					ItemIO.Send(item, packet, true);
@@ -402,19 +398,20 @@ namespace MagicStorage {
 			if (Main.netMode != NetmodeID.Server) {
 				return;
 			}
-			int ent = reader.ReadInt32();
-			if (!TileEntity.ByID.ContainsKey(ent) || !(TileEntity.ByID[ent] is TEStorageHeart)) {
+			int heartID = reader.ReadInt32();
+			if (!TileEntity.ByID.ContainsKey(heartID) || !(TileEntity.ByID[heartID] is TEStorageHeart)) {
 				return;
 			}
-			TEStorageHeart heart = (TEStorageHeart)TileEntity.ByID[ent];
+			TEStorageHeart heart = (TEStorageHeart)TileEntity.ByID[heartID];
+
+			TECraftingAccess access = (TECraftingAccess)TileEntity.ByID[reader.ReadInt32()];
 			int count = reader.ReadInt32();
 			List<Item> toWithdraw = new List<Item>();
 			for (int k = 0; k < count; k++) {
 				toWithdraw.Add(ItemIO.Receive(reader, true));
 			}
 			Item result = ItemIO.Receive(reader, true);
-			//List<Item> items = CraftingGUI.DoCraft(heart, toWithdraw, result);
-			List<Item> items = MagicStorage.Instance.guiM.CraftingGUI.DoCraft(heart, toWithdraw, result);
+			List<Item> items = access.DoCraft(heart, toWithdraw, result);
 			if (items.Count > 0) {
 				ModPacket packet = MagicStorage.Instance.GetPacket();
 				packet.Write((byte)MessageType.CraftResult);
@@ -424,7 +421,7 @@ namespace MagicStorage {
 				}
 				packet.Send(sender);
 			}
-			SendRefreshNetworkItems(ent);
+			SendRefreshNetworkItems(heartID);
 		}
 
 		public static void ReceiveCraftResult(BinaryReader reader) {
@@ -447,6 +444,7 @@ namespace MagicStorage {
 		StationOperationResult,
 		ResetCompactStage,
 		CraftRequest,
-		CraftResult
+		CraftResult,
+		TestPacket
 	}
 }

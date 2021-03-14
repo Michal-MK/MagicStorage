@@ -58,7 +58,7 @@ namespace MagicStorage {
 		}
 
 		private bool MouseOverButton(int mouseX, int mouseY, int button) {
-			Rectangle dim = InterfaceHelper.GetFullRectangle(this);
+			Rectangle dim = GUIHelper.GetFullRectangle(this);
 			float left = dim.X + button * (BUTTON_SIZE + BUTTON_PADDING) * Main.UIScale;
 			float right = left + BUTTON_SIZE * Main.UIScale;
 			float top = dim.Y;

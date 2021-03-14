@@ -50,6 +50,17 @@ namespace MagicStorage.GUI {
 			layers.Insert(mouseItemIndex, new LegacyGameInterfaceLayer("MagicStorage: StorageAccess", DrawStorageGUI, InterfaceScaleType.UI));
 		}
 
+		public void Refresh(TEStorageCenter center = null) {
+			if (StorageGUI == null || CraftingGUI == null) return;
+
+			if (StorageGUI.Active) {
+				StorageGUI.RefreshItems(center);
+			}
+			if (CraftingGUI.Active) {
+				CraftingGUI.RefreshItems(center);
+			}
+		}
+
 		public bool DrawStorageGUI() {
 			Player player = Main.player[Main.myPlayer];
 			StoragePlayer modPlayer = player.GetModPlayer<StoragePlayer>();

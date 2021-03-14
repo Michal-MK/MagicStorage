@@ -227,7 +227,8 @@ namespace MagicStorage.GUI {
 			curMouse = PlayerInput.MouseInfo;
 			if (Main.playerInventory) {
 				(Point16 Pos, Type Tile) = Main.player[Main.myPlayer].GetModPlayer<StoragePlayer>().ViewingStorage();
-				if ((Tile == typeof(TStorageAccess) || Tile == typeof(TStorageHeart)|| Tile == typeof(TCraftingStorageAccess)) && Pos.X >= 0) {
+				if ((Tile == typeof(TStorageAccess) || Tile == typeof(TStorageHeart) ||
+					 Tile == typeof(TCraftingStorageAccess) || Tile == typeof(TRemoteAccess)) && Pos.X >= 0) {
 					if (curMouse.RightButton == ButtonState.Released) {
 						ResetSlotFocus();
 						MagicStorage.Instance.guiM.WaitForUnpress = false;
@@ -253,7 +254,7 @@ namespace MagicStorage.GUI {
 			if (Main.mouseX > panelLeft && Main.mouseX < panelLeft + panelWidth && Main.mouseY > panelTop && Main.mouseY < panelTop + panelHeight) {
 				player.mouseInterface = true;
 				player.showItemIcon = false;
-				InterfaceHelper.HideItemIconCache();
+				GUIHelper.HideItemIconCache();
 			}
 
 			storagePanel.Draw(Main.spriteBatch);
@@ -309,7 +310,7 @@ namespace MagicStorage.GUI {
 			return modPlayer.GetStorageHeart();
 		}
 
-		public override void RefreshItems() {
+		public override void RefreshItems(TEStorageCenter center = null) {
 			if (Main.player[Main.myPlayer].GetModPlayer<StoragePlayer>().tileType == typeof(TCraftingStorageAccess)) {
 				MagicStorage.Instance.guiM?.CraftingGUI.RefreshItems();
 			}
@@ -317,7 +318,7 @@ namespace MagicStorage.GUI {
 				return;
 			}
 			items.Clear();
-			TEStorageHeart heart = GetHeart();
+			TEStorageHeart heart = center as TEStorageHeart ?? GetHeart();
 			if (heart == null) {
 				return;
 			}
@@ -331,7 +332,7 @@ namespace MagicStorage.GUI {
 		}
 
 		private void UpdateDepositButton() {
-			Rectangle dim = InterfaceHelper.GetFullRectangle(depositButton);
+			Rectangle dim = GUIHelper.GetFullRectangle(depositButton);
 			if (curMouse.X > dim.X && curMouse.X < dim.X + dim.Width && curMouse.Y > dim.Y && curMouse.Y < dim.Y + dim.Height) {
 				depositButton.BackgroundColor = new Color(73, 94, 171);
 				if (MouseClicked) {
