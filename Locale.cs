@@ -12,7 +12,7 @@ namespace MagicStorageTwo {
 		}
 
 		public static class C {
-			private const string BASE = "Mods.MagicStorage.";
+			private const string BASE = "Mods.MagicStorageTwo.";
 
 			public const string SAERCH_NAME = BASE + "SearchName";
 			public const string SAERCH_MOD = BASE + "SearchMod";
