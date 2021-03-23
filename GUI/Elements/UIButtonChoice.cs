@@ -39,21 +39,16 @@ namespace MagicStorageTwo {
 
 		public override void Update(GameTime gameTime) {
 			int oldChoice = choice;
-			if ((parentGui?.MouseClicked).HasValue && (parentGui?.MouseClicked).Value/* || StorageGUI.MouseClicked*/) {
+			if ((parentGui?.MouseClicked).HasValue && (parentGui?.MouseClicked).Value) {
 				for (int k = 0; k < buttons.Length; k++) {
 					if (MouseOverButton(parentGui.curMouse.X, parentGui.curMouse.Y, k)) {
 						choice = k;
 						break;
 					}
-					//if (MouseOverButton(StorageGUI.curMouse.X, StorageGUI.curMouse.Y, k)) {
-					//	choice = k;
-					//	break;
-					//}
 				}
 			}
 			if (oldChoice != choice) {
 				parentGui?.RefreshItems();
-				//StorageGUI.RefreshItems();
 			}
 		}
 

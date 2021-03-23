@@ -12,9 +12,6 @@ using Terraria.UI;
 
 namespace MagicStorageTwo {
 	public class UISearchBar : UIElement {
-		//TODO this hack
-		private static List<UISearchBar> searchBars = new List<UISearchBar>();
-
 		private readonly LocalizedText hintText = Locale.Get(Locale.C.SEARCH);
 
 		private string text = "";
@@ -30,14 +27,12 @@ namespace MagicStorageTwo {
 			hintText = defaultText;
 			parentGui = parent;
 			SetPadding(UICommon.PADDING);
-			searchBars.Add(this);
 		}
 
 		public void Reset() {
 			text = string.Empty;
 			cursorPosition = 0;
-			hasFocus = false;
-			CheckBlockInput();
+			Main.blockInput = hasFocus = false;
 		}
 
 		public override void Update(GameTime gameTime) {
@@ -45,39 +40,24 @@ namespace MagicStorageTwo {
 			cursorTimer %= 60;
 
 			Rectangle dim = GUIHelper.GetFullRectangle(this);
-			//MouseState mouse = StorageGUI.curMouse;
 			MouseState mouse = PlayerInput.MouseInfo;
 			bool mouseOver = mouse.X > dim.X && mouse.X < dim.X + dim.Width && mouse.Y > dim.Y && mouse.Y < dim.Y + dim.Height;
 			
 			bool changed = false;
 			string prev = text;
 
-			if ((parentGui?.MouseClicked).HasValue && (parentGui?.MouseClicked).Value/* || StorageGUI.MouseClicked*/) {
+			if ((parentGui?.MouseClicked).HasValue && (parentGui?.MouseClicked).Value) {
 				if (!hasFocus && mouseOver) {
-					hasFocus = true;
-					CheckBlockInput();
+					Main.blockInput = hasFocus = true;
 				}
 				else if (hasFocus && !mouseOver) {
-					hasFocus = false;
-					CheckBlockInput();
+					Main.blockInput = hasFocus = false;
 					cursorPosition = text.Length;
 				}
 			}
-			//else if (StorageGUI.curMouse.RightButton == ButtonState.Pressed && StorageGUI.oldMouse.RightButton == ButtonState.Released && Parent != null && hasFocus && !mouseOver) {
-			//	hasFocus = false;
-			//	cursorPosition = text.Length;
-			//	CheckBlockInput();
-			//}
-			//else if (StorageGUI.curMouse.RightButton == ButtonState.Pressed && StorageGUI.oldMouse.RightButton == ButtonState.Released && mouseOver) {
-			//	if (text.Length > 0) {
-			//		text = string.Empty;
-			//		cursorPosition = 0;
-			//	}
-			//}	
 			else if (parentGui.curMouse.RightButton == ButtonState.Pressed && parentGui.oldMouse.RightButton == ButtonState.Released && Parent != null && hasFocus && !mouseOver) {
-				hasFocus = false;
+				Main.blockInput = hasFocus = false;
 				cursorPosition = text.Length;
-				CheckBlockInput();
 			}
 			else if (parentGui.curMouse.RightButton == ButtonState.Pressed && parentGui.oldMouse.RightButton == ButtonState.Released && mouseOver) {
 				if (text.Length > 0) {
@@ -138,8 +118,7 @@ namespace MagicStorageTwo {
 				}
 
 				if (KeyTyped(Keys.Enter) || KeyTyped(Keys.Tab) || KeyTyped(Keys.Escape)) {
-					hasFocus = false;
-					CheckBlockInput();
+					Main.blockInput = hasFocus = false;
 				}
 			}
 			base.Update(gameTime);
@@ -183,16 +162,6 @@ namespace MagicStorageTwo {
 
 		public bool KeyTyped(Keys key) {
 			return Main.keyState.IsKeyDown(key) && !Main.oldKeyState.IsKeyDown(key);
-		}
-
-		private static void CheckBlockInput() {
-			Main.blockInput = false;
-			foreach (UISearchBar searchBar in searchBars) {
-				if (searchBar.hasFocus) {
-					Main.blockInput = true;
-					break;
-				}
-			}
 		}
 	}
 }
