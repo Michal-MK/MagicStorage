@@ -1,4 +1,4 @@
-﻿namespace MagicStorage {
+﻿namespace MagicStorageTwo {
 	public static class Constants {
 		public const string MOD = "MagicStorage";
 		public const string ANY = "LegacyMisc.37";

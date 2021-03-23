@@ -5,7 +5,7 @@ using Terraria.ModLoader;
 using Terraria.ID;
 using Microsoft.Xna.Framework;
 
-namespace MagicStorage.Components {
+namespace MagicStorageTwo.Components {
 	public abstract class TEStorageComponent : ModTileEntity {
 
 		public abstract bool ValidTile(Tile tile);
@@ -42,7 +42,7 @@ namespace MagicStorage.Components {
 		public override void OnKill() {
 			if (Main.netMode == NetmodeID.MultiplayerClient) {
 				NetHelper.SendSearchAndRefresh(Position.X, Position.Y);
-				MagicStorage.Instance.guiM.Refresh();
+				MagicStorageTwo.Instance.guiM.Refresh();
 			}
 			else {
 				SearchAndRefreshNetwork(Position);
@@ -84,9 +84,9 @@ namespace MagicStorage.Components {
 
 		public static IEnumerable<Point16> AdjacentComponents(Point16 point, bool isConnectorCanPlace = false) {
 			List<Point16> points = new List<Point16>();
-			bool isConnector = Main.tile[point.X, point.Y].type == MagicStorage.Instance.TileType(nameof(TStorageConnector)) || isConnectorCanPlace;
-			bool isLargeSocket = Main.tile[point.X, point.Y].type == MagicStorage.Instance.TileType(nameof(TCraftingTileSocketLarge));
-			bool isSocket = Main.tile[point.X, point.Y].type == MagicStorage.Instance.TileType(nameof(TCraftingTileSocket));
+			bool isConnector = Main.tile[point.X, point.Y].type == MagicStorageTwo.Instance.TileType(nameof(TStorageConnector)) || isConnectorCanPlace;
+			bool isLargeSocket = Main.tile[point.X, point.Y].type == MagicStorageTwo.Instance.TileType(nameof(TCraftingTileSocketLarge));
+			bool isSocket = Main.tile[point.X, point.Y].type == MagicStorageTwo.Instance.TileType(nameof(TCraftingTileSocket));
 
 			foreach (Point16 add in (isConnector ? checkNeighbors1x1 : isLargeSocket ? checkNeighbors3x1 : isSocket ? checkNeighbors2x1 : checkNeighbors2x2)) {
 				int checkX = point.X + add.X;
@@ -114,7 +114,7 @@ namespace MagicStorage.Components {
 						points.Add(check);
 					}
 				}
-				else if (tile.type == MagicStorage.Instance.TileType(nameof(TStorageConnector))) {
+				else if (tile.type == MagicStorageTwo.Instance.TileType(nameof(TStorageConnector))) {
 					Point16 check = new Point16(checkX, checkY);
 					if (!points.Contains(check)) {
 						points.Add(check);

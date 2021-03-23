@@ -1,14 +1,14 @@
-using MagicStorage.Components;
+using MagicStorageTwo.Components;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
 using Terraria.UI;
 using Terraria.ID;
 using System;
-using MagicStorage.Extensions;
+using MagicStorageTwo.Extensions;
 using Terraria.ObjectData;
 
-namespace MagicStorage {
+namespace MagicStorageTwo {
 	public class StoragePlayer : ModPlayer {
 
 		private bool postOpenCleanup;
@@ -71,12 +71,12 @@ namespace MagicStorage {
 			tileType = tile;
 			if (tileType == typeof(TStorageAccess) || tileType == typeof(TStorageHeart) ||
 				tileType == typeof(TCraftingStorageAccess) || tileType == typeof(TRemoteAccess)) {
-				MagicStorage.Instance.guiM.StorageGUI.Active = true;
-				MagicStorage.Instance.guiM.StorageGUI.RefreshItems();
+				MagicStorageTwo.Instance.guiM.StorageGUI.Active = true;
+				MagicStorageTwo.Instance.guiM.StorageGUI.RefreshItems();
 			}
 			if (tileType == typeof(TCraftingAccess) || tileType == typeof(TCraftingStorageAccess)) {
-				MagicStorage.Instance.guiM.CraftingGUI.Active = true;
-				MagicStorage.Instance.guiM.CraftingGUI.RefreshItems();
+				MagicStorageTwo.Instance.guiM.CraftingGUI.Active = true;
+				MagicStorageTwo.Instance.guiM.CraftingGUI.RefreshItems();
 			}
 			postOpenCleanup = true;
 		}
@@ -85,20 +85,20 @@ namespace MagicStorage {
 			storageAccess = new Point16(-1, -1);
 			Main.blockInput = false;
 
-			if (MagicStorage.Instance.guiM.StorageGUI.Active) {
-				MagicStorage.Instance.guiM?.StorageGUI.nameSearchBar.Reset();
+			if (MagicStorageTwo.Instance.guiM.StorageGUI.Active) {
+				MagicStorageTwo.Instance.guiM?.StorageGUI.nameSearchBar.Reset();
 			}
-			if (MagicStorage.Instance.guiM.StorageGUI.Active) {
-				MagicStorage.Instance.guiM.StorageGUI.modSearchBar.Reset();
+			if (MagicStorageTwo.Instance.guiM.StorageGUI.Active) {
+				MagicStorageTwo.Instance.guiM.StorageGUI.modSearchBar.Reset();
 			}
-			if (MagicStorage.Instance.guiM.CraftingGUI.Active) {
-				MagicStorage.Instance.guiM.CraftingGUI.nameSearchBar.Reset();
+			if (MagicStorageTwo.Instance.guiM.CraftingGUI.Active) {
+				MagicStorageTwo.Instance.guiM.CraftingGUI.nameSearchBar.Reset();
 			}
-			if (MagicStorage.Instance.guiM.CraftingGUI.Active) {
-				MagicStorage.Instance.guiM.CraftingGUI.modSearchBar.Reset();
+			if (MagicStorageTwo.Instance.guiM.CraftingGUI.Active) {
+				MagicStorageTwo.Instance.guiM.CraftingGUI.modSearchBar.Reset();
 			}
-			MagicStorage.Instance.guiM.StorageGUI.Active = false;
-			MagicStorage.Instance.guiM.CraftingGUI.Active = false;
+			MagicStorageTwo.Instance.guiM.StorageGUI.Active = false;
+			MagicStorageTwo.Instance.guiM.CraftingGUI.Active = false;
 		}
 
 		public (Point16 Pos, Type Tile) ViewingStorage() {
@@ -161,7 +161,7 @@ namespace MagicStorage {
 			}
 			if (item.type != oldType || item.stack != oldStack) {
 				Main.PlaySound(SoundID.Grab, -1, -1, 1, 1f, 0f);
-				MagicStorage.Instance.guiM?.Refresh();
+				MagicStorageTwo.Instance.guiM?.Refresh();
 			}
 			return true;
 		}

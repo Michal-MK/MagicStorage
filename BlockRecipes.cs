@@ -3,7 +3,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
 
-namespace MagicStorage {
+namespace MagicStorageTwo {
 	public class BlockRecipes : GlobalRecipe {
 		public static bool active = true;
 

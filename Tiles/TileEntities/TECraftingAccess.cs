@@ -4,7 +4,7 @@ using Terraria;
 using Terraria.ModLoader.IO;
 using Terraria.ID;
 
-namespace MagicStorage.Components {
+namespace MagicStorageTwo.Components {
 	public class TECraftingAccess : TEStorageComponent {
 		public Item[] stations = new Item[10];
 

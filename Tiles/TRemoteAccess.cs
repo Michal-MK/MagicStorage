@@ -1,9 +1,9 @@
-using MagicStorage.Items;
+using MagicStorageTwo.Items;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
 
-namespace MagicStorage.Components {
+namespace MagicStorageTwo.Components {
 	public class TRemoteAccess : TStorageAccess {
 		public override ModTileEntity GetTileEntity() {
 			return mod.GetTileEntity(nameof(TERemoteAccess));

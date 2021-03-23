@@ -4,7 +4,7 @@ using Terraria;
 using Terraria.ModLoader.IO;
 using Terraria.ID;
 
-namespace MagicStorage.Components {
+namespace MagicStorageTwo.Components {
 	public class TECraftingStorageAccess : TECraftingAccess {
 
 		public override bool ValidTile(Tile tile) {

@@ -1,10 +1,10 @@
-﻿using MagicStorage.Extensions;
+﻿using MagicStorageTwo.Extensions;
 using System.Linq;
 using System.Reflection;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 
-namespace MagicStorage {
+namespace MagicStorageTwo {
 	public class StorageWorld : ModWorld {
 		private const int saveVersion = 0;
 		public static bool kingSlimeDiamond = false;

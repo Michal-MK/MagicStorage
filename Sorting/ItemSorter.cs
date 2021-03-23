@@ -1,9 +1,9 @@
-using MagicStorage.GUI;
+using MagicStorageTwo.GUI;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;
 
-namespace MagicStorage.Sorting {
+namespace MagicStorageTwo.Sorting {
 	public static class ItemSorter {
 		public static IEnumerable<Item> SortAndFilter(IEnumerable<Item> items, SortMode sortMode, FilterMode filterMode, string modFilter, string nameFilter) {
 			ItemFilter filter;
@@ -114,7 +114,7 @@ namespace MagicStorage.Sorting {
 				//if (CraftingGUI.threadNeedsRestart) {
 				//	return new List<Recipe>();
 				//}	
-				if (MagicStorage.Instance.guiM.CraftingGUI.threadNeedsRestart) {
+				if (MagicStorageTwo.Instance.guiM.CraftingGUI.threadNeedsRestart) {
 					return new List<Recipe>();
 				}
 			}

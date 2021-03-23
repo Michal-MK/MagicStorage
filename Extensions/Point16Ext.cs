@@ -1,6 +1,6 @@
 ﻿using Terraria.DataStructures;
 
-namespace MagicStorage.Extensions {
+namespace MagicStorageTwo.Extensions {
 	public static class Point16Ext {
 		/// <summary>
 		/// Is the <see cref="Point16"/> made of non-negative elements

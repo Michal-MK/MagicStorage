@@ -4,11 +4,11 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using MagicStorage.Items.Base;
+using MagicStorageTwo.Items.Base;
 using System;
-using MagicStorage.Components;
+using MagicStorageTwo.Components;
 
-namespace MagicStorage.Items {
+namespace MagicStorageTwo.Items {
 	public class PortableAccess : Locator {
 		public override void SetStaticDefaults() {
 			DisplayName.SetDefault("Portable Remote Storage Access");

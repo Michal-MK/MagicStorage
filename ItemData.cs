@@ -1,7 +1,7 @@
 using System;
 using Terraria;
 
-namespace MagicStorage {
+namespace MagicStorageTwo {
 	public struct ItemData {
 		public int Type { get; }
 		public int Prefix { get; }

@@ -1,5 +1,5 @@
-using MagicStorage.Components;
-using MagicStorage.Sorting;
+using MagicStorageTwo.Components;
+using MagicStorageTwo.Sorting;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -13,7 +13,7 @@ using Terraria.ID;
 using Terraria.DataStructures;
 using Terraria.GameInput;
 
-namespace MagicStorage.GUI {
+namespace MagicStorageTwo.GUI {
 	public class StorageGUINew : GUIBase {
 		private const int NUM_COLS = 10;
 		private const float INV_SCALE = 1f;
@@ -67,11 +67,11 @@ namespace MagicStorage.GUI {
 
 			panelTop = Main.instance.invBottom + 60;
 
-			float innerCraftingPanelWidth = MagicStorage.Instance.guiM.CraftingGUI.ActualWidth;
+			float innerCraftingPanelWidth = MagicStorageTwo.Instance.guiM.CraftingGUI.ActualWidth;
 			float ingredientWidth = CraftingGUINew.AVAILABLE_INGREDIENT_NUM_COLS * (smallSlotWidth + UICommon.PADDING) + 20f + UICommon.PADDING;
 			ingredientWidth += 12 * 2;
 
-			panelLeft = 20f + (OffseLeft ? MagicStorage.Instance.guiM.CraftingGUI.HasRecipe ? innerCraftingPanelWidth + ingredientWidth : innerCraftingPanelWidth : 0);
+			panelLeft = 20f + (OffseLeft ? MagicStorageTwo.Instance.guiM.CraftingGUI.HasRecipe ? innerCraftingPanelWidth + ingredientWidth : innerCraftingPanelWidth : 0);
 			storagePanel = new UIPanel();
 			panelWidth = itemsZone.ActualWidth + storagePanel.PaddingRight + storagePanel.PaddingLeft + 20 + UICommon.PADDING;
 			storagePanel.Left.Set(panelLeft, 0f);
@@ -183,9 +183,9 @@ namespace MagicStorage.GUI {
 				sortButtons = new UIButtonChoice(this, new Texture2D[]
 				{
 					Main.inventorySortTexture[0],
-					MagicStorage.Instance.GetTexture("Textures/Sorting/SortID"),
-					MagicStorage.Instance.GetTexture("Textures/Sorting/SortName"),
-					MagicStorage.Instance.GetTexture("Textures/Sorting/SortNumber")
+					MagicStorageTwo.Instance.GetTexture("Textures/Sorting/SortID"),
+					MagicStorageTwo.Instance.GetTexture("Textures/Sorting/SortName"),
+					MagicStorageTwo.Instance.GetTexture("Textures/Sorting/SortNumber")
 				},
 				new LocalizedText[]
 				{
@@ -201,13 +201,13 @@ namespace MagicStorage.GUI {
 			if (filterButtons == null) {
 				filterButtons = new UIButtonChoice(this, new Texture2D[]
 				{
-					MagicStorage.Instance.GetTexture("Textures/Filtering/FilterAll"),
-					MagicStorage.Instance.GetTexture("Textures/Filtering/FilterMelee"),
-					MagicStorage.Instance.GetTexture("Textures/Filtering/FilterPickaxe"),
-					MagicStorage.Instance.GetTexture("Textures/Filtering/FilterArmor"),
-					MagicStorage.Instance.GetTexture("Textures/Filtering/FilterPotion"),
-					MagicStorage.Instance.GetTexture("Textures/Filtering/FilterTile"),
-					MagicStorage.Instance.GetTexture("Textures/Filtering/FilterMisc"),
+					MagicStorageTwo.Instance.GetTexture("Textures/Filtering/FilterAll"),
+					MagicStorageTwo.Instance.GetTexture("Textures/Filtering/FilterMelee"),
+					MagicStorageTwo.Instance.GetTexture("Textures/Filtering/FilterPickaxe"),
+					MagicStorageTwo.Instance.GetTexture("Textures/Filtering/FilterArmor"),
+					MagicStorageTwo.Instance.GetTexture("Textures/Filtering/FilterPotion"),
+					MagicStorageTwo.Instance.GetTexture("Textures/Filtering/FilterTile"),
+					MagicStorageTwo.Instance.GetTexture("Textures/Filtering/FilterMisc"),
 				},
 				new LocalizedText[]
 				{
@@ -231,7 +231,7 @@ namespace MagicStorage.GUI {
 					 Tile == typeof(TCraftingStorageAccess) || Tile == typeof(TRemoteAccess)) && Pos.X >= 0) {
 					if (curMouse.RightButton == ButtonState.Released) {
 						ResetSlotFocus();
-						MagicStorage.Instance.guiM.WaitForUnpress = false;
+						MagicStorageTwo.Instance.guiM.WaitForUnpress = false;
 					}
 					if (storagePanel != null)
 						storagePanel.Update(gameTime);
@@ -312,7 +312,7 @@ namespace MagicStorage.GUI {
 
 		public override void RefreshItems(TEStorageCenter center = null) {
 			if (Main.player[Main.myPlayer].GetModPlayer<StoragePlayer>().tileType == typeof(TCraftingStorageAccess)) {
-				MagicStorage.Instance.guiM?.CraftingGUI.RefreshItems();
+				MagicStorageTwo.Instance.guiM?.CraftingGUI.RefreshItems();
 			}
 			if (StoragePlayer.IsOnlyStorageCrafting()) {
 				return;
@@ -389,7 +389,7 @@ namespace MagicStorage.GUI {
 				hoverSlot = visualSlot;
 			}
 
-			if (slotFocus >= 0 && !MagicStorage.Instance.guiM.WaitForUnpress) {
+			if (slotFocus >= 0 && !MagicStorageTwo.Instance.guiM.WaitForUnpress) {
 				SlotFocusLogic();
 			}
 		}

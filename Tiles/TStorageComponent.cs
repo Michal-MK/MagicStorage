@@ -1,4 +1,4 @@
-using MagicStorage.Items;
+using MagicStorageTwo.Items;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using Terraria;
@@ -7,18 +7,18 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
-namespace MagicStorage.Components {
+namespace MagicStorageTwo.Components {
 	public class TStorageComponent : ModTile {
 
 		public TStorageComponent() {
-			tileTexture = "MagicStorage/Textures/Tiles/" + ActualName;
+			tileTexture = "MagicStorageTwo/Textures/Tiles/" + ActualName;
 		}
 
 		public string ActualName => GetType().Name.Remove(0, 1);
 
 		public static Point16 killTile = new Point16(-1, -1);
 
-		public override string HighlightTexture => "MagicStorage/Textures/Tiles/StorageComponent_Highlight";
+		public override string HighlightTexture => "MagicStorageTwo/Textures/Tiles/StorageComponent_Highlight";
 
 		public string tileTexture;
 

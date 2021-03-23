@@ -5,10 +5,10 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using MagicStorage.Items.Base;
+using MagicStorageTwo.Items.Base;
 using Terraria.ModLoader.IO;
 
-namespace MagicStorage.Items {
+namespace MagicStorageTwo.Items {
 	public class Locator : BaseItem {
 		public Point16 location = new Point16(-1, -1);
 

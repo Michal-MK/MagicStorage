@@ -1,9 +1,9 @@
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using MagicStorage.Items.Base;
+using MagicStorageTwo.Items.Base;
 
-namespace MagicStorage.Items {
+namespace MagicStorageTwo.Items {
 	public class RadiantJewelDrop : GlobalNPC {
 		public override void NPCLoot(NPC npc) {
 			if (npc.type == NPCID.MoonLordCore && !Main.expertMode && Main.rand.Next(20) == 0) {

@@ -10,7 +10,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
-namespace MagicStorage.Components {
+namespace MagicStorageTwo.Components {
 	public class TCraftingTileSocket : TStorageComponent {
 
 		private Point16 storedPosition;
@@ -18,7 +18,7 @@ namespace MagicStorage.Components {
 		public Point16 Position => storedPosition;
 
 		public TCraftingTileSocket() {
-			tileTexture = "MagicStorage/Textures/Tiles/" + ActualName;
+			tileTexture = "MagicStorageTwo/Textures/Tiles/" + ActualName;
 		}
 
 		public TCraftingTileSocket(Point16 pos) : this() {
@@ -67,7 +67,7 @@ namespace MagicStorage.Components {
 			if (val == ushort.MaxValue) {
 				return -1;
 			}
-			return MagicStorage.tilesToItems[val];
+			return MagicStorageTwo.tilesToItems[val];
 		}
 
 

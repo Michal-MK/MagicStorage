@@ -2,10 +2,10 @@
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using MagicStorage.Items.Base;
-using MagicStorage.Components;
+using MagicStorageTwo.Items.Base;
+using MagicStorageTwo.Components;
 
-namespace MagicStorage.Items {
+namespace MagicStorageTwo.Items {
 	public class CraftingAccess : BaseItem {
 		public override void SetStaticDefaults() {
 			DisplayName.SetDefault("Storage Crafting Interface");

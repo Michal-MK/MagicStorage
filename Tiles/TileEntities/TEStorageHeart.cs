@@ -8,7 +8,7 @@ using Terraria.ModLoader.IO;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace MagicStorage.Components {
+namespace MagicStorageTwo.Components {
 	public class TEStorageHeart : TEStorageCenter {
 		private ReaderWriterLockSlim itemsLock = new ReaderWriterLockSlim();
 		public List<Point16> remoteAccesses = new List<Point16>();

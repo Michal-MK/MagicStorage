@@ -8,15 +8,15 @@ using Terraria.ID;
 using System.Reflection;
 using System.Linq;
 using System;
-using MagicStorage.Items;
+using MagicStorageTwo.Items;
 
-namespace MagicStorage.Components {
+namespace MagicStorageTwo.Components {
 	public class TStorageConnector : ModTile {
 
 		private static HashSet<ushort> tilesToConnect = new HashSet<ushort>();
 
 		public TStorageConnector() {
-			tileTexture = "MagicStorage/Textures/Tiles/StorageConnector";
+			tileTexture = "MagicStorageTwo/Textures/Tiles/StorageConnector";
 		}
 
 		public static void SetupConnectors() {
@@ -122,7 +122,7 @@ namespace MagicStorage.Components {
 			TStorageComponent.killTile = new Point16(i, j);
 			if (Main.netMode == NetmodeID.MultiplayerClient) {
 				NetHelper.SendSearchAndRefresh(TStorageComponent.killTile.X, TStorageComponent.killTile.Y);
-				MagicStorage.Instance.guiM.Refresh();
+				MagicStorageTwo.Instance.guiM.Refresh();
 			}
 			else {
 				TEStorageComponent.SearchAndRefreshNetwork(TStorageComponent.killTile);

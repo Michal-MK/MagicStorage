@@ -1,7 +1,7 @@
-﻿using MagicStorage.Components;
+﻿using MagicStorageTwo.Components;
 using Microsoft.Xna.Framework.Input;
 
-namespace MagicStorage.GUI {
+namespace MagicStorageTwo.GUI {
 	public abstract class GUIBase {
 		public bool Active { get; set; }
 

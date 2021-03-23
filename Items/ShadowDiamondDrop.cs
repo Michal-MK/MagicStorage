@@ -1,10 +1,10 @@
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using MagicStorage.Items.Base;
-using MagicStorage.Items;
+using MagicStorageTwo.Items.Base;
+using MagicStorageTwo.Items;
 
-namespace MagicStorage.NPCs {
+namespace MagicStorageTwo.NPCs {
 	public class ShadowDiamondDrop : GlobalNPC {
 		public override void NPCLoot(NPC npc) {
 			if (npc.type == NPCID.KingSlime && !StorageWorld.kingSlimeDiamond) {

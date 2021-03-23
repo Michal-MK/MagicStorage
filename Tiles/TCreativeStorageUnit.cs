@@ -1,10 +1,10 @@
-using MagicStorage.Items;
+using MagicStorageTwo.Items;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace MagicStorage.Components {
+namespace MagicStorageTwo.Components {
 	public class TCreativeStorageUnit : TStorageComponent {
 		public override ModTileEntity GetTileEntity() {
 			return mod.GetTileEntity(nameof(TECreativeStorageUnit));

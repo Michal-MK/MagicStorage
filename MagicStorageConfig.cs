@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using Terraria.ModLoader.Config;
 
-namespace MagicStorage {
+namespace MagicStorageTwo {
 	public class MagicStorageConfig : ModConfig {
 		public override ConfigScope Mode => ConfigScope.ClientSide;
 

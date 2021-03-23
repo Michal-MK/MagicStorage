@@ -1,7 +1,7 @@
-using MagicStorage.Components;
-using MagicStorage.GUI.Elements;
-using MagicStorage.Items;
-using MagicStorage.Sorting;
+using MagicStorageTwo.Components;
+using MagicStorageTwo.GUI.Elements;
+using MagicStorageTwo.Items;
+using MagicStorageTwo.Sorting;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -18,11 +18,11 @@ using Terraria.Localization;
 using Terraria.Map;
 using Terraria.ModLoader;
 using Terraria.UI;
-using TCraftingAccess = MagicStorage.Components.TCraftingAccess;
-using TCraftingStorageAccess = MagicStorage.Components.TCraftingStorageAccess;
-using TCraftingTileSocket = MagicStorage.Components.TCraftingTileSocket;
+using TCraftingAccess = MagicStorageTwo.Components.TCraftingAccess;
+using TCraftingStorageAccess = MagicStorageTwo.Components.TCraftingStorageAccess;
+using TCraftingTileSocket = MagicStorageTwo.Components.TCraftingTileSocket;
 
-namespace MagicStorage.GUI {
+namespace MagicStorageTwo.GUI {
 	public class CraftingGUINew : GUIBase {
 
 		public const int AVAILABLE_RECIPES_NUM_COLS = 10;
@@ -212,7 +212,7 @@ namespace MagicStorage.GUI {
 			modSearchBar.Height.Set(0f, 1f);
 			ingredientsTopBar.Append(modSearchBar);
 			stationText.Top.Set(sortButtons.Height.Pixels + filterButtons.Height.Pixels + UICommon.PADDING * 4, 0f);
-			if (!MagicStorage.Instance.guiM.StorageGUI.Active) {
+			if (!MagicStorageTwo.Instance.guiM.StorageGUI.Active) {
 				recipesPanel.Append(stationText);
 			}
 
@@ -220,15 +220,15 @@ namespace MagicStorage.GUI {
 			stationZone.Height.Set(stationZone.ActualHeight, 0);
 			stationZone.Top.Set(stationText.Top.Pixels + stationText.GetDimensions().Height + UICommon.PADDING * 3, 0f);
 			stationZone.SetDimensions(10, 1);
-			if (!MagicStorage.Instance.guiM.StorageGUI.Active) {
+			if (!MagicStorageTwo.Instance.guiM.StorageGUI.Active) {
 				recipesPanel.Append(stationZone);
 			}
 			recipeText.Top.Set(stationZone.Top.Pixels + stationZone.ActualHeight + UICommon.PADDING * 2, 0f);
-			if (!MagicStorage.Instance.guiM.StorageGUI.Active) {
+			if (!MagicStorageTwo.Instance.guiM.StorageGUI.Active) {
 				recipesPanel.Append(recipeText);
 			}
 			recipeZone.Width.Set(0f, 1f);
-			if (MagicStorage.Instance.guiM.StorageGUI.Active) {
+			if (MagicStorageTwo.Instance.guiM.StorageGUI.Active) {
 				recipeZone.Top.Set(recipesTopBar.Top.Pixels + recipesTopBar.GetDimensions().Height * 2 + UICommon.PADDING * 3, 0f);
 			}
 			else {
@@ -357,8 +357,8 @@ namespace MagicStorage.GUI {
 			if (sortButtons != null) return;
 			sortButtons = new UIButtonChoice(this, new Texture2D[] {
 				Main.inventorySortTexture[0],
-				MagicStorage.Instance.GetTexture("Textures/Sorting/SortID"),
-				MagicStorage.Instance.GetTexture("Textures/Sorting/SortName")
+				MagicStorageTwo.Instance.GetTexture("Textures/Sorting/SortID"),
+				MagicStorageTwo.Instance.GetTexture("Textures/Sorting/SortName")
 			}, new LocalizedText[] {
 				Locale.Get(Locale.C.SORT_DEF),
 				Locale.Get(Locale.C.SORT_ID),
@@ -369,8 +369,8 @@ namespace MagicStorage.GUI {
 		private void InitRecipeButtons() {
 			if (recipeButtons != null) return;
 			recipeButtons = new UIButtonChoice(this, new Texture2D[] {
-				MagicStorage.Instance.GetTexture("Textures/Filtering/RecipeAvailable"),
-				MagicStorage.Instance.GetTexture("Textures/Filtering/RecipeAll")
+				MagicStorageTwo.Instance.GetTexture("Textures/Filtering/RecipeAvailable"),
+				MagicStorageTwo.Instance.GetTexture("Textures/Filtering/RecipeAll")
 			}, new LocalizedText[] {
 				Locale.Get(Locale.C.RECIPE_AVAIL),
 				Locale.Get(Locale.C.RECIPE_ALL),
@@ -380,13 +380,13 @@ namespace MagicStorage.GUI {
 		private void InitFilterButtons() {
 			if (filterButtons != null) return;
 			filterButtons = new UIButtonChoice(this, new Texture2D[] {
-				MagicStorage.Instance.GetTexture("Textures/Filtering/FilterAll"),
-				MagicStorage.Instance.GetTexture("Textures/Filtering/FilterMelee"),
-				MagicStorage.Instance.GetTexture("Textures/Filtering/FilterPickaxe"),
-				MagicStorage.Instance.GetTexture("Textures/Filtering/FilterArmor"),
-				MagicStorage.Instance.GetTexture("Textures/Filtering/FilterPotion"),
-				MagicStorage.Instance.GetTexture("Textures/Filtering/FilterTile"),
-				MagicStorage.Instance.GetTexture("Textures/Filtering/FilterMisc"),
+				MagicStorageTwo.Instance.GetTexture("Textures/Filtering/FilterAll"),
+				MagicStorageTwo.Instance.GetTexture("Textures/Filtering/FilterMelee"),
+				MagicStorageTwo.Instance.GetTexture("Textures/Filtering/FilterPickaxe"),
+				MagicStorageTwo.Instance.GetTexture("Textures/Filtering/FilterArmor"),
+				MagicStorageTwo.Instance.GetTexture("Textures/Filtering/FilterPotion"),
+				MagicStorageTwo.Instance.GetTexture("Textures/Filtering/FilterTile"),
+				MagicStorageTwo.Instance.GetTexture("Textures/Filtering/FilterMisc"),
 			}, new LocalizedText[] {
 				Locale.Get(Locale.C.FILTER_ALL),
 				Locale.Get(Locale.C.FILTER_WEAP),
@@ -411,7 +411,7 @@ namespace MagicStorage.GUI {
 						//	.Select(s => { Item i = new Item(); i.SetDefaults(s.GetItemTypeFromTileAbove()); return i.Name; })));
 						if (curMouse.RightButton == ButtonState.Released) {
 							ResetSlotFocus();
-							MagicStorage.Instance.guiM.WaitForUnpress = false;
+							MagicStorageTwo.Instance.guiM.WaitForUnpress = false;
 						}
 						if (recipesPanel != null) {
 							recipesPanel.Update(gameTime);
@@ -455,7 +455,7 @@ namespace MagicStorage.GUI {
 					Utils.DrawBorderString(Main.spriteBatch, Locale.GetStr(Locale.C.LOADING), pos + new Vector2(8f, 8f), Color.White);
 				}
 
-				if (!MagicStorage.Instance.guiM.StorageGUI.Active) {
+				if (!MagicStorageTwo.Instance.guiM.StorageGUI.Active) {
 					stationZone.DrawText();
 				}
 				recipeZone.DrawText();
@@ -642,7 +642,7 @@ namespace MagicStorage.GUI {
 							}
 							TryCraft(access);
 							RefreshItems();
-							MagicStorage.Instance.guiM?.StorageGUI.RefreshItems();
+							MagicStorageTwo.Instance.guiM?.StorageGUI.RefreshItems();
 							Main.PlaySound(SoundID.Grab, -1, -1, 1);
 						}
 						craftTimer--;
@@ -887,11 +887,11 @@ namespace MagicStorage.GUI {
 				if (item.type == ItemID.HoneyBucket) {
 					adjHoney = true;
 				}
-				if (item.type == MagicStorage.Instance.ItemType(nameof(SnowBiomeEmulator))) {
+				if (item.type == MagicStorageTwo.Instance.ItemType(nameof(SnowBiomeEmulator))) {
 					zoneSnow = true;
 				}
 			}
-			adjTiles[MagicStorage.Instance.TileType(nameof(Components.TCraftingAccess))] = true;
+			adjTiles[MagicStorageTwo.Instance.TileType(nameof(Components.TCraftingAccess))] = true;
 		}
 
 		private bool IsAvailable(Recipe recipe) {
@@ -1038,7 +1038,7 @@ namespace MagicStorage.GUI {
 				}
 				if (changed) {
 					RefreshItems();
-					MagicStorage.Instance.guiM?.StorageGUI.RefreshItems();
+					MagicStorageTwo.Instance.guiM?.StorageGUI.RefreshItems();
 					Main.PlaySound(SoundID.Grab, -1, -1, 1);
 				}
 			}
@@ -1113,7 +1113,7 @@ namespace MagicStorage.GUI {
 				}
 				if (changed) {
 					RefreshItems();
-					MagicStorage.Instance.guiM?.StorageGUI.RefreshItems();
+					MagicStorageTwo.Instance.guiM?.StorageGUI.RefreshItems();
 					Main.PlaySound(SoundID.Grab, -1, -1, 1);
 				}
 			}
@@ -1153,7 +1153,7 @@ namespace MagicStorage.GUI {
 					Main.soundInstanceMenuTick = Main.soundMenuTick.CreateInstance();
 					Main.PlaySound(SoundID.MenuTick, -1, -1, 1);
 					RefreshItems();
-					MagicStorage.Instance.guiM?.StorageGUI.RefreshItems();
+					MagicStorageTwo.Instance.guiM?.StorageGUI.RefreshItems();
 				}
 				rightClickTimer--;
 			}
@@ -1170,7 +1170,7 @@ namespace MagicStorage.GUI {
 			if (Main.netMode == NetmodeID.SinglePlayer) {
 				Item result = access.TryWithdrawStation(slot);
 				RefreshItems();
-				MagicStorage.Instance.guiM?.StorageGUI.RefreshItems();
+				MagicStorageTwo.Instance.guiM?.StorageGUI.RefreshItems();
 				return result;
 			}
 			else {
@@ -1184,7 +1184,7 @@ namespace MagicStorage.GUI {
 			if (Main.netMode == NetmodeID.SinglePlayer) {
 				Item result = access.DoStationSwap(item, slot);
 				RefreshItems();
-				MagicStorage.Instance.guiM?.StorageGUI.RefreshItems();
+				MagicStorageTwo.Instance.guiM?.StorageGUI.RefreshItems();
 				return result;
 			}
 			else {

@@ -1,4 +1,4 @@
-﻿using MagicStorage.GUI;
+﻿using MagicStorageTwo.GUI;
 using System;
 using System.Reflection;
 using System.Collections.Generic;
@@ -9,12 +9,12 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.UI;
 using System.Linq;
-using MagicStorage.Components;
-using MagicStorage.Items;
+using MagicStorageTwo.Components;
+using MagicStorageTwo.Items;
 
-namespace MagicStorage {
-	public class MagicStorage : Mod {
-		public static MagicStorage Instance;
+namespace MagicStorageTwo {
+	public class MagicStorageTwo : Mod {
+		public static MagicStorageTwo Instance;
 		//This mod should provide an API that other mods can consume instead of going though other mod's internals
 		//public static Mod bluemagicMod;
 		//public static Mod legendMod;

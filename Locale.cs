@@ -1,6 +1,6 @@
 ﻿using Terraria.Localization;
 
-namespace MagicStorage {
+namespace MagicStorageTwo {
 	public class Locale {
 
 		public static string GetStr(string code) {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MagicStorage.Extensions {
+namespace MagicStorageTwo.Extensions {
 	public static class LinqExt {
 		/// <summary>
 		/// Apply <see cref="Action"/> to every element of the sequence.

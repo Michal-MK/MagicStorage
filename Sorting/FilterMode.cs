@@ -1,4 +1,4 @@
-namespace MagicStorage.Sorting {
+namespace MagicStorageTwo.Sorting {
 	public enum FilterMode {
 		All,
 		Weapons,

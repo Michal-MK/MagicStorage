@@ -1,4 +1,4 @@
-﻿using MagicStorage.Components;
+﻿using MagicStorageTwo.Components;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -12,7 +12,7 @@ using Terraria.GameInput;
 using Terraria.ModLoader;
 using Terraria.UI;
 
-namespace MagicStorage.GUI {
+namespace MagicStorageTwo.GUI {
 	public class GUIManager {
 
 		public CraftingGUINew CraftingGUI { get; private set; }

@@ -1,11 +1,11 @@
 ﻿using Terraria;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using MagicStorage.Items.Base;
+using MagicStorageTwo.Items.Base;
 using Terraria.ID;
-using MagicStorage.Components;
+using MagicStorageTwo.Components;
 
-namespace MagicStorage.Items {
+namespace MagicStorageTwo.Items {
 	public class StorageUnitHellstone : BaseItem {
 		public override void SetStaticDefaults() {
 			DisplayName.SetDefault("Hellstone Storage Unit");

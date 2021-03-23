@@ -3,7 +3,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader.IO;
 
-namespace MagicStorage.Components {
+namespace MagicStorageTwo.Components {
 	public class TERemoteAccess : TEStorageCenter {
 		private Point16 locator = new Point16(-1, -1);
 

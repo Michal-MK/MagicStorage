@@ -2,10 +2,10 @@
 using Terraria;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using MagicStorage.Items.Base;
+using MagicStorageTwo.Items.Base;
 using Terraria.ID;
 
-namespace MagicStorage.Items {
+namespace MagicStorageTwo.Items {
 	public class ShadowDiamond : BaseItem {
 		public override void SetStaticDefaults() {
 			DisplayName.AddTranslation(GameCulture.Russian, "Теневой Алмаз");

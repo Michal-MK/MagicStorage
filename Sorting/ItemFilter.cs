@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 
-namespace MagicStorage.Sorting {
+namespace MagicStorageTwo.Sorting {
 	public abstract class ItemFilter {
 		public abstract bool Passes(Item item);
 

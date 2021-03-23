@@ -1,4 +1,4 @@
-using MagicStorage.GUI;
+using MagicStorageTwo.GUI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -10,7 +10,7 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.UI;
 
-namespace MagicStorage {
+namespace MagicStorageTwo {
 	public class UISearchBar : UIElement {
 		//TODO this hack
 		private static List<UISearchBar> searchBars = new List<UISearchBar>();
@@ -146,7 +146,7 @@ namespace MagicStorage {
 		}
 
 		protected override void DrawSelf(SpriteBatch spriteBatch) {
-			Texture2D texture = ModContent.GetTexture("MagicStorage/Textures/UI/SearchBar");
+			Texture2D texture = ModContent.GetTexture("MagicStorageTwo/Textures/UI/SearchBar");
 			CalculatedStyle dim = GetDimensions();
 			const int P = UICommon.PADDING;
 			int innerWidth = (int)dim.Width - 2 * P;

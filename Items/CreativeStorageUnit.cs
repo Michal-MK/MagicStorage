@@ -1,9 +1,9 @@
-﻿using MagicStorage.Items.Base;
+﻿using MagicStorageTwo.Items.Base;
 using Terraria.Localization;
 using Terraria.ID;
-using MagicStorage.Components;
+using MagicStorageTwo.Components;
 
-namespace MagicStorage.Items {
+namespace MagicStorageTwo.Items {
 	public class CreativeStorageUnit : BaseItem {
 		public override void SetStaticDefaults() {
 			DisplayName.AddTranslation(GameCulture.Russian, "Креативная Ячейка Хранилища");

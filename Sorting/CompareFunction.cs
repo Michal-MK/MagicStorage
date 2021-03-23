@@ -1,7 +1,7 @@
 using System;
 using Terraria;
 
-namespace MagicStorage.Sorting {
+namespace MagicStorageTwo.Sorting {
 	public abstract class CompareFunction {
 		public abstract int Compare(Item item1, Item item2);
 

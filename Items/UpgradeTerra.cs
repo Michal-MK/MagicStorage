@@ -2,9 +2,9 @@
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using MagicStorage.Items.Base;
+using MagicStorageTwo.Items.Base;
 
-namespace MagicStorage.Items {
+namespace MagicStorageTwo.Items {
 	public class UpgradeTerra : BaseItem {
 		public override void SetStaticDefaults() {
 			DisplayName.SetDefault("Terra Storage Upgrade");

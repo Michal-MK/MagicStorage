@@ -6,7 +6,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 
-namespace MagicStorage.Components {
+namespace MagicStorageTwo.Components {
 	public abstract class TEStorageCenter : TEStorageComponent {
 		public List<Point16> storageUnits = new List<Point16>();
 		public List<TCraftingTileSocket> sockets = new List<TCraftingTileSocket>();
@@ -62,7 +62,7 @@ namespace MagicStorage.Components {
 				}
 				NetHelper.SendTEUpdate(ID, Position);
 				if (Main.netMode != NetmodeID.Server) {
-					MagicStorage.Instance.guiM.Refresh();
+					MagicStorageTwo.Instance.guiM.Refresh();
 				}
 			}
 		}
@@ -171,7 +171,7 @@ namespace MagicStorage.Components {
 				sockets.Add(new TCraftingTileSocket(new Point16(reader.ReadInt16(), reader.ReadInt16())));
 			}
 
-			MagicStorage.Instance.guiM.Refresh(this);
+			MagicStorageTwo.Instance.guiM.Refresh(this);
 		}
 	}
 }

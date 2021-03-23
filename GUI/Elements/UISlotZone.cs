@@ -1,4 +1,4 @@
-using MagicStorage.GUI;
+using MagicStorageTwo.GUI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -6,7 +6,7 @@ using Terraria;
 using Terraria.GameInput;
 using Terraria.UI;
 
-namespace MagicStorage {
+namespace MagicStorageTwo {
 	public class UISlotZone : UIElement {
 		public delegate void HoverItemSlot(int slot, ref int hoverSlot);
 		public delegate Item GetItem(int slot, ref int context);

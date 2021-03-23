@@ -1,5 +1,5 @@
-using MagicStorage.Components;
-using MagicStorage.GUI;
+using MagicStorageTwo.Components;
+using MagicStorageTwo.GUI;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using Terraria.DataStructures;
 using Terraria.ModLoader;
 using Terraria.UI;
 
-namespace MagicStorage {
+namespace MagicStorageTwo {
 	public static class GUIHelper {
 		private static FieldInfo _itemIconCacheTimeInfo;
 

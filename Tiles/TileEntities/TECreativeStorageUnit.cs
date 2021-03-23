@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 
-namespace MagicStorage.Components {
+namespace MagicStorageTwo.Components {
 	public class TECreativeStorageUnit : TEAbstractStorageUnit {
 		public override bool IsFull {
 			get {

@@ -1,7 +1,7 @@
 ﻿using Terraria.ModLoader;
 
-namespace MagicStorage.Items.Base {
+namespace MagicStorageTwo.Items.Base {
 	public abstract class BaseItem : ModItem {
-		public override string Texture => "MagicStorage/Textures/Items/" + GetType().Name;
+		public override string Texture => "MagicStorageTwo/Textures/Items/" + GetType().Name;
 	}
 }

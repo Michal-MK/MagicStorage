@@ -2,10 +2,10 @@
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using MagicStorage.Items.Base;
-using MagicStorage.Components;
+using MagicStorageTwo.Items.Base;
+using MagicStorageTwo.Components;
 
-namespace MagicStorage.Items {
+namespace MagicStorageTwo.Items {
 	public class StorageHeart : BaseItem {
 		public override void SetStaticDefaults() {
 			DisplayName.AddTranslation(GameCulture.Russian, "Сердце Хранилища");

@@ -1,4 +1,4 @@
-﻿using MagicStorage.Items;
+﻿using MagicStorageTwo.Items;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Terraria.ModLoader;
 
-namespace MagicStorage.Components {
+namespace MagicStorageTwo.Components {
 	public class TCraftingStorageAccess : TCraftingAccess {
 		public override ModTileEntity GetTileEntity() {
 			return mod.GetTileEntity(nameof(TECraftingStorageAccess));

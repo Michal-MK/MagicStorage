@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Terraria.GameContent.UI.Elements;
 using Terraria.UI;
 
-namespace MagicStorage.GUI.Elements {
+namespace MagicStorageTwo.GUI.Elements {
 	public class UIPanelWithChildren : UIPanel {
 		public List<UIElement> Children => Elements;
 	}

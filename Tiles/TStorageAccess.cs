@@ -1,4 +1,4 @@
-using MagicStorage.Items;
+using MagicStorageTwo.Items;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -8,7 +8,7 @@ using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.Localization;
 
-namespace MagicStorage.Components {
+namespace MagicStorageTwo.Components {
 	public class TStorageAccess : TStorageComponent {
 		public override int ItemType(int frameX, int frameY) {
 			return mod.ItemType(nameof(StorageAccess));

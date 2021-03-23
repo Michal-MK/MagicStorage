@@ -3,7 +3,7 @@ using System.IO;
 using Terraria.DataStructures;
 using Terraria.ModLoader.IO;
 
-namespace MagicStorage.Components {
+namespace MagicStorageTwo.Components {
 	public abstract class TEStoragePoint : TEStorageComponent {
 		private Point16 center;
 

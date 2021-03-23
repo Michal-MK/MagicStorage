@@ -1,4 +1,4 @@
-using MagicStorage.GUI;
+using MagicStorageTwo.GUI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -6,7 +6,7 @@ using Terraria;
 using Terraria.Localization;
 using Terraria.UI;
 
-namespace MagicStorage {
+namespace MagicStorageTwo {
 	public class UIButtonChoice : UIElement {
 		public const int BUTTON_SIZE = 32;
 		public const int BUTTON_PADDING = 8;
@@ -67,8 +67,8 @@ namespace MagicStorage {
 		}
 
 		protected override void DrawSelf(SpriteBatch spriteBatch) {
-			Texture2D backTexture = MagicStorage.Instance.GetTexture("Textures/Sorting/SortButtonBackground");
-			Texture2D backTextureActive = MagicStorage.Instance.GetTexture("Textures/Sorting/SortButtonBackgroundActive");
+			Texture2D backTexture = MagicStorageTwo.Instance.GetTexture("Textures/Sorting/SortButtonBackground");
+			Texture2D backTextureActive = MagicStorageTwo.Instance.GetTexture("Textures/Sorting/SortButtonBackgroundActive");
 			CalculatedStyle dim = GetDimensions();
 			for (int k = 0; k < buttons.Length; k++) {
 				Texture2D texture = k == choice ? backTextureActive : backTexture;

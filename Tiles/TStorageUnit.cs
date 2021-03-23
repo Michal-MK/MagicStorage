@@ -5,9 +5,9 @@ using Terraria.DataStructures;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 using Terraria.ID;
-using MagicStorage.Items;
+using MagicStorageTwo.Items;
 
-namespace MagicStorage.Components {
+namespace MagicStorageTwo.Components {
 	public class TStorageUnit : TStorageComponent {
 		public override void ModifyObjectData() {
 			TileObjectData.newTile.StyleHorizontal = true;

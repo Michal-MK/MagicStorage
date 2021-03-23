@@ -7,7 +7,7 @@ using Terraria.DataStructures;
 using Terraria.ModLoader.IO;
 using Terraria.ID;
 
-namespace MagicStorage.Components {
+namespace MagicStorageTwo.Components {
 	public class TEStorageUnit : TEAbstractStorageUnit {
 		private IList<Item> items = new List<Item>();
 		private Queue<UnitOperation> netQueue = new Queue<UnitOperation>();

@@ -1,5 +1,5 @@
-﻿using MagicStorage.Components;
-using MagicStorage.Items.Base;
+﻿using MagicStorageTwo.Components;
+using MagicStorageTwo.Items.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace MagicStorage.Items {
+namespace MagicStorageTwo.Items {
 	public class CraftingTileSocket : BaseItem {
 		public override void SetStaticDefaults() {
 			DisplayName.SetDefault("Crafting Socket");
